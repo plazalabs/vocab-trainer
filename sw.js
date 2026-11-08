@@ -1,10 +1,11 @@
-const CACHE_NAME = 'vocab-trainer-v1';
+const CACHE_NAME = 'vocab-trainer-v2';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
   './data/words.json',
+  './data/exam-words.json',
   './manifest.json',
   './icons/icon.svg',
   './icons/icon-192.png',

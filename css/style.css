@@ -1311,6 +1311,50 @@ button {
   border: 1px solid var(--danger-border);
 }
 
+.wrong-start-btn.exam-btn {
+  background: var(--amber-primary);
+  color: #FFFFFF;
+  border: 1px solid var(--amber-primary);
+}
+
+.wrong-start-btn.exam-btn-secondary {
+  background: var(--bg-surface);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
+}
+
+.wrong-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.wrong-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--danger-border);
+  background: var(--danger-soft);
+  color: var(--danger-primary);
+}
+
+.wrong-mode-badge.exam-mode {
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border-color: var(--amber-border);
+}
+
+.wrong-mode-badge.basic-mode {
+  background: var(--sky-soft);
+  color: var(--sky-primary);
+  border-color: rgba(14, 116, 144, 0.25);
+}
+
 .empty-state {
   background: var(--bg-surface);
   border: 1px dashed var(--border-strong);

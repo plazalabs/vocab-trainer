@@ -10,6 +10,15 @@
   // 간격반복(SRS) 복습 간격 단계: 맞히면 1일 -> 3일 -> 7일 -> 14일 확대
   const SRS_INTERVALS = [1, 3, 7, 14];
 
+  // 퀴즈 모드 라벨 (기본 3종 + 기출 모드 2종)
+  const QUIZ_MODE_LABELS = {
+    meaning: '기본 · 뜻 맞히기',
+    blank: '기본 · 예문 빈칸',
+    flashcard: '기본 · 카드 뒤집기',
+    'exam-blank': '기출 · 예문 빈칸',
+    'exam-meaning': '기출 · 문맥 속 뜻'
+  };
+
   const state = {
     words: [],
     examWords: [],
@@ -27,6 +36,7 @@
     wordbookFilter: 'all',      // 'all' | '고1' | '고2' | '고3' | 'due'
     examWordbookFilter: 'all',  // 'all' | 'S' | 'A' | 'due'
     wordbookSearch: '',
+    wrongNoteFilter: 'all',     // 'all' | 'exam' | 'sample' | 'exam-blank' | 'exam-meaning' | 'meaning' | 'blank' | 'flashcard'
     quiz: {
       mode: 'meaning', // 'meaning' | 'blank' | 'flashcard' | 'exam-blank' | 'exam-meaning'
       scope: 'today',  // 'today' | 'all' | 'wrong' | 'S' | 'A'
@@ -135,6 +145,10 @@
   }
 
   // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
+  function getQuizModeLabel(modeKey) {
+    return QUIZ_MODE_LABELS[modeKey] || '기본 · 뜻 맞히기';
+  }
+
   function getWordSrs(wordId) {
     return state.srs[String(wordId)] || null;
   }
@@ -145,20 +159,79 @@
     return rec.nextReviewDate <= getTodayStr();
   }
 
-  function getDueWords() {
+  function getDueSampleWords() {
     return state.words.filter((w) => isWordDueToday(w.id));
   }
 
-  function getNewWords() {
+  function getDueExamWords() {
+    return state.examWords.filter((w) => isWordDueToday(w.id));
+  }
+
+  function getDueWords() {
+    return [...getDueSampleWords(), ...getDueExamWords()];
+  }
+
+  function getNewSampleWords() {
     return state.words.filter((w) => !getWordSrs(w.id));
   }
 
-  function getWrongWords() {
+  function getNewExamWords() {
+    return state.examWords.filter((w) => !getWordSrs(w.id));
+  }
+
+  function getNewWords() {
+    return [...getNewSampleWords(), ...getNewExamWords()];
+  }
+
+  function getWrongSampleWords() {
     return state.words.filter((w) => Boolean(state.wrongNote[String(w.id)]));
   }
 
-  function recordQuizAnswer(wordId, isCorrect) {
+  function getWrongExamWords() {
+    return state.examWords.filter((w) => Boolean(state.wrongNote[String(w.id)]));
+  }
+
+  function getWrongWords() {
+    return [...getWrongSampleWords(), ...getWrongExamWords()];
+  }
+
+  function getWrongModesForRecord(wrongInfo, isExamWord) {
+    if (!wrongInfo) return [];
+    if (Array.isArray(wrongInfo.wrongModes) && wrongInfo.wrongModes.length > 0) {
+      return wrongInfo.wrongModes;
+    }
+    if (wrongInfo.lastWrongMode) {
+      return [wrongInfo.lastWrongMode];
+    }
+    return [isExamWord ? 'exam-blank' : 'meaning'];
+  }
+
+  function renderWrongModeBadges(wrongInfo, isExamWord, compact) {
+    if (!wrongInfo) return '';
+    const modes = getWrongModesForRecord(wrongInfo, isExamWord);
+    const modeCounts =
+      wrongInfo.modeCounts && typeof wrongInfo.modeCounts === 'object'
+        ? wrongInfo.modeCounts
+        : {};
+
+    return modes
+      .map((m) => {
+        const label = getQuizModeLabel(m);
+        const cls = m.startsWith('exam-') ? 'exam-mode' : 'basic-mode';
+        const cnt = Number(modeCounts[m]) || 0;
+        const text = compact
+          ? `오답노트 · ${label}`
+          : cnt > 1
+          ? `${label} 오답 ${cnt}회`
+          : `${label} 오답`;
+        return `<span class="wrong-mode-badge ${cls}" data-wrong-mode="${escapeHtml(m)}">${escapeHtml(text)}</span>`;
+      })
+      .join('');
+  }
+
+  function recordQuizAnswer(wordId, isCorrect, quizMode) {
     const key = String(wordId);
+    const modeKey = quizMode || state.quiz.mode || (key.startsWith('exam-') ? 'exam-blank' : 'meaning');
     const today = getTodayStr();
     const prev = state.srs[key];
 
@@ -183,15 +256,31 @@
       nextReviewDate,
       lastReviewedDate: today,
       lastResult: isCorrect ? 'correct' : 'wrong',
+      lastMode: modeKey,
       reviewCount: (prev && prev.reviewCount ? prev.reviewCount : 0) + 1
     };
 
-    // 오답노트 자동 저장
+    // 오답노트 자동 저장 (어떤 모드에서 틀렸는지 구분 저장)
     if (!isCorrect) {
       const prevWrong = state.wrongNote[key];
+      const isExam = key.startsWith('exam-');
+      const prevModes = getWrongModesForRecord(prevWrong, isExam);
+      const wrongModes = prevModes.includes(modeKey)
+        ? prevModes.slice()
+        : [...prevModes, modeKey];
+      const modeCounts =
+        prevWrong && prevWrong.modeCounts && typeof prevWrong.modeCounts === 'object'
+          ? { ...prevWrong.modeCounts }
+          : {};
+      modeCounts[modeKey] = (Number(modeCounts[modeKey]) || 0) + 1;
+
       state.wrongNote[key] = {
         wrongCount: (prevWrong && prevWrong.wrongCount ? prevWrong.wrongCount : 0) + 1,
-        lastWrongDate: today
+        lastWrongDate: today,
+        lastWrongMode: modeKey,
+        wrongModes,
+        modeCounts,
+        sourceType: isExam ? 'exam' : 'sample'
       };
     }
 
@@ -219,7 +308,8 @@
       isCorrect,
       stage: nextStage,
       intervalDays,
-      nextReviewDate
+      nextReviewDate,
+      mode: modeKey
     };
   }
 
@@ -344,9 +434,10 @@
   // --- 1. 홈 화면 렌더링 ---
   function renderHomeView() {
     const today = getTodayStr();
+    const allWords = [...state.words, ...state.examWords];
     const dueWords = getDueWords();
     const newWords = getNewWords();
-    const totalWords = state.words.length;
+    const totalWords = allWords.length;
     const learnedCount = totalWords - newWords.length;
     const scheduledFutureCount = learnedCount - dueWords.length;
     const todayStudiedCount = state.streak.todayStudiedIds.length;
@@ -390,9 +481,9 @@
       }
     }
 
-    // 간격반복 단계별 단어 수 집계
+    // 간격반복 단계별 단어 수 집계 (기본 단어 + 기출 다의어 전체 연동)
     const stageCounts = [0, 0, 0, 0, 0];
-    state.words.forEach((w) => {
+    allWords.forEach((w) => {
       const rec = getWordSrs(w.id);
       if (!rec || !rec.stage) {
         stageCounts[0] += 1;
@@ -525,7 +616,7 @@
     const wrongBadgesHtml = opts.wrongBadgesHtml
       ? opts.wrongBadgesHtml
       : isWrong
-      ? '<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">오답노트</span>'
+      ? renderWrongModeBadges(wrongInfo, true, true)
       : '';
 
     return `
@@ -705,7 +796,7 @@
     listEl.innerHTML = filtered
       .map((w) => {
         const srsMeta = getSrsBadgeMeta(w.id);
-        const isWrong = Boolean(state.wrongNote[String(w.id)]);
+        const wrongInfo = state.wrongNote[String(w.id)];
         return `
           <article class="word-card" data-word-id="${w.id}" data-speak-word="${escapeHtml(w.word)}" tabindex="0" role="button" aria-label="${escapeHtml(w.word)} 발음 듣기">
             <div class="word-card-top">
@@ -713,7 +804,7 @@
                 <span class="word-en">${escapeHtml(w.word)}</span>
                 <span class="word-pos">${escapeHtml(w.pos)}</span>
                 <span class="level-badge level-${escapeHtml(w.level)}">${escapeHtml(w.level)}</span>
-                ${isWrong ? '<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">오답노트</span>' : ''}
+                ${wrongInfo ? renderWrongModeBadges(wrongInfo, false, true) : ''}
               </div>
               <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}" aria-label="${escapeHtml(w.word)} 단어 발음 재생">
                 <span aria-hidden="true">🔊</span>
@@ -846,15 +937,14 @@
   function buildQuizQueue(scope, mode) {
     if (isExamQuizMode(mode)) {
       if (scope === 'wrong') {
-        const wrongExamList = state.examWords.filter((w) => Boolean(state.wrongNote[String(w.id)]));
-        return shuffleArray(wrongExamList);
+        return shuffleArray(getWrongExamWords());
       }
       if (scope === 'S' || scope === 'A') {
         return shuffleArray(state.examWords.filter((w) => w.grade === scope));
       }
       if (scope === 'today') {
-        const dueExam = state.examWords.filter((w) => isWordDueToday(w.id));
-        const unseenExam = state.examWords.filter((w) => !getWordSrs(w.id));
+        const dueExam = getDueExamWords();
+        const unseenExam = getNewExamWords();
         const combined = [...shuffleArray(dueExam), ...shuffleArray(unseenExam)];
         if (combined.length > 0) {
           return combined.slice(0, Math.max(dueExam.length, Math.min(15, combined.length)));
@@ -865,12 +955,11 @@
     }
 
     if (scope === 'wrong') {
-      const wrongSampleList = state.words.filter((w) => Boolean(state.wrongNote[String(w.id)]));
-      return shuffleArray(wrongSampleList);
+      return shuffleArray(getWrongSampleWords());
     }
     if (scope === 'today') {
-      const due = getDueWords();
-      const unseen = getNewWords();
+      const due = getDueSampleWords();
+      const unseen = getNewSampleWords();
       // 오늘 복습할 단어를 최우선 출제하고, 부족하면 미학습 단어 추가 (최대 12문항 세션)
       const combined = [...shuffleArray(due), ...shuffleArray(unseen)];
       if (combined.length > 0) {
@@ -1422,10 +1511,11 @@
     const correctCount = state.quiz.results.filter((r) => r.isCorrect).length;
     const wrongResults = state.quiz.results.filter((r) => !r.isCorrect);
     const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+    const currentModeLabel = getQuizModeLabel(state.quiz.mode);
 
     container.innerHTML = `
       <div class="quiz-stage-card" style="text-align: center;">
-        <span class="hero-date-label">학습 세션 완료</span>
+        <span class="hero-date-label">학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
         <h3 class="hero-headline" style="margin-bottom: 14px;">
           총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
         </h3>
@@ -1456,16 +1546,24 @@
               const meaningLabel = w.isExam
                 ? getExamContextMeaningObj(w).meaning_ko || ''
                 : w.meaning_ko || '';
+              const modeLabel = getQuizModeLabel(res.mode || state.quiz.mode);
               return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 8px; flex-wrap: wrap;">
                   <div>
                     <strong style="font-family: var(--font-en);">${escapeHtml(w.word)}</strong>
                     ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}" style="margin-left: 4px;">${escapeHtml(w.grade)}급</span>` : ''}
                     <span style="color: var(--text-secondary); margin-left: 6px;">${escapeHtml(meaningLabel)}</span>
                   </div>
-                  <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
-                    ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}
-                  </span>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    ${
+                      !res.isCorrect
+                        ? `<span class="wrong-mode-badge ${w.isExam ? 'exam-mode' : 'basic-mode'}">${escapeHtml(modeLabel)} 오답</span>`
+                        : ''
+                    }
+                    <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
+                      ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}
+                    </span>
+                  </div>
                 </div>
               `;
             })
@@ -1519,16 +1617,23 @@
     if (!headerEl || !listEl) return;
 
     const wrongWords = getWrongWords();
+    const wrongExamWords = getWrongExamWords();
+    const wrongSampleWords = getWrongSampleWords();
 
     if (wrongWords.length === 0) {
       headerEl.innerHTML = '';
       listEl.innerHTML = `
         <div class="empty-state">
           <p class="empty-title">오답노트에 저장된 단어가 없습니다</p>
-          <p class="empty-desc">퀴즈에서 틀리거나 '몰라요'를 선택한 단어가 이곳에 자동으로 기록됩니다.</p>
-          <button class="primary-cta-btn" type="button" id="btn-wrong-go-quiz" style="max-width: 240px; margin: 0 auto;">
-            퀴즈 풀러 가기
-          </button>
+          <p class="empty-desc">기본 퀴즈 3종 또는 기출 모드 2종에서 틀린 단어가 어떤 모드에서 틀렸는지 구분되어 이곳에 자동 기록됩니다.</p>
+          <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+            <button class="primary-cta-btn" type="button" id="btn-wrong-go-quiz" style="max-width: 220px;">
+              기본 퀴즈 풀러 가기
+            </button>
+            <button class="primary-cta-btn" type="button" id="btn-wrong-go-exam-quiz" style="max-width: 220px; background: var(--amber-primary);">
+              기출 모드 풀러 가기
+            </button>
+          </div>
         </div>
       `;
       const goQuizBtn = document.getElementById('btn-wrong-go-quiz');
@@ -1538,26 +1643,90 @@
           switchView('quiz');
         });
       }
+      const goExamQuizBtn = document.getElementById('btn-wrong-go-exam-quiz');
+      if (goExamQuizBtn) {
+        goExamQuizBtn.addEventListener('click', () => {
+          initQuizSession('exam-blank', 'today');
+          switchView('quiz');
+        });
+      }
       return;
     }
 
+    const countByMode = (targetMode) =>
+      wrongWords.filter((w) => {
+        const info = state.wrongNote[String(w.id)];
+        return getWrongModesForRecord(info, Boolean(w.isExam)).includes(targetMode);
+      }).length;
+
+    const examBlankCount = countByMode('exam-blank');
+    const examMeaningCount = countByMode('exam-meaning');
+    const basicMeaningCount = countByMode('meaning');
+    const basicBlankCount = countByMode('blank');
+    const basicFlashcardCount = countByMode('flashcard');
+
     headerEl.innerHTML = `
       <div class="wrong-banner">
-        <h2 class="wrong-banner-title">오답노트 집중 복습 (${wrongWords.length}개 단어)</h2>
+        <h2 class="wrong-banner-title">오답노트 집중 복습 (총 ${wrongWords.length}개 · 기출 ${wrongExamWords.length} / 기본 ${wrongSampleWords.length})</h2>
         <p class="wrong-banner-desc">
-          틀린 단어는 내일 복습 대상에 자동 포함됩니다. 아래 버튼을 눌러 오답 단어만으로 퀴즈를 다시 시작할 수 있습니다.
+          틀린 단어는 어떤 모드에서 틀렸는지 구분되어 기록되며 내일 복습 대상에 자동 포함됩니다.
         </p>
-        <div class="wrong-quiz-btns">
-          <button class="wrong-start-btn" type="button" data-wrong-quiz="meaning" id="btn-wrong-quiz-meaning">
-            오답 뜻 맞히기 퀴즈 시작
+        <div class="wrong-quiz-btns" style="margin-bottom: 8px;">
+          <button class="wrong-start-btn exam-btn" type="button" data-wrong-quiz="exam-blank" id="btn-wrong-quiz-exam-blank">
+            기출 · 예문 빈칸 오답 퀴즈 (${wrongExamWords.length})
           </button>
-          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="blank" id="btn-wrong-quiz-blank">
-            오답 예문 빈칸 퀴즈
-          </button>
-          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="flashcard" id="btn-wrong-quiz-flashcard">
-            오답 카드 뒤집기
+          <button class="wrong-start-btn exam-btn-secondary" type="button" data-wrong-quiz="exam-meaning" id="btn-wrong-quiz-exam-meaning">
+            기출 · 문맥 속 뜻 오답 퀴즈 (${wrongExamWords.length})
           </button>
         </div>
+        <div class="wrong-quiz-btns">
+          <button class="wrong-start-btn" type="button" data-wrong-quiz="meaning" id="btn-wrong-quiz-meaning">
+            오답 뜻 맞히기 퀴즈 시작 (${wrongSampleWords.length})
+          </button>
+          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="blank" id="btn-wrong-quiz-blank">
+            오답 예문 빈칸 퀴즈 (${wrongSampleWords.length})
+          </button>
+          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="flashcard" id="btn-wrong-quiz-flashcard">
+            오답 카드 뒤집기 (${wrongSampleWords.length})
+          </button>
+        </div>
+      </div>
+
+      <div class="wrong-filter-row" role="group" aria-label="오답노트 모드별 필터">
+        <button class="filter-pill ${state.wrongNoteFilter === 'all' ? 'active' : ''}" type="button" data-wrong-filter="all">
+          전체 (${wrongWords.length})
+        </button>
+        <button class="filter-pill exam-pill ${state.wrongNoteFilter === 'exam' ? 'active' : ''}" type="button" data-wrong-filter="exam">
+          기출 모드 오답 (${wrongExamWords.length})
+        </button>
+        <button class="filter-pill ${state.wrongNoteFilter === 'sample' ? 'active' : ''}" type="button" data-wrong-filter="sample">
+          기본 퀴즈 오답 (${wrongSampleWords.length})
+        </button>
+        ${
+          examBlankCount > 0
+            ? `<button class="filter-pill exam-pill ${state.wrongNoteFilter === 'exam-blank' ? 'active' : ''}" type="button" data-wrong-filter="exam-blank">기출 · 예문 빈칸 (${examBlankCount})</button>`
+            : ''
+        }
+        ${
+          examMeaningCount > 0
+            ? `<button class="filter-pill exam-pill ${state.wrongNoteFilter === 'exam-meaning' ? 'active' : ''}" type="button" data-wrong-filter="exam-meaning">기출 · 문맥 속 뜻 (${examMeaningCount})</button>`
+            : ''
+        }
+        ${
+          basicMeaningCount > 0
+            ? `<button class="filter-pill ${state.wrongNoteFilter === 'meaning' ? 'active' : ''}" type="button" data-wrong-filter="meaning">기본 · 뜻 맞히기 (${basicMeaningCount})</button>`
+            : ''
+        }
+        ${
+          basicBlankCount > 0
+            ? `<button class="filter-pill ${state.wrongNoteFilter === 'blank' ? 'active' : ''}" type="button" data-wrong-filter="blank">기본 · 예문 빈칸 (${basicBlankCount})</button>`
+            : ''
+        }
+        ${
+          basicFlashcardCount > 0
+            ? `<button class="filter-pill ${state.wrongNoteFilter === 'flashcard' ? 'active' : ''}" type="button" data-wrong-filter="flashcard">기본 · 카드 뒤집기 (${basicFlashcardCount})</button>`
+            : ''
+        }
       </div>
     `;
 
@@ -1569,9 +1738,45 @@
       });
     });
 
-    listEl.innerHTML = wrongWords
+    headerEl.querySelectorAll('[data-wrong-filter]').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        state.wrongNoteFilter = pill.dataset.wrongFilter || 'all';
+        renderWrongNoteView();
+      });
+    });
+
+    const filteredWrongWords = wrongWords.filter((w) => {
+      const f = state.wrongNoteFilter;
+      if (f === 'all') return true;
+      if (f === 'exam') return Boolean(w.isExam);
+      if (f === 'sample') return !w.isExam;
+      const info = state.wrongNote[String(w.id)];
+      return getWrongModesForRecord(info, Boolean(w.isExam)).includes(f);
+    });
+
+    if (filteredWrongWords.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-title">선택한 모드 필터에 해당하는 오답 단어가 없습니다</p>
+          <p class="empty-desc">상단 필터에서 '전체'를 선택하면 모든 오답 단어를 볼 수 있습니다.</p>
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = filteredWrongWords
       .map((w) => {
         const wrongInfo = state.wrongNote[String(w.id)] || { wrongCount: 1 };
+        const modeBadges = renderWrongModeBadges(wrongInfo, Boolean(w.isExam), false);
+        const countBadge = `<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">총 오답 ${wrongInfo.wrongCount || 1}회</span>`;
+
+        if (w.isExam) {
+          return renderExamWordCard(w, {
+            showRemoveWrongBtn: true,
+            wrongBadgesHtml: `${countBadge}${modeBadges}`
+          });
+        }
+
         const srsMeta = getSrsBadgeMeta(w.id);
         return `
           <article class="word-card" data-word-id="${w.id}" data-speak-word="${escapeHtml(w.word)}">
@@ -1580,9 +1785,8 @@
                 <span class="word-en">${escapeHtml(w.word)}</span>
                 <span class="word-pos">${escapeHtml(w.pos)}</span>
                 <span class="level-badge level-${escapeHtml(w.level)}">${escapeHtml(w.level)}</span>
-                <span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">
-                  오답 ${wrongInfo.wrongCount}회
-                </span>
+                ${countBadge}
+                ${modeBadges}
               </div>
               <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}">
                 <span aria-hidden="true">🔊</span>
@@ -1623,7 +1827,11 @@
     const heroStartBtn = document.getElementById('btn-hero-start');
     if (heroStartBtn) {
       heroStartBtn.addEventListener('click', () => {
-        initQuizSession('meaning', 'today');
+        const startMode =
+          getDueSampleWords().length === 0 && getDueExamWords().length > 0
+            ? 'exam-blank'
+            : 'meaning';
+        initQuizSession(startMode, 'today');
         switchView('quiz');
       });
     }
