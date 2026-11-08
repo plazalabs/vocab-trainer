@@ -944,6 +944,114 @@
     renderQuizView();
   }
 
+  // 빈칸 퀴즈 오답 보기 선별 — 빈칸에 넣었을 때 문법적·의미적으로 문장이 성립하지 않는 오답 보기 풀
+  const SAMPLE_BLANK_SAFE_DISTRACTORS = {
+    abandon: ['adapt', 'collaborate', 'compel', 'contribute', 'advocate'],
+    accommodate: ['adapt', 'collaborate', 'advocate', 'contribute', 'acknowledge'],
+    accurate: ['ambiguous', 'conventional', 'inevitable', 'deliberate'],
+    acknowledge: ['collaborate', 'compel', 'contribute', 'adapt', 'advocate'],
+    adapt: ['abandon', 'accommodate', 'acknowledge', 'advocate', 'anticipate', 'compel'],
+    adequate: ['ambiguous', 'apparent', 'comprehensive', 'conventional', 'deliberate', 'inevitable', 'accurate'],
+    advocate: ['collaborate', 'adapt', 'accommodate', 'compel', 'contribute', 'diminish'],
+    ambiguous: ['accurate', 'apparent', 'adequate', 'consistent', 'inevitable', 'crucial', 'deliberate'],
+    anticipate: ['collaborate', 'adapt', 'advocate', 'contribute', 'compel'],
+    apparent: ['accurate', 'adequate', 'comprehensive', 'consistent', 'conventional', 'deliberate'],
+    candidate: ['capacity', 'consequence', 'collaborate', 'ambiguous', 'inevitable'],
+    capacity: ['candidate', 'consequence', 'collaborate', 'ambiguous', 'inevitable'],
+    collaborate: ['abandon', 'accommodate', 'acknowledge', 'advocate', 'anticipate', 'compel', 'decline', 'diminish'],
+    compel: ['collaborate', 'adapt', 'advocate', 'acknowledge', 'anticipate', 'contribute', 'decline', 'diminish'],
+    comprehensive: ['ambiguous', 'apparent', 'inevitable', 'deliberate'],
+    consequence: ['candidate', 'capacity', 'collaborate', 'compel', 'adapt'],
+    consistent: ['ambiguous', 'apparent', 'inevitable', 'accurate'],
+    contribute: ['collaborate', 'compel', 'diminish', 'decline', 'abandon'],
+    conventional: ['ambiguous', 'apparent', 'deliberate', 'accurate', 'inevitable'],
+    crucial: ['ambiguous', 'apparent', 'accurate', 'inevitable'],
+    decline: ['collaborate', 'adapt', 'compel', 'contribute', 'diminish'],
+    deliberate: ['ambiguous', 'apparent', 'accurate', 'inevitable'],
+    diminish: ['collaborate', 'adapt', 'advocate', 'compel', 'contribute'],
+    inevitable: ['accurate', 'comprehensive', 'conventional', 'deliberate', 'ambiguous']
+  };
+
+  const EXAM_BLANK_SAFE_DISTRACTORS = {
+    account: ['approach', 'base', 'sense', 'subject', 'term', 'view', 'population', 'nature'],
+    approach: ['contribute', 'reflect', 'remain', 'follow', 'population', 'leave', 'term'],
+    base: ['population', 'nature', 'movement', 'course', 'case', 'term', 'subject', 'sense', 'remain', 'result'],
+    lead: ['population', 'nature', 'case', 'course', 'term', 'sense', 'view', 'practice', 'order', 'account'],
+    leave: ['term', 'sense', 'case', 'course', 'nature', 'population', 'movement', 'remain', 'matter'],
+    matter: ['term', 'subject', 'case', 'course', 'nature', 'population', 'movement', 'field', 'approach', 'order'],
+    order: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'concern', 'figure', 'draw', 'lead', 'leave', 'matter', 'present', 'account'],
+    practice: ['contribute', 'reflect', 'remain', 'follow', 'population', 'leave', 'turn', 'present', 'base'],
+    present: ['contribute', 'remain', 'result', 'matter', 'account', 'turn', 'lead', 'population', 'course', 'movement'],
+    sense: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'concern', 'figure', 'draw', 'leave', 'lead', 'turn', 'base', 'present'],
+    subject: ['term', 'order', 'practice', 'view', 'sense', 'base', 'approach', 'account', 'turn', 'lead', 'leave', 'matter', 'course', 'field'],
+    term: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'concern', 'figure', 'draw', 'leave', 'lead', 'turn', 'base', 'present'],
+    turn: ['term', 'subject', 'sense', 'view', 'order', 'practice', 'approach', 'account', 'base', 'case', 'course', 'nature', 'population'],
+    view: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'figure', 'draw', 'leave', 'lead', 'turn', 'base', 'present', 'population'],
+    address: ['population', 'nature', 'course', 'case', 'movement', 'field', 'remain', 'result', 'matter', 'contribute', 'function'],
+    case: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'figure', 'draw', 'leave', 'lead', 'turn', 'base', 'present', 'produce'],
+    concern: ['population', 'nature', 'course', 'case', 'movement', 'field', 'point', 'term', 'sense', 'remain', 'result', 'matter', 'contribute', 'function'],
+    conduct: ['population', 'nature', 'course', 'case', 'movement', 'field', 'point', 'term', 'sense', 'remain', 'result', 'matter', 'contribute', 'function'],
+    contribute: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'produce', 'reflect', 'follow', 'conduct', 'cover', 'address'],
+    cover: ['population', 'nature', 'case', 'course', 'movement', 'field', 'point', 'remain', 'result', 'matter', 'contribute', 'function'],
+    course: ['contribute', 'reflect', 'conduct', 'follow', 'address', 'concern', 'figure', 'draw', 'leave', 'lead'],
+    draw: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'produce', 'conduct', 'cover', 'address', 'contribute'],
+    field: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'produce', 'cover', 'draw', 'leave', 'present'],
+    figure: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'contribute', 'remain', 'result', 'matter', 'reflect', 'conduct', 'concern'],
+    follow: ['population', 'nature', 'case', 'course', 'movement', 'field', 'point', 'term', 'remain', 'result', 'matter', 'contribute', 'function'],
+    force: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'remain', 'result', 'matter', 'contribute', 'function', 'reflect'],
+    form: ['population', 'nature', 'case', 'course', 'movement', 'field', 'point', 'term', 'remain', 'result', 'matter', 'contribute', 'function'],
+    function: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'contribute', 'result', 'matter', 'conduct', 'cover', 'address', 'follow', 'produce', 'reflect', 'concern'],
+    mean: ['contribute', 'reflect', 'follow', 'present', 'conduct', 'concern', 'remain', 'result', 'matter'],
+    movement: ['contribute', 'reflect', 'remain', 'follow', 'address', 'figure', 'draw', 'present', 'cover'],
+    nature: ['contribute', 'reflect', 'conduct', 'follow', 'address', 'concern', 'figure', 'draw', 'leave', 'lead'],
+    point: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'concern', 'figure', 'draw', 'leave', 'present', 'produce'],
+    population: ['contribute', 'reflect', 'conduct', 'follow', 'address', 'draw', 'leave', 'present', 'cover'],
+    process: ['population', 'nature', 'case', 'course', 'movement', 'field', 'point', 'term', 'remain', 'result', 'matter', 'contribute', 'function'],
+    produce: ['contribute', 'reflect', 'follow', 'address', 'figure', 'draw', 'leave', 'lead', 'turn', 'base', 'present', 'cover'],
+    project: ['population', 'nature', 'course', 'movement', 'field', 'remain', 'contribute', 'function', 'conduct', 'produce'],
+    reflect: ['population', 'nature', 'case', 'course', 'movement', 'field', 'point', 'term', 'result', 'matter', 'contribute', 'function'],
+    remain: ['contribute', 'reflect', 'follow', 'address', 'figure', 'leave', 'lead', 'turn', 'present', 'cover', 'conduct'],
+    result: ['population', 'nature', 'case', 'course', 'movement', 'field', 'term', 'sense', 'conduct', 'address', 'cover', 'concern', 'contribute'],
+    work: ['contribute', 'reflect', 'remain', 'conduct', 'follow', 'address', 'draw', 'leave', 'present', 'cover']
+  };
+
+  function wordAppearsInSentence(word, sentence) {
+    if (!word || !sentence) return false;
+    const escaped = String(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\b${escaped}[a-z]*\\b`, 'i').test(String(sentence));
+  }
+
+  function selectBlankDistractors(currentWord, pool, isExam) {
+    const sentence = currentWord.example_en || '';
+    const safeNames = isExam
+      ? EXAM_BLANK_SAFE_DISTRACTORS[currentWord.word] || []
+      : SAMPLE_BLANK_SAFE_DISTRACTORS[currentWord.word] || [];
+    const safeSet = new Set(safeNames);
+
+    // 1차 필터: 정답 자신 제외 + 예문 내 이미 등장하는 단어(파생·굴절 포함) 제외
+    const nonOccurring = pool.filter(
+      (w) =>
+        w.id !== currentWord.id &&
+        w.word !== currentWord.word &&
+        !wordAppearsInSentence(w.word, sentence)
+    );
+
+    // 2차 필터: 문장 빈칸에 넣었을 때 문법적·의미적으로 성립하지 않음이 검증된 안전 오답 풀 우선 선택
+    const verifiedSafe = nonOccurring.filter((w) => safeSet.has(w.word));
+
+    if (isExam) {
+      const sameGradeSafe = shuffleArray(verifiedSafe.filter((w) => w.grade === currentWord.grade));
+      const diffGradeSafe = shuffleArray(verifiedSafe.filter((w) => w.grade !== currentWord.grade));
+      const fallback = shuffleArray(nonOccurring.filter((w) => !safeSet.has(w.word)));
+      return [...sameGradeSafe, ...diffGradeSafe, ...fallback].slice(0, 3);
+    }
+
+    const samePosSafe = shuffleArray(verifiedSafe.filter((w) => w.pos === currentWord.pos));
+    const diffPosSafe = shuffleArray(verifiedSafe.filter((w) => w.pos !== currentWord.pos));
+    const fallback = shuffleArray(nonOccurring.filter((w) => !safeSet.has(w.word)));
+    return [...samePosSafe, ...diffPosSafe, ...fallback].slice(0, 3);
+  }
+
   function prepareCurrentQuestionChoices() {
     const currentWord = state.quiz.queue[state.quiz.currentIndex];
     if (!currentWord) {
@@ -957,11 +1065,8 @@
     const mode = state.quiz.mode;
 
     if (mode === 'exam-blank') {
-      // 기출 모드 유형 1 — 기출 예문 빈칸 (오답 선택지는 다른 기출 단어에서)
-      const otherExamWords = state.examWords.filter((w) => w.id !== currentWord.id);
-      const sameGrade = shuffleArray(otherExamWords.filter((w) => w.grade === currentWord.grade));
-      const diffGrade = shuffleArray(otherExamWords.filter((w) => w.grade !== currentWord.grade));
-      const distractors = [...sameGrade, ...diffGrade].slice(0, 3);
+      // 기출 모드 유형 1 — 기출 예문 빈칸 (빈칸에 넣어도 문장이 성립하는 단어 배제)
+      const distractors = selectBlankDistractors(currentWord, state.examWords, true);
       state.quiz.choices = shuffleArray([currentWord, ...distractors]);
       return;
     }
@@ -1048,6 +1153,13 @@
       }
 
       state.quiz.choices = shuffleArray(meaningChoices);
+      return;
+    }
+
+    if (mode === 'blank') {
+      // 기본 퀴즈 (b) 예문 빈칸 (빈칸에 넣어도 문장이 성립하는 단어 배제)
+      const distractors = selectBlankDistractors(currentWord, state.words, false);
+      state.quiz.choices = shuffleArray([currentWord, ...distractors]);
       return;
     }
 
