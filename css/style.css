@@ -3,6 +3,8 @@
   --bg-surface: #FFFFFF;
   --bg-subtle: #F1EFEA;
   --bg-muted: #E6E3DC;
+  --bg-header-glass: rgba(248, 247, 244, 0.92);
+  --bg-nav-glass: rgba(255, 255, 255, 0.96);
 
   --text-primary: #14212B;
   --text-secondary: #4A5864;
@@ -101,7 +103,7 @@ button {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(248, 247, 244, 0.92);
+  background: var(--bg-header-glass);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-subtle);
@@ -595,7 +597,7 @@ button {
 
 .word-card.speaking {
   border-color: var(--brand-primary);
-  background: #FCFDFD;
+  background: var(--brand-soft);
 }
 
 .word-card-top {
@@ -715,7 +717,7 @@ button {
 .exam-meanings-section {
   margin: 8px 0 12px;
   border: 1px solid var(--brand-border);
-  background: #F9FCFB;
+  background: var(--bg-page);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
 }
@@ -927,7 +929,7 @@ button {
 
 .quiz-tabs.exam-quiz-tabs {
   grid-template-columns: repeat(2, 1fr);
-  background: #FDF9EE;
+  background: var(--amber-soft);
   border: 1px solid var(--amber-border);
 }
 
@@ -1391,7 +1393,7 @@ button {
   left: 0;
   right: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--bg-nav-glass);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-subtle);
@@ -1702,4 +1704,132 @@ button {
 .badge-item.locked .badge-name {
   filter: grayscale(1);
   opacity: 0.48;
+}
+
+/* ---------- 다크 모드 토큰 (DESIGN.md 5.2) ---------- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-page: #0F171E;
+  --bg-surface: #18232C;
+  --bg-subtle: #21303C;
+  --bg-muted: #2B3D4B;
+  --bg-header-glass: rgba(15, 23, 30, 0.90);
+  --bg-nav-glass: rgba(24, 35, 44, 0.94);
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #8FA1B3;
+
+  --brand-primary: #14B88A;
+  --brand-primary-hover: #34D3A5;
+  --brand-soft: rgba(20, 184, 138, 0.15);
+  --brand-border: rgba(20, 184, 138, 0.38);
+
+  --amber-primary: #F59E0B;
+  --amber-soft: rgba(245, 158, 11, 0.15);
+  --amber-border: rgba(245, 158, 11, 0.38);
+
+  --danger-primary: #F87171;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --danger-border: rgba(248, 113, 113, 0.38);
+
+  --xp-primary: #A78BFA;
+  --xp-soft: rgba(167, 139, 250, 0.16);
+  --xp-border: rgba(167, 139, 250, 0.38);
+
+  --sky-primary: #38BDF8;
+  --sky-soft: rgba(56, 189, 248, 0.15);
+
+  --info-primary: #38BDF8;
+  --info-soft: rgba(56, 189, 248, 0.15);
+
+  --border-subtle: #263542;
+  --border-strong: #364958;
+}
+
+/* ---------- 헤더 컨트롤 (DESIGN.md 5.1) ---------- */
+.icon-toggle-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  font-size: 0.95rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.icon-toggle-btn:hover {
+  border-color: var(--brand-primary);
+}
+
+/* ---------- 애니메이션 (DESIGN.md 5.3) ---------- */
+@keyframes correctPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wrongShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes badgeUnlockPop {
+  0% { transform: scale(0.75); }
+  70% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes xpRise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.choice-btn.correct {
+  animation: correctPop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.choice-btn.wrong {
+  animation: wrongShake 0.34s ease-in-out;
+}
+
+.blank-slot {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.blank-slot.filled {
+  animation: blankFill 0.2s ease-out;
+}
+
+@keyframes blankFill {
+  from { transform: translateY(3px); }
+  to { transform: translateY(0); }
+}
+
+.xp-gain-pill {
+  animation: xpRise 0.22s ease-out;
+}
+
+.level-pill.pulse,
+.levelup-banner,
+.badge-item.just-unlocked {
+  animation: badgeUnlockPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

@@ -5,7 +5,8 @@
     SRS: 'vocab_trainer_srs_v1',
     WRONG: 'vocab_trainer_wrong_v1',
     STREAK: 'vocab_trainer_streak_v1',
-    GAMIFICATION: 'vocab_trainer_gamification_v1'
+    GAMIFICATION: 'vocab_trainer_gamification_v1',
+    PREFS: 'vocab_trainer_prefs_v1'
   };
 
   // 간격반복(SRS) 복습 간격 단계: 맞히면 1일 -> 3일 -> 7일 -> 14일 확대
@@ -33,6 +34,7 @@
       dayOffset: 0
     },
     gamification: createDefaultGamification(),
+    prefs: { version: 1, theme: 'system', soundEnabled: true },
     currentView: 'home',
     wordbookTab: 'sample',      // 'sample' | 'exam'
     wordbookFilter: 'all',      // 'all' | '고1' | '고2' | '고3' | 'due'
@@ -137,6 +139,146 @@
     // 게임화 상태: 없거나 파싱 실패 시 신규 상태만 기본값으로 초기화 (기존 학습 기록은 건드리지 않음, DESIGN.md 6.3)
     state.gamification = loadGamificationFromStorage();
     normalizeGamificationForToday();
+
+    state.prefs = loadPrefsFromStorage();
+  }
+
+  // --- 사용자 설정(prefs): 다크 모드·효과음 (DESIGN.md 6.2-2) ---
+  function loadPrefsFromStorage() {
+    const prefs = { version: 1, theme: 'system', soundEnabled: true };
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.PREFS);
+      if (!raw) return prefs;
+      const p = JSON.parse(raw);
+      if (p && typeof p === 'object') {
+        if (p.theme === 'light' || p.theme === 'dark' || p.theme === 'system') prefs.theme = p.theme;
+        if (typeof p.soundEnabled === 'boolean') prefs.soundEnabled = p.soundEnabled;
+      }
+    } catch (e) {
+      // 기본값 유지
+    }
+    return prefs;
+  }
+
+  function savePrefsToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PREFS, JSON.stringify(state.prefs));
+    } catch (e) {
+      showToast('브라우저 저장소(localStorage)에 설정을 저장할 수 없습니다.');
+    }
+  }
+
+  function isDarkThemeActive() {
+    if (state.prefs.theme === 'dark') return true;
+    if (state.prefs.theme === 'light') return false;
+    return Boolean(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function applyTheme() {
+    const dark = isDarkThemeActive();
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    const btn = document.getElementById('btn-toggle-theme');
+    if (btn) {
+      btn.textContent = dark ? '☀️' : '🌙';
+      btn.setAttribute('aria-label', dark ? '라이트 모드로 전환' : '다크 모드로 전환');
+    }
+  }
+
+  function applySoundToggleUi() {
+    const btn = document.getElementById('btn-toggle-sound');
+    if (btn) {
+      btn.textContent = state.prefs.soundEnabled ? '🔊' : '🔇';
+      btn.setAttribute('aria-label', state.prefs.soundEnabled ? '효과음 끄기' : '효과음 켜기');
+    }
+  }
+
+  // --- 효과음 (Web Audio API 합성, 외부 오디오 파일 없음, DESIGN.md 5.4) ---
+  let audioCtx = null;
+
+  function getAudioCtx() {
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return null;
+    if (!audioCtx) {
+      try {
+        audioCtx = new Ctor(); // 첫 사용자 클릭 시점에 지연 생성
+      } catch (e) {
+        return null;
+      }
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  }
+
+  // 단일 음: peak ≤ 0.15, 짧은 엔벨로프 (TTS와 간섭 방지). 효과음 OFF여도 TTS는 별개로 동작.
+  function playTone(ctx, freq, startOffset, durSec, type, peak, filterHz) {
+    const t0 = ctx.currentTime + startOffset;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    const safePeak = Math.min(peak, 0.15);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(safePeak, t0 + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durSec);
+    let node = osc;
+    if (filterHz) {
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(filterHz, t0);
+      osc.connect(filter);
+      node = filter;
+    }
+    node.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + durSec + 0.02);
+  }
+
+  function withSfx(fn) {
+    if (!state.prefs.soundEnabled) return;
+    try {
+      const ctx = getAudioCtx();
+      if (ctx) fn(ctx);
+    } catch (e) {
+      // 효과음 실패는 학습 흐름에 영향을 주지 않음
+    }
+  }
+
+  function playCorrectSfx(combo) {
+    withSfx((ctx) => {
+      const f = combo >= 3 ? [587.33, 783.99] : [523.25, 659.25];
+      playTone(ctx, f[0], 0, 0.08, 'triangle', 0.14);
+      playTone(ctx, f[1], 0.08, 0.12, 'triangle', 0.14);
+    });
+  }
+
+  function playWrongSfx() {
+    withSfx((ctx) => {
+      playTone(ctx, 185.0, 0, 0.1, 'sawtooth', 0.1, 500);
+      playTone(ctx, 146.83, 0.1, 0.12, 'sawtooth', 0.1, 500);
+    });
+  }
+
+  function playJudgeKnownSfx() {
+    withSfx((ctx) => {
+      playTone(ctx, 659.25, 0, 0.12, 'sine', 0.13);
+    });
+  }
+
+  function playLevelUpSfx() {
+    withSfx((ctx) => {
+      [523.25, 659.25, 783.99].forEach((f, i) => playTone(ctx, f, i * 0.07, 0.07, 'triangle', 0.13));
+      playTone(ctx, 1046.5, 0.21, 0.15, 'triangle', 0.13);
+    });
+  }
+
+  function playBadgeSfx() {
+    withSfx((ctx) => {
+      playTone(ctx, 880.0, 0, 0.26, 'sine', 0.08);
+      playTone(ctx, 1318.51, 0, 0.26, 'sine', 0.07);
+    });
   }
 
   function loadGamificationFromStorage() {
@@ -394,6 +536,8 @@
   }
 
   // 단방향 해금: 한 번 해금된 배지는 박탈하지 않음. 새로 해금된 배지 목록 반환.
+  const justUnlockedBadgeIds = new Set(); // 방금 해금된 배지 (홈 렌더 시 팝 애니메이션)
+
   function evaluateBadges() {
     const g = state.gamification;
     const today = getTodayStr();
@@ -409,6 +553,8 @@
       const names = unlocked.map((d) => d.name).join(', ');
       // 같은 틱의 다른 토스트(카드 판정 안내 등)에 덮어쓰이지 않도록 지연 표시
       setTimeout(() => showToast(`🏅 새 배지 획득: ${names}`), 0);
+      playBadgeSfx();
+      unlocked.forEach((d) => justUnlockedBadgeIds.add(d.id));
     }
     return unlocked;
   }
@@ -425,7 +571,7 @@
     box.innerHTML = BADGE_DEFS.map((def) => {
       const got = state.gamification.badges[def.id];
       return `
-        <div class="badge-item ${got ? 'unlocked' : 'locked'}">
+        <div class="badge-item ${got ? 'unlocked' : 'locked'}${justUnlockedBadgeIds.has(def.id) ? ' just-unlocked' : ''}">
           <span class="badge-icon" aria-hidden="true">${def.icon}</span>
           <strong class="badge-name">${escapeHtml(def.name)}</strong>
           <span class="badge-sub">${
@@ -433,6 +579,7 @@
           }</span>
         </div>`;
     }).join('');
+    justUnlockedBadgeIds.clear();
   }
 
   // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
@@ -1967,6 +2114,7 @@
     // 빈칸 채우기 모드일 경우 모든 빈칸에 마스킹됐던 원문 굴절형 그대로 채워 넣기
     document.querySelectorAll('#quiz-active-area .blank-slot').forEach((slot) => {
       slot.textContent = slot.dataset.original || wordObj.word;
+      slot.classList.add('filled');
     });
 
     document.querySelectorAll('#quiz-active-area .choice-btn').forEach((btn) => {
@@ -1987,6 +2135,8 @@
 
     const outcome = recordQuizAnswer(wordObj.id, isCorrect, mode);
     state.quiz.results.push(outcome);
+    if (isCorrect) playCorrectSfx(outcome.xp.combo);
+    else playWrongSfx();
     announceLevelUp(outcome.xp);
 
     const feedbackSlot = document.getElementById('quiz-feedback-slot');
@@ -2077,6 +2227,7 @@
       void pill.offsetWidth;
       pill.classList.add('pulse');
     }
+    playLevelUpSfx();
     showToast(`🎉 레벨 업! Lv.${xp.newLevel} 달성!`);
   }
 
@@ -2098,6 +2249,8 @@
         ? `⭕ '알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정${xpMsg}`
         : `❌ '몰라요' 판정 → 오답노트 저장 및 내일 재출제`
     );
+    if (isKnown) playJudgeKnownSfx();
+    else playWrongSfx();
     announceLevelUp(outcome.xp);
 
     advanceToNextQuestion();
@@ -2600,6 +2753,36 @@
       });
     }
 
+    // 효과음 / 다크 모드 토글 (DESIGN.md 5.1)
+    const soundBtn = document.getElementById('btn-toggle-sound');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => {
+        state.prefs.soundEnabled = !state.prefs.soundEnabled;
+        savePrefsToStorage();
+        applySoundToggleUi();
+        if (state.prefs.soundEnabled) playJudgeKnownSfx();
+        showToast(state.prefs.soundEnabled ? '🔊 효과음이 켜졌습니다.' : '🔇 효과음이 꺼졌습니다. (단어 발음 듣기는 그대로 동작)');
+      });
+    }
+
+    const themeBtn = document.getElementById('btn-toggle-theme');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        state.prefs.theme = isDarkThemeActive() ? 'light' : 'dark';
+        savePrefsToStorage();
+        applyTheme();
+      });
+    }
+
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const onSystemThemeChange = () => {
+        if (state.prefs.theme === 'system') applyTheme();
+      };
+      if (mq.addEventListener) mq.addEventListener('change', onSystemThemeChange);
+      else if (mq.addListener) mq.addListener(onSystemThemeChange);
+    }
+
     // PWA 설치 버튼
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -2632,6 +2815,8 @@
 
   async function initApp() {
     loadStateFromStorage();
+    applyTheme();
+    applySoundToggleUi();
     bindEvents();
     registerServiceWorker();
 

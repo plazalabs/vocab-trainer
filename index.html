@@ -12,6 +12,18 @@
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <title>수능·고등 영단어 트레이너 | 간격반복 어휘 학습</title>
+  <script>
+    // 첫 페인트 전 테마 적용 (깜빡임 방지) — vocab_trainer_prefs_v1.theme: 'system' | 'light' | 'dark'
+    (function () {
+      var theme = 'system';
+      try {
+        var p = JSON.parse(localStorage.getItem('vocab_trainer_prefs_v1') || '{}');
+        if (p && (p.theme === 'light' || p.theme === 'dark')) theme = p.theme;
+      } catch (e) {}
+      var dark = theme === 'dark' || (theme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
@@ -38,6 +50,8 @@
             <span aria-hidden="true">⚡</span>
             <span id="header-level-text">Lv.1 · 0 XP</span>
           </div>
+          <button id="btn-toggle-sound" class="icon-toggle-btn" type="button" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기">🔊</button>
+          <button id="btn-toggle-theme" class="icon-toggle-btn" type="button" aria-label="다크 모드 전환" title="다크 모드 전환">🌙</button>
         </div>
       </div>
     </header>
