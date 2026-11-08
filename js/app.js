@@ -737,8 +737,12 @@
             Array.isArray(w.exam_meanings) &&
             w.exam_meanings.some(
               (m) =>
-                (m.meaning_ko && m.meaning_ko.toLowerCase().includes(query)) ||
-                (m.signal && m.signal.toLowerCase().includes(query))
+                m &&
+                m.meaning_ko !== null &&
+                m.meaning_ko !== undefined &&
+                String(m.meaning_ko).trim() !== '' &&
+                (m.meaning_ko.toLowerCase().includes(query) ||
+                  (m.signal && m.signal.toLowerCase().includes(query)))
             );
           const matchSignal = w.signal && w.signal.toLowerCase().includes(query);
           const matchExEn = w.example_en && w.example_en.toLowerCase().includes(query);
