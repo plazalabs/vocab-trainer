@@ -1577,3 +1577,83 @@ button {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* ---------- 주간 연습 리그 (DESIGN.md 3장) ---------- */
+.league-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+}
+
+.league-caption {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.league-summary {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.league-summary strong {
+  color: var(--xp-primary);
+}
+
+.league-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.league-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+}
+
+.league-row.me {
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  font-weight: 800;
+}
+
+.league-rank {
+  width: 22px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.league-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bot-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.league-xp {
+  font-weight: 700;
+  color: var(--xp-primary);
+  white-space: nowrap;
+}

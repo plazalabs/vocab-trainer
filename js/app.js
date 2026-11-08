@@ -258,6 +258,98 @@
     }
   }
 
+  // --- 주간 연습 리그 (DESIGN.md 3장) ---
+  // 고정 규칙 AI 연습 봇 9명 (실제 사용자 아님)
+  const PRACTICE_BOTS = [
+    { botId: 'bot-1', name: '연습봇 알파', minDaily: 15, maxDaily: 35 },
+    { botId: 'bot-2', name: '연습봇 베타', minDaily: 30, maxDaily: 60 },
+    { botId: 'bot-3', name: '연습봇 감마', minDaily: 45, maxDaily: 85 },
+    { botId: 'bot-4', name: '연습봇 델타', minDaily: 65, maxDaily: 110 },
+    { botId: 'bot-5', name: '연습봇 엡실론', minDaily: 85, maxDaily: 140 },
+    { botId: 'bot-6', name: '연습봇 제타', minDaily: 110, maxDaily: 170 },
+    { botId: 'bot-7', name: '연습봇 에타', minDaily: 140, maxDaily: 210 },
+    { botId: 'bot-8', name: '연습봇 세타', minDaily: 175, maxDaily: 255 },
+    { botId: 'bot-9', name: '연습봇 오메가', minDaily: 215, maxDaily: 310 }
+  ];
+
+  // 32-bit FNV-1a
+  function hashSeed(seedKey) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < seedKey.length; i++) {
+      h ^= seedKey.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  // Mulberry32
+  function seededRandom01(seedUint32) {
+    let t = (seedUint32 + 0x6D2B79F5) >>> 0;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
+  function getBotDailyXp(bot, dateYMD) {
+    const r = seededRandom01(hashSeed(`${dateYMD}:${bot.botId}`));
+    const span = bot.maxDaily - bot.minDaily + 1;
+    const raw = bot.minDaily + Math.floor(r * span);
+    return Math.round(raw / 5) * 5;
+  }
+
+  // 월요일 ~ 기준일까지 일 단위 일괄 합산 (유보 7.4 확정: 시각 비례 없음)
+  function getBotWeeklyXp(bot, todayStr) {
+    const weekId = getWeekMondayStr(todayStr);
+    const parts = todayStr.split('-').map(Number);
+    const dayIndex = (new Date(parts[0], parts[1] - 1, parts[2]).getDay() + 6) % 7;
+    let sum = 0;
+    for (let d = 0; d <= dayIndex; d++) {
+      sum += getBotDailyXp(bot, addDays(weekId, d));
+    }
+    return sum;
+  }
+
+  function getLeagueStandings() {
+    normalizeGamificationForToday();
+    const today = getTodayStr();
+    const rows = PRACTICE_BOTS.map((bot) => ({
+      id: bot.botId,
+      name: bot.name,
+      isUser: false,
+      weeklyXp: getBotWeeklyXp(bot, today)
+    }));
+    rows.push({ id: 'user', name: '나 (학습자)', isUser: true, weeklyXp: state.gamification.weekly.xp });
+    rows.sort((a, b) => {
+      if (b.weeklyXp !== a.weeklyXp) return b.weeklyXp - a.weeklyXp;
+      if (a.isUser !== b.isUser) return a.isUser ? -1 : 1;
+      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    });
+    return rows.map((r, i) => ({ ...r, rank: i + 1 }));
+  }
+
+  function renderLeagueCard() {
+    const box = document.getElementById('home-league-card');
+    if (!box) return;
+    const rows = getLeagueStandings();
+    const me = rows.find((r) => r.isUser);
+    box.innerHTML = `
+      <p class="league-caption">연습 리그는 실제 다른 사용자와의 경쟁이 아니며, 학습 페이스 유지를 위해 고정 규칙으로 동작하는 AI 연습 봇 9명과 주간 XP를 비교하는 화면입니다.</p>
+      <div class="league-summary">이번 주 내 순위 <strong>${me.rank}위 / ${rows.length}명</strong> · 주간 <strong>${me.weeklyXp} XP</strong></div>
+      <ol class="league-list">
+        ${rows
+          .map(
+            (r) => `
+          <li class="league-row ${r.isUser ? 'me' : ''}">
+            <span class="league-rank">${r.rank}</span>
+            <span class="league-name">${r.isUser ? '' : '<span class="bot-badge">BOT</span>'}${escapeHtml(r.name)}</span>
+            <span class="league-xp">${r.weeklyXp} XP</span>
+          </li>`
+          )
+          .join('')}
+      </ol>
+    `;
+  }
+
   // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
   function getQuizModeLabel(modeKey) {
     return QUIZ_MODE_LABELS[modeKey] || '기록 없음';
@@ -695,6 +787,7 @@
     }
 
     renderLevelProgress();
+    renderLeagueCard();
 
     const simDisplay = document.getElementById('sim-date-display');
     if (simDisplay) {
