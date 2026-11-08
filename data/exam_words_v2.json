@@ -1,0 +1,1147 @@
+[
+  {
+    "word": "account",
+    "grade": "S",
+    "base_meaning_ko": "계좌",
+    "exam_meanings": [
+      {
+        "meaning_ko": "고려하다",
+        "share_pct": 26,
+        "signal": "take into account"
+      },
+      {
+        "meaning_ko": "차지하다",
+        "share_pct": 22,
+        "signal": "account for + 숫자·%"
+      },
+      {
+        "meaning_ko": "설명·기술",
+        "share_pct": 19,
+        "signal": "an account of ~"
+      },
+      {
+        "meaning_ko": "계좌",
+        "share_pct": 19,
+        "signal": null
+      },
+      {
+        "meaning_ko": "설명하다",
+        "share_pct": 7,
+        "signal": "account for + why절"
+      }
+    ],
+    "signal": "① 뒤에 %/share/rest가 오면 '차지하다'. ② 뒤에 why절이 오면 '설명하다'. ③ take (it) into account는 고정 — '고려하다'. ④ holder/details/password가 붙을 때만 '계좌'. 숫자가 보이면 계좌는 버려라.",
+    "example_en": "Subscriptions account for almost 90 percent of total magazine circulation.",
+    "example_ko": "정기 구독이 전체 잡지 발행 부수의 거의 90퍼센트를 차지한다.",
+    "source_note": "2018년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "approach",
+    "grade": "S",
+    "base_meaning_ko": "다가가다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "접근법·방법",
+        "share_pct": 75,
+        "signal": "명사 '접근법·방법'"
+      },
+      {
+        "meaning_ko": "다가가다",
+        "share_pct": 25,
+        "signal": null
+      }
+    ],
+    "signal": "① 앞에 this/a new/an + approach면 '접근법' 확정. ② approach to + 명사는 '~에 대한 접근법'. ③ 사람이 주어이고 장소·사람이 목적어일 때만 '다가가다'. 학술 지문이면 접근법으로 고정하고 읽어라.",
+    "example_en": "This new approach increases biological diversity by conserving hedges and the wildflowers, insects, birds and other animals that live on the land.",
+    "example_ko": "이 새로운 접근법은 울타리와, 그 땅에 사는 야생화·곤충·새 및 다른 동물들을 보존함으로써 생물 다양성을 높인다.",
+    "source_note": "2017년 9월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "base",
+    "grade": "S",
+    "base_meaning_ko": "기초·밑부분",
+    "exam_meanings": [
+      {
+        "meaning_ko": "~에 근거하다",
+        "share_pct": 75,
+        "signal": "be based on / based on ~"
+      },
+      {
+        "meaning_ko": "~기반 (plant-based 식물 기반처럼)",
+        "share_pct": 17,
+        "signal": "복합형용사 X-based"
+      },
+      {
+        "meaning_ko": "밑부분·고객층·기지",
+        "share_pct": 10,
+        "signal": null
+      }
+    ],
+    "signal": "① 뒤 전치사 on이 고정 신호 — based on 뒤 명사가 '근거'. ② 하이픈 앞 명사(plant-, time-, team-)는 근거의 종류를 말한다. ③ 명사 base는 customer/military가 앞일 때, 또는 at the base처럼 위치 맥락일 때만.",
+    "example_en": "Environmental learning occurs when farmers base decisions on observations of “payoff” information.",
+    "example_ko": "환경 학습은 농부들이 \"보상\" 정보에 대한 관찰에 근거해 결정을 내릴 때 일어난다.",
+    "source_note": "2022년 9월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "lead",
+    "grade": "S",
+    "base_meaning_ko": "이끌다·지도하다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "~로 이어지다, ~을 초래하다",
+        "share_pct": 70,
+        "signal": "lead to + 결과"
+      },
+      {
+        "meaning_ko": "주요한, 선두의",
+        "share_pct": 12,
+        "signal": "leading"
+      },
+      {
+        "meaning_ko": "~하게 되다, ~하도록 만들다",
+        "share_pct": null,
+        "signal": null
+      }
+    ],
+    "signal": "① 뒤에 to가 오면 거의 무조건 결과 — 주어가 사람이 아니라 사건·요인·변화면 확정. ② 명사 앞 leading은 형용사 '주요한'. ③ 사람이 주어이고 목적어가 사람일 때만 '이끌다'.",
+    "example_en": "In mature markets, breakthroughs that lead to a major change in competitive positions and to the growth of the market are rare.",
+    "example_ko": "성숙한 시장에서는, 경쟁 구도에 큰 변화를 가져오고 시장의 성장으로 이어지는 돌파구가 드물다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "leave",
+    "grade": "S",
+    "base_meaning_ko": "떠나다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "남기다·~한 채로 두다",
+        "share_pct": 26,
+        "signal": "'남기다·~한 채로 두다'"
+      },
+      {
+        "meaning_ko": "떠나다",
+        "share_pct": 23,
+        "signal": null
+      },
+      {
+        "meaning_ko": "잎(leaf의 복수)",
+        "share_pct": 26,
+        "signal": "leaves"
+      },
+      {
+        "meaning_ko": "휴가",
+        "share_pct": 6,
+        "signal": null
+      }
+    ],
+    "signal": "① leave + 목적어 + 형용사/과거분사면 '~한 채로 남기다' (leaves others having to respond). ② leaves가 명사 자리고 차·식물 맥락이면 '잎'. ③ leave A to B면 'B에게 맡기다'. ④ 장소가 목적어일 때만 '떠나다'.",
+    "example_en": "That leaves others having to respond to you instead of the other way around.",
+    "example_ko": "그것은 다른 사람들이 당신에게 반응해야 하는 처지가 되게 만든다 — 반대가 아니라.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "matter",
+    "grade": "S",
+    "base_meaning_ko": "물질",
+    "exam_meanings": [
+      {
+        "meaning_ko": "중요하다",
+        "share_pct": 24,
+        "signal": "동사 matter"
+      },
+      {
+        "meaning_ko": "~와 상관없이",
+        "share_pct": 24,
+        "signal": "no matter how/what/where"
+      },
+      {
+        "meaning_ko": "~의 문제",
+        "share_pct": 21,
+        "signal": "a matter of + 명사"
+      },
+      {
+        "meaning_ko": "사안, 일",
+        "share_pct": 18,
+        "signal": "s"
+      },
+      {
+        "meaning_ko": "사실은",
+        "share_pct": 6,
+        "signal": null
+      }
+    ],
+    "signal": "① matters 뒤에 비교급이나 절이 오면 동사 '중요하다'. ② a matter of + 추상명사면 '~의 문제'. ③ 문두 No matter how + 형용사면 양보 구문 확정. ④ 물리 단어가 of 뒤에 붙을 때만 '물질'인데, 실제 기출 0건 — 떠올리지 마라.",
+    "example_en": "Whether such women are American or Iranian or whether they are Catholic or Protestant matters less than the fact that they are women.",
+    "example_ko": "그런 여성들이 미국인이든 이란인이든, 가톨릭 신자든 개신교도든은, 그들이 여성이라는 사실보다 덜 중요하다.",
+    "source_note": "2018년 9월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "order",
+    "grade": "S",
+    "base_meaning_ko": "주문·명령",
+    "exam_meanings": [
+      {
+        "meaning_ko": "~하기 위해",
+        "share_pct": 52,
+        "signal": "in order to"
+      },
+      {
+        "meaning_ko": "질서·순서",
+        "share_pct": 29,
+        "signal": "social order 사회 질서, impose order 질서를 부여하다"
+      },
+      {
+        "meaning_ko": "주문하다·명령하다",
+        "share_pct": 16,
+        "signal": null
+      }
+    ],
+    "signal": "① in order to + 동사원형이면 무조건 목적. ② social/impose/keep + order면 '질서'. ③ in what order면 '순서'. ④ services 같은 구체 서비스가 목적어일 때만 '주문하다'.",
+    "example_en": "Psychology seeks to make patterns, find regularity, and ultimately impose order on human experience and behavior.",
+    "example_ko": "심리학은 패턴을 만들고, 규칙성을 발견하며, 궁극적으로 인간의 경험과 행동에 질서를 부여하고자 한다.",
+    "source_note": "2022년 9월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "practice",
+    "grade": "S",
+    "base_meaning_ko": "연습",
+    "exam_meanings": [
+      {
+        "meaning_ko": "연습·훈련",
+        "share_pct": 45,
+        "signal": null
+      },
+      {
+        "meaning_ko": "관행·실무 관습",
+        "share_pct": 40,
+        "signal": "'관행·실무 관습'"
+      },
+      {
+        "meaning_ko": "실제로는",
+        "share_pct": 6,
+        "signal": null
+      }
+    ],
+    "signal": "① 복수형 practices + 앞 형용사가 management/cultural/social이면 '관행'. ② 동사 practiced(연습했다)와 명사를 구별 — 명사 자리에 사람이 주어가 아니면 관행 쪽. ③ in practice는 통째로 '실제로는' — 이론과 대조하는 신호.",
+    "example_en": "In these situations, the problem is often not the lack of effective natural enemies but management practices and a lack of concerted research.",
+    "example_ko": "이런 상황에서 문제는 흔히 효과적인 천적의 부족이 아니라, 관리 관행과 조직적인 연구의 부족이다.",
+    "source_note": "2018년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "present",
+    "grade": "S",
+    "base_meaning_ko": null,
+    "exam_meanings": [
+      {
+        "meaning_ko": "현재의",
+        "share_pct": 46,
+        "signal": "at present, present reality"
+      },
+      {
+        "meaning_ko": "제시받다",
+        "share_pct": 27,
+        "signal": "동사 '제시하다·보여주다'"
+      },
+      {
+        "meaning_ko": "선물",
+        "share_pct": 8,
+        "signal": null
+      }
+    ],
+    "signal": "① present A with B / be presented with면 '제시(받)하다' — 실험 지문의 단골. ② 명사 앞 present는 '현재의'. ③ 동사 자리의 presents that절이면 '(주장·자료를) 제시하다'. ④ '선물'은 생일·크리스마스 맥락에서만.",
+    "example_en": "To make plans for the future, the brain must have an ability to take certain elements of prior experiences and reconfigure them in a way that does not copy any actual past experience or present reality exactly.",
+    "example_ko": "미래를 계획하려면, 뇌는 과거 경험의 특정 요소들을 가져다가, 실제 과거 경험이나 현재의 현실을 그대로 복사하지 않는 방식으로 재구성할 수 있어야 한다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "sense",
+    "grade": "S",
+    "base_meaning_ko": "감각(오감)",
+    "exam_meanings": [
+      {
+        "meaning_ko": "~감, ~의식",
+        "share_pct": 45,
+        "signal": "sense of + 추상명사"
+      },
+      {
+        "meaning_ko": "말이 되다, 이해하다",
+        "share_pct": 17,
+        "signal": "make sense (of)"
+      },
+      {
+        "meaning_ko": "~라는 의미에서는",
+        "share_pct": 15,
+        "signal": "in a/one sense"
+      },
+      {
+        "meaning_ko": "감각·감지",
+        "share_pct": 13,
+        "signal": null
+      }
+    ],
+    "signal": "① 뒤에 of + 추상명사면 '~감'. ② 문두 In a sense,는 '어떤 의미에서는' — 양보·부분 긍정의 표시. ③ 주어가 문장·가격·이론이고 make sense면 '말이 되다'; 사람이 주어 + sense that절이면 '감지하다'.",
+    "example_en": "As new ways of controlling the environment are achieved, motor development provides the infant with a growing sense of competence and mastery.",
+    "example_ko": "환경을 통제하는 새로운 방법이 갖춰짐에 따라, 운동 발달은 유아에게 점점 커지는 유능감과 숙달감을 제공한다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "subject",
+    "grade": "S",
+    "base_meaning_ko": "주제·과목",
+    "exam_meanings": [
+      {
+        "meaning_ko": "피험자·실험 참가자",
+        "share_pct": 41,
+        "signal": "'피험자·실험 참가자'"
+      },
+      {
+        "meaning_ko": "주제·과목",
+        "share_pct": 41,
+        "signal": null
+      },
+      {
+        "meaning_ko": "~의 영향을 받는, ~에 따라 달라지는",
+        "share_pct": 11,
+        "signal": "subject to"
+      },
+      {
+        "meaning_ko": "주체",
+        "share_pct": 7,
+        "signal": null
+      }
+    ],
+    "signal": "① 복수형 subjects + 동사(were presented, showed, responded)면 '피험자들'. ② be subject to + 명사면 '~에 좌우되는'. ③ on the subject of면 '주제'. 테마가 실험·연구 보고면 피험자가 기본값이다.",
+    "example_en": "For example, subjects who were presented with different shapes of pasta showed increased hedonic ratings and increased energy consumption.",
+    "example_ko": "예를 들어, 서로 다른 모양의 파스타를 제시받은 피험자들은, 한 가지 모양만 먹은 피험자들에 비해 쾌락 평점과 에너지 섭취량이 증가한 것으로 나타났다.",
+    "source_note": "2018년 11월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "term",
+    "grade": "S",
+    "base_meaning_ko": "용어·학기",
+    "exam_meanings": [
+      {
+        "meaning_ko": "용어",
+        "share_pct": 47,
+        "signal": "the term X refers to…"
+      },
+      {
+        "meaning_ko": "~의 측면에서, ~으로 따지면",
+        "share_pct": 41,
+        "signal": "in terms of"
+      },
+      {
+        "meaning_ko": "조건",
+        "share_pct": 8,
+        "signal": "long-term"
+      }
+    ],
+    "signal": "① in terms of + 명사는 통째로 '~으로 보면' — 뒤에 수치·비율이 오면 '~으로 환산하면'. ② the term + 단어 + refers to/means면 용어 정의 문장 — 빈칸·주제 문항의 근거 문장일 확률이 높다. ③ long/short 앞이면 '기간'.",
+    "example_en": "In terms of direct expenditures on elementary and secondary education, New Zealand spent the highest percentage of GDP among the five countries.",
+    "example_ko": "초·중등 교육에 대한 직접 지출로 따지면, 뉴질랜드가 다섯 나라 중 GDP 대비 가장 높은 비율을 지출했다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "turn",
+    "grade": "S",
+    "base_meaning_ko": "돌다·돌리다",
+    "exam_meanings": [
+      {
+        "meaning_ko": null,
+        "share_pct": 24,
+        "signal": "turn on/off/to/up/around 등 구동사 전반"
+      },
+      {
+        "meaning_ko": "~로 변하다·바꾸다",
+        "share_pct": 16,
+        "signal": "turn into"
+      },
+      {
+        "meaning_ko": "전환, 세기 바뀜, 차례",
+        "share_pct": 13,
+        "signal": null
+      },
+      {
+        "meaning_ko": "~로 판명되다",
+        "share_pct": 12,
+        "signal": "turn out"
+      },
+      {
+        "meaning_ko": "그 결과, 차례로",
+        "share_pct": 11,
+        "signal": "in turn"
+      }
+    ],
+    "signal": "① turn out + to be/형용사면 '판명되다'. ② turn A into B면 'B로 바꾸다'. ③ 문장 중간 in turn은 앞 문장과 인과로 묶는 연결 신호. ④ by the turn of the + 세기는 '~세기가 바뀔 무렵'.",
+    "example_en": "It turned out that this simple suggestion helped Michael not only to relax, but to get more work done as well.",
+    "example_ko": "이 단순한 제안은 마이클이 긴장을 푸는 데 도움이 되었을 뿐만 아니라, 일을 더 많이 해내는 데도 도움이 된 것으로 판명되었다.",
+    "source_note": "2018년 6월",
+    "context_meaning_index": 3
+  },
+  {
+    "word": "view",
+    "grade": "S",
+    "base_meaning_ko": "보다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "견해·관점",
+        "share_pct": 71,
+        "signal": "명사 '견해·관점'"
+      },
+      {
+        "meaning_ko": "보다·~로 여기다",
+        "share_pct": 19,
+        "signal": "view A as B"
+      },
+      {
+        "meaning_ko": "경치·전망",
+        "share_pct": 7,
+        "signal": null
+      },
+      {
+        "meaning_ko": "시야",
+        "share_pct": 4,
+        "signal": null
+      }
+    ],
+    "signal": "① the/this/such + view + that절이면 '견해'. ② point of view는 통째로 '관점'. ③ view A as B / be viewed as면 '~로 여기다'. ④ 경치 용법은 서사 지문의 풍경 묘사에서만 — 학술 지문이면 견해로 확정하고 읽어라.",
+    "example_en": "Scientism is the view that the scientific description of reality is the only truth there is.",
+    "example_ko": "과학주의란, 현실에 대한 과학적 기술만이 존재하는 유일한 진리라는 견해이다.",
+    "source_note": "2020년 11월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "address",
+    "grade": "A",
+    "base_meaning_ko": "주소",
+    "exam_meanings": [
+      {
+        "meaning_ko": "다루다·해결에 나서다",
+        "share_pct": 60,
+        "signal": "동사 '다루다·해결에 나서다'"
+      },
+      {
+        "meaning_ko": "주소",
+        "share_pct": 10,
+        "signal": null
+      },
+      {
+        "meaning_ko": "연설하다",
+        "share_pct": null,
+        "signal": null
+      }
+    ],
+    "signal": "① 목적어가 problem/issue/root causes/risks면 '다루다'. ② be addressed to + 사람이면 편지 수신. ③ 숫자와 우편 맥락일 때만 '주소'.",
+    "example_en": "People presented with a metaphor comparing crime to a virus invading their city emphasized prevention and addressing the root causes of the problem.",
+    "example_ko": "범죄를 도시를 침범하는 바이러스에 비유하는 은유를 제시받은 사람들은, 예방과 그 문제의 근본 원인을 다루는 것을 강조했다.",
+    "source_note": "2020년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "case",
+    "grade": "A",
+    "base_meaning_ko": "상자·가방",
+    "exam_meanings": [
+      {
+        "meaning_ko": "경우",
+        "share_pct": 80,
+        "signal": "'경우'"
+      },
+      {
+        "meaning_ko": "사례·증례",
+        "share_pct": 12,
+        "signal": "clinical cases"
+      },
+      {
+        "meaning_ko": "주장하다",
+        "share_pct": 7,
+        "signal": "make the case for"
+      }
+    ],
+    "signal": "① in the case of + 명사면 '~의 경우에'. ② make/strengthen + the case + for면 '주장'. ③ 뒤에 settle/fees가 붙으면 법률 사건. ④ clinical/reported가 앞이면 '증례'.",
+    "example_en": "In this case, one of the negative values associated with a peregrine falcon population is that its predation reduces the population of another endangered species.",
+    "example_ko": "이 경우, 매 개체군과 연관된 부정적 가치 중 하나는, 그 포식이 또 다른 멸종 위기 종의 개체군을 감소시킨다는 점이다.",
+    "source_note": "2019년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "concern",
+    "grade": "A",
+    "base_meaning_ko": "걱정·관심사",
+    "exam_meanings": [
+      {
+        "meaning_ko": "걱정·우려·관심사",
+        "share_pct": 53,
+        "signal": null
+      },
+      {
+        "meaning_ko": "~을 다루다·와 관련되다",
+        "share_pct": 19,
+        "signal": "be concerned with"
+      },
+      {
+        "meaning_ko": "걱정하다",
+        "share_pct": 14,
+        "signal": "be concerned about"
+      },
+      {
+        "meaning_ko": "편지 머리말",
+        "share_pct": 7,
+        "signal": null
+      }
+    ],
+    "signal": "① concerned with + 학술 주제면 '다루다'. ② concerned about + 위험·사람이면 '걱정하다'. with와 about을 바꿔 읽으면 정반대다. ③ as far as X is concerned는 '~에 관한 한' 고정.",
+    "example_en": "Great scientists, the pioneers that we admire, are not concerned with results but with the next questions.",
+    "example_ko": "우리가 존경하는 개척자인 위대한 과학자들은 결과에 매달리지 않고, 다음 질문을 다룬다.",
+    "source_note": "2019년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "conduct",
+    "grade": "A",
+    "base_meaning_ko": "품행·행동",
+    "exam_meanings": [
+      {
+        "meaning_ko": "실시하다·수행하다",
+        "share_pct": null,
+        "signal": "'실시하다·수행하다'"
+      },
+      {
+        "meaning_ko": "품행",
+        "share_pct": 10,
+        "signal": null
+      },
+      {
+        "meaning_ko": "전도하다(열·전기)",
+        "share_pct": null,
+        "signal": "열·전기"
+      }
+    ],
+    "signal": "① 목적어가 research/survey/experiment/study면 '실시하다' 확정. ② 수동형 was conducted는 실험 보고 문장의 상수. ③ '품행'은 도덕·교육 맥락에서 명사로 설 때만.",
+    "example_en": "Numerous biodiversity experiments have been conducted since Elton’s time and several mechanisms have been proposed to explain the often observed negative relationship between diversity and invasibility.",
+    "example_ko": "엘턴의 시대 이후 수많은 생물 다양성 실험이 실시되었고, 다양성과 침입 가능성 사이에서 흔히 관찰되는 부적 관계를 설명하기 위해 여러 메커니즘이 제안되었다.",
+    "source_note": "2020년 11월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "contribute",
+    "grade": "A",
+    "base_meaning_ko": null,
+    "exam_meanings": [
+      {
+        "meaning_ko": "기여하다·(~의) 한 요인이 되다",
+        "share_pct": null,
+        "signal": "contribute to + 결과"
+      },
+      {
+        "meaning_ko": null,
+        "share_pct": null,
+        "signal": "요인·현상·활동"
+      }
+    ],
+    "signal": "① 뒤 전치사 to가 고정. ② 주어가 사람 아닌 추상명사면 '기여하다'가 아니라 '한 원인이 되다'로 읽어야 인과가 산다. ③ contribute to 뒤는 결과 명사 — 지문의 인과 사슬 표시다.",
+    "example_en": "Reading, watching videos, and listening to others’ thoughts contribute to a more solid understanding of the concept.",
+    "example_ko": "읽기, 영상 시청, 그리고 다른 사람들의 생각을 듣는 것은 그 개념에 대한 더 단단한 이해에 기여한다.",
+    "source_note": "2019년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "cover",
+    "grade": "A",
+    "base_meaning_ko": "덮다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "다루다·포함하다·(범위를) 아우르다",
+        "share_pct": 54,
+        "signal": "'다루다·포함하다·(범위를) 아우르다'"
+      },
+      {
+        "meaning_ko": "덮다",
+        "share_pct": 23,
+        "signal": null
+      },
+      {
+        "meaning_ko": "보도하다",
+        "share_pct": 15,
+        "signal": "be covered in the press"
+      },
+      {
+        "meaning_ko": "(비용을) 충당하다",
+        "share_pct": 8,
+        "signal": "비용을"
+      }
+    ],
+    "signal": "① 목적어가 주제·spectrum·범위면 '다루다·아우르다'. ② press/media가 주변이면 '보도하다'. ③ costs가 목적어면 '충당하다'. ④ 물리적 대상 + over면 '덮다'.",
+    "example_en": "The term “biological control” has been used, at times, in a broad context to cover a full spectrum of biological organisms and biologically based products.",
+    "example_ko": "\"생물학적 방제\"라는 용어는 때로, 생물 유기체와 생물 기반 제품의 전체 스펙트럼을 아우르는 넓은 맥락에서 사용되어 왔다.",
+    "source_note": "2018년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "course",
+    "grade": "A",
+    "base_meaning_ko": "강좌·과목",
+    "exam_meanings": [
+      {
+        "meaning_ko": "강좌·과목·코스",
+        "share_pct": 50,
+        "signal": null
+      },
+      {
+        "meaning_ko": "물론",
+        "share_pct": 30,
+        "signal": "of course"
+      },
+      {
+        "meaning_ko": "과정·진로",
+        "share_pct": null,
+        "signal": "in the course of ~하는 동안에"
+      }
+    ],
+    "signal": "① of course는 통째로 '물론' — 양보·당연함의 신호로 글의 방향을 예고한다. ② in the course of + 기간/사건이면 '~하는 동안에'. ③ 복수 courses + elect/take면 '과목'.",
+    "example_en": "You can still, of course, incorporate aspects of yourself: your love of Beethoven, your quick temper, your soccer injuries.",
+    "example_ko": "물론, 당신은 여전히 당신 자신의 측면들 — 베토벤에 대한 사랑, 급한 성미, 축구 부상 — 을 (인물 속에) 녹여 넣을 수 있다.",
+    "source_note": "2018년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "draw",
+    "grade": "A",
+    "base_meaning_ko": "그림 그리다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "그리다",
+        "share_pct": 48,
+        "signal": null
+      },
+      {
+        "meaning_ko": "활용하다·끌어다 쓰다",
+        "share_pct": 17,
+        "signal": "draw on"
+      },
+      {
+        "meaning_ko": "추론을 도출하다",
+        "share_pct": 13,
+        "signal": "draw inferences"
+      },
+      {
+        "meaning_ko": "끌어당기다·끌어내다",
+        "share_pct": 8,
+        "signal": null
+      }
+    ],
+    "signal": "① draw on + 경험·자원·물이면 '활용하다'. ② draw + inferences/conclusions + from이면 '도출하다'. ③ 목적어가 circle/pictures일 때만 '그리다'. 전치사 on이 붙으면 그림은 버려라.",
+    "example_en": "That scene in which your octogenarian feels humiliated will draw on your experience of humiliation in the eighth grade.",
+    "example_ko": "당신의 팔순 노인이 굴욕을 느끼는 그 장면은, 당신이 중학교 2학년 때 겪은 굴욕의 경험을 끌어다 쓰게 될 것이다.",
+    "source_note": "2018년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "field",
+    "grade": "A",
+    "base_meaning_ko": null,
+    "exam_meanings": [
+      {
+        "meaning_ko": "분야·영역",
+        "share_pct": 44,
+        "signal": "'분야·영역'"
+      },
+      {
+        "meaning_ko": "들판·밭",
+        "share_pct": 41,
+        "signal": null
+      },
+      {
+        "meaning_ko": "경기장·현장",
+        "share_pct": null,
+        "signal": null
+      }
+    ],
+    "signal": "① 앞뒤 단어가 학문·직업·산업이면 '분야' (field of ~, in the field of). ② 작물·양귀비·스포츠 동작이 주변에 있으면 '들판'. ③ 이 단어는 1·2번 신호가 없으니, 문장 전체의 소재를 보고 정하되 — 학술 지문에서는 분야가 기본값이다.",
+    "example_en": "Their award citations commonly honor the discovery for having “opened a field up,” “transformed a field,” or “taken a field in new directions.”",
+    "example_ko": "노벨상 시상 이유는 흔히 그 발견이 \"한 분야를 열었고\", \"한 분야를 바꿔 놓았으며\", \"한 분야를 새로운 방향으로 이끌었다\"고 기린다.",
+    "source_note": "2019년 11월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "figure",
+    "grade": "A",
+    "base_meaning_ko": "수치·숫자",
+    "exam_meanings": [
+      {
+        "meaning_ko": "인물",
+        "share_pct": 36,
+        "signal": "'인물'"
+      },
+      {
+        "meaning_ko": "알아내다·생각해 내다",
+        "share_pct": 36,
+        "signal": "figure out"
+      },
+      {
+        "meaning_ko": "형상·형태",
+        "share_pct": 14,
+        "signal": null
+      }
+    ],
+    "signal": "① 뒤에 out이 붙으면 무조건 '알아내다'. ② 복수 figures + 사람 관련 형용사면 '인물들'. ③ '수치'는 figure가 아니라 figures/data/numbers로 출제되는 게 실제 패턴 — figure 단독 = 수치로 읽지 마라.",
+    "example_en": "And if they only tell you things like, “don’t let that happen again,” then work to figure out what you can do better next time.",
+    "example_ko": "그리고 그들이 \"다시는 그런 일 없도록 해\" 같은 말만 한다면, 다음번에 무엇을 더 잘할 수 있을지 알아내기 위해 노력하라.",
+    "source_note": "2019년 9월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "follow",
+    "grade": "A",
+    "base_meaning_ko": "따라가다(물리)",
+    "exam_meanings": [
+      {
+        "meaning_ko": "따르다·준수하다",
+        "share_pct": 54,
+        "signal": "추상 '따르다·준수하다'"
+      },
+      {
+        "meaning_ko": "뒤이어 일어나다·뒤따르다",
+        "share_pct": 23,
+        "signal": null
+      },
+      {
+        "meaning_ko": "물리적으로 따라가다",
+        "share_pct": 15,
+        "signal": null
+      },
+      {
+        "meaning_ko": "다음의",
+        "share_pct": 8,
+        "signal": "the following"
+      }
+    ],
+    "signal": "① 목적어가 규칙·패턴·조언·방식이면 '따르다·준수하다'. ② as follows는 '다음과 같다' 고정. ③ 시간·사건이 주어면 '뒤이어 일어나다'. ④ the following + 명사·목록이면 '다음의'.",
+    "example_en": "Both the pop song and the art song tend to follow tried-and-true structural patterns.",
+    "example_ko": "대중가요와 예술가곡 모두 검증된 구조적 패턴을 따르는 경향이 있다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "force",
+    "grade": "A",
+    "base_meaning_ko": "힘",
+    "exam_meanings": [
+      {
+        "meaning_ko": "강요하다·억지로 ~하게 하다",
+        "share_pct": 43,
+        "signal": "'강요하다·억지로 ~하게 하다'"
+      },
+      {
+        "meaning_ko": "힘·세력",
+        "share_pct": 40,
+        "signal": null
+      },
+      {
+        "meaning_ko": "군대",
+        "share_pct": 10,
+        "signal": "air force 공군"
+      }
+    ],
+    "signal": "① force + 목적어 + to부정사면 '강요하다'. ② be forced to면 '~할 수밖에 없다'. ③ air/armed가 앞이면 '군'. ④ 물리량의 힘이 명사 자리에 있을 때만 '힘'.",
+    "example_en": "The Securities and Exchange Commission that monitors American stock markets forces firms to meet certain reporting requirements.",
+    "example_ko": "미국 주식 시장을 감독하는 증권거래위원회는 기업들이 특정 보고 요건을 충족하도록 강제한다.",
+    "source_note": "2017년 9월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "form",
+    "grade": "A",
+    "base_meaning_ko": "형태",
+    "exam_meanings": [
+      {
+        "meaning_ko": "형태·양식·종류",
+        "share_pct": 67,
+        "signal": "a form of ~, in the form of ~"
+      },
+      {
+        "meaning_ko": "형성하다·이루다",
+        "share_pct": 30,
+        "signal": "동사 '형성하다·이루다'"
+      },
+      {
+        "meaning_ko": "신청서",
+        "share_pct": 3,
+        "signal": "application form"
+      }
+    ],
+    "signal": "① 주어 뒤 form(s) + 목적어면 동사 '형성하다'. ② a/the + form + of면 명사. ③ 앞에 application이 붙으면 '신청서'.",
+    "example_en": "To accomplish that, the organism must go beyond the mere ability to form internal representations, the models of the world outside.",
+    "example_ko": "그것을 이루려면, 그 유기체는 내적 표상, 즉 바깥 세계의 모형을 형성하는 단순한 능력을 넘어서야 한다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "function",
+    "grade": "A",
+    "base_meaning_ko": "기능",
+    "exam_meanings": [
+      {
+        "meaning_ko": "기능·역할",
+        "share_pct": null,
+        "signal": null
+      },
+      {
+        "meaning_ko": "~로서 기능하다·작용하다",
+        "share_pct": 30,
+        "signal": "동사 '~로서 기능하다·작용하다'"
+      },
+      {
+        "meaning_ko": "~에 따라 결정되는 것",
+        "share_pct": 10,
+        "signal": "a function of ~"
+      }
+    ],
+    "signal": "① function as + 명사면 '~로 기능하다'. ② a function of + 원인·변수면 '~에 의해 결정되는 결과물' — 수학의 '함수'가 아니라 인과 표현이다. ③ 주어 뒤 functions/functioned는 동사 자리 — 명사로 읽지 마라.",
+    "example_en": "In the classic model of the Sumerian economy, the temple functioned as an administrative authority governing commodity production, collection, and redistribution.",
+    "example_ko": "수메르 경제의 고전적 모형에서, 신전은 상품의 생산·수집·재분배를 관장하는 행정 당국으로서 기능했다.",
+    "source_note": "2021년 12월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "mean",
+    "grade": "A",
+    "base_meaning_ko": "의미하다·의미",
+    "exam_meanings": [
+      {
+        "meaning_ko": "의미",
+        "share_pct": 49,
+        "signal": null
+      },
+      {
+        "meaning_ko": "수단·방법",
+        "share_pct": 10,
+        "signal": "명사 means — '수단·방법'"
+      },
+      {
+        "meaning_ko": "결코 ~않다",
+        "share_pct": 2,
+        "signal": null
+      }
+    ],
+    "signal": "① a means of/for + 명사면 '수단' (a means of communication 소통 수단). ② by other means면 '다른 수단으로'. ③ by no means는 통째로 부정 — 문장 전체가 뒤집힌다. ④ means는 단·복수 동형 — 동사 일치로 출제된 적도 있다.",
+    "example_en": "War is a mere continuation of politics by other means.",
+    "example_ko": "전쟁이란 단지 다른 수단에 의한 정치의 연속일 뿐이다.",
+    "source_note": "2021년 12월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "movement",
+    "grade": "A",
+    "base_meaning_ko": "움직임",
+    "exam_meanings": [
+      {
+        "meaning_ko": "움직임",
+        "share_pct": 45,
+        "signal": "eye movements"
+      },
+      {
+        "meaning_ko": "(사회·정치) 운동",
+        "share_pct": 32,
+        "signal": "'(사회·정치) 운동'"
+      },
+      {
+        "meaning_ko": "악장",
+        "share_pct": 9,
+        "signal": null
+      }
+    ],
+    "signal": "① 앞에 운동 이름·이념이 붙거나 supporters/protest가 주변이면 '운동'. ② eye/body가 앞이면 '움직임'. ③ 음악 지문에서 숫자와 함께면 '악장'.",
+    "example_en": "The crucial factor in the success of the suffragette movement was that its supporters were consistent in their views.",
+    "example_ko": "여성 참정권 운동의 성공에서 결정적 요인은, 그 지지자들이 자신들의 견해를 일관되게 유지했다는 점이었다.",
+    "source_note": "2019년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "nature",
+    "grade": "A",
+    "base_meaning_ko": "자연",
+    "exam_meanings": [
+      {
+        "meaning_ko": "자연(자연계)",
+        "share_pct": 64,
+        "signal": "자연계"
+      },
+      {
+        "meaning_ko": "본성·본질·성질",
+        "share_pct": 23,
+        "signal": "'본성·본질·성질'"
+      }
+    ],
+    "signal": "① the nature of + 추상명사면 '본질'. ② 형용사 + nature (liquid nature 액체 같은 성질)면 '성질'. ③ by nature면 '본성상'. ④ 숲·동물·풍경 맥락일 때만 '자연'.",
+    "example_en": "The liquid nature of services means they don’t have to be bound to materials.",
+    "example_ko": "서비스의 액체 같은 성질은, 서비스가 물질에 묶여 있을 필요가 없다는 것을 의미한다.",
+    "source_note": "2019년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "point",
+    "grade": "A",
+    "base_meaning_ko": "점",
+    "exam_meanings": [
+      {
+        "meaning_ko": "지점·시점",
+        "share_pct": 40,
+        "signal": "at this point 이 시점에서"
+      },
+      {
+        "meaning_ko": "요점·핵심",
+        "share_pct": 20,
+        "signal": "'요점·핵심'"
+      },
+      {
+        "meaning_ko": "관점",
+        "share_pct": 17,
+        "signal": "point of view"
+      },
+      {
+        "meaning_ko": "점수",
+        "share_pct": 15,
+        "signal": null
+      },
+      {
+        "meaning_ko": "~할 정도까지",
+        "share_pct": null,
+        "signal": "to the point of + 동명사"
+      }
+    ],
+    "signal": "① point of view는 통째로 '관점'. ② to the point of + 동명사면 '~할 지경까지'. ③ the point is that절이면 '요점은'. ④ at this/that point면 시간의 '시점'.",
+    "example_en": "Artists are perceived to establish a strong bond with their art to the point of combining into one “entity.”",
+    "example_ko": "예술가들은 자신의 예술과 강한 유대를 맺어, 하나의 \"존재\"로 합쳐질 지경에 이르는 것으로 인식된다.",
+    "source_note": "2017년 9월",
+    "context_meaning_index": 4
+  },
+  {
+    "word": "population",
+    "grade": "A",
+    "base_meaning_ko": "인구",
+    "exam_meanings": [
+      {
+        "meaning_ko": "인구",
+        "share_pct": 74,
+        "signal": "world/rural/urban population, population growth"
+      },
+      {
+        "meaning_ko": "개체군(생물 집단)",
+        "share_pct": 26,
+        "signal": "'개체군(생물 집단)'"
+      }
+    ],
+    "signal": "① 주변에 species/falcon/pest/biological/evolving이 있으면 '개체군'. ② population of a species면 개체군 확정. ③ world/rural/urban이 앞이고 growth/per million이 뒤면 '인구'. 테마 신호가 뜻을 통째로 바꾸는, 테마 예외의 대표 사례다.",
+    "example_en": "In this case, one of the negative values associated with a peregrine falcon population is that its predation reduces the population of another endangered species.",
+    "example_ko": "이 경우, 매 개체군과 연관된 부정적 가치 중 하나는, 그 포식이 또 다른 멸종 위기 종의 개체군을 감소시킨다는 점이다.",
+    "source_note": "2019년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "process",
+    "grade": "A",
+    "base_meaning_ko": "과정",
+    "exam_meanings": [
+      {
+        "meaning_ko": "과정",
+        "share_pct": 68,
+        "signal": null
+      },
+      {
+        "meaning_ko": "처리하다·가공하다",
+        "share_pct": 27,
+        "signal": "동사 '처리하다·가공하다'"
+      },
+      {
+        "meaning_ko": "행진하다",
+        "share_pct": 5,
+        "signal": null
+      }
+    ],
+    "signal": "① be processed / process + 정보·자료면 '처리하다' — 인지·심리 지문 단골. ② processing 뒤 산업 명사(fiber processing)면 '가공'. ③ the process of + 명사면 '과정'.",
+    "example_en": "Theories of all sorts promote the view that there are ways by which disagreement can be processed or managed so as to make it disappear.",
+    "example_ko": "온갖 이론들은, 의견 불일치가 처리되거나 관리되어 사라지게 할 수 있는 방법이 있다는 견해를 조장한다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "produce",
+    "grade": "A",
+    "base_meaning_ko": "생산하다·만들어내다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "만들어내다·일으키다",
+        "share_pct": 50,
+        "signal": "produce an effect 효과를 내다"
+      },
+      {
+        "meaning_ko": "농산물",
+        "share_pct": null,
+        "signal": "명사 produce — '농산물'"
+      },
+      {
+        "meaning_ko": "생산자",
+        "share_pct": null,
+        "signal": "생태계 생산자가 아니라 문화·산업의 생산자 쪽이 다수"
+      }
+    ],
+    "signal": "① 관사·형용사 뒤 produce가 명사 자리이고 도표·식품 맥락이면 '농산물'. ② 동사 자리에 effect/result가 목적어면 '일으키다'. ③ 강세로 구별하는 시험은 안 나온다 — 자리로만 가른다.",
+    "example_en": "The above graph shows the sales of four types of ethical produce in the UK in 2010 and 2015.",
+    "example_ko": "위 그래프는 2010년과 2015년 영국에서 네 종류의 윤리적 농산물의 판매를 보여준다.",
+    "source_note": "2018년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "project",
+    "grade": "A",
+    "base_meaning_ko": "사업·과제",
+    "exam_meanings": [
+      {
+        "meaning_ko": "사업·과제·프로젝트",
+        "share_pct": 74,
+        "signal": null
+      },
+      {
+        "meaning_ko": "예상된·전망되는",
+        "share_pct": 15,
+        "signal": "projected — '예상된·전망되는'"
+      },
+      {
+        "meaning_ko": "투사하다·드러내다",
+        "share_pct": 7,
+        "signal": "project an image"
+      }
+    ],
+    "signal": "① It is projected that 또는 projected + share/percentage면 '예상되다' — 도표 문항에서 미래 수치를 읽는 열쇠다. ② 동사 자리에 image가 목적어면 '투사하다'. ③ manager/construction이 주변이면 명사 '사업'.",
+    "example_en": "It is projected that the share of the global middle class in Asia Pacific will increase from 46 percent in 2015 to 60 percent in 2025.",
+    "example_ko": "아시아·태평양 지역에서 세계 중산층이 차지하는 비중은 2015년 46퍼센트에서 2025년 60퍼센트로 증가할 것으로 전망된다.",
+    "source_note": "2022년 11월",
+    "context_meaning_index": 1
+  },
+  {
+    "word": "reflect",
+    "grade": "A",
+    "base_meaning_ko": "반사하다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "반영하다",
+        "share_pct": 62,
+        "signal": "'반영하다'"
+      },
+      {
+        "meaning_ko": "숙고하다",
+        "share_pct": 14,
+        "signal": "reflect on"
+      },
+      {
+        "meaning_ko": "반사하다",
+        "share_pct": 10,
+        "signal": null
+      }
+    ],
+    "signal": "① 주어가 가격·현상·결과 같은 추상명사고 목적어가 수요·현실·선호면 '반영하다'. ② reflect off + 벽·표면, reflected waves면 '반사'. ③ 사람이 주어 + on이 있거나 pause to reflect면 '숙고하다'.",
+    "example_en": "This phenomenon reflects a unique feature in the health care industry.",
+    "example_ko": "이 현상은 의료 산업의 독특한 특징을 반영한다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 0
+  },
+  {
+    "word": "remain",
+    "grade": "A",
+    "base_meaning_ko": "남다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "여전히 ~인 채이다",
+        "share_pct": 46,
+        "signal": "remain + 형용사/분사"
+      },
+      {
+        "meaning_ko": "남아 머무르다",
+        "share_pct": 18,
+        "signal": null
+      },
+      {
+        "meaning_ko": "잔해·유물·음식 찌꺼기",
+        "share_pct": 11,
+        "signal": "remains (명사)"
+      },
+      {
+        "meaning_ko": "남은",
+        "share_pct": 7,
+        "signal": null
+      }
+    ],
+    "signal": "① 뒤에 형용사가 바로 오면 연결동사 '~인 채로 있다' — be동사처럼 읽어라. ② remains 앞에 food/physical이 붙으면 명사 '잔해'. ③ remaining이 명사 앞이면 '남은'.",
+    "example_en": "It is relatively easy, for example, for archaeologists to identify and draw inferences about technology and diet from stone tools and food remains.",
+    "example_ko": "예를 들어 고고학자들이 석기 도구와 음식 잔해로부터 기술과 식단에 대한 추론을 식별하고 도출하는 것은 비교적 쉽다.",
+    "source_note": "2021년 9월",
+    "context_meaning_index": 2
+  },
+  {
+    "word": "result",
+    "grade": "A",
+    "base_meaning_ko": "결과",
+    "exam_meanings": [
+      {
+        "meaning_ko": "결과·실험 결과",
+        "share_pct": 55,
+        "signal": null
+      },
+      {
+        "meaning_ko": "초래하다",
+        "share_pct": 9,
+        "signal": "result in"
+      },
+      {
+        "meaning_ko": "비롯되다",
+        "share_pct": 13,
+        "signal": "result from"
+      }
+    ],
+    "signal": "① result in + 결과 명사: 주어가 원인이다. ② result from + 원인 명사: 주어가 결과다. ③ As a result, 문두 + 쉼표면 앞 문장의 결과라는 연결 신호. 인과 방향 문제는 전부 여기서 갈린다.",
+    "example_en": "Creativity results from a complex interaction between a person and his or her environment or culture.",
+    "example_ko": "창의성은 개인과 그 환경 또는 문화 사이의 복잡한 상호작용에서 비롯된다.",
+    "source_note": "2018년 9월",
+    "context_meaning_index": 2
+  },
+  {
+    "word": "work",
+    "grade": "A",
+    "base_meaning_ko": "일하다",
+    "exam_meanings": [
+      {
+        "meaning_ko": "일·작업",
+        "share_pct": 42,
+        "signal": null
+      },
+      {
+        "meaning_ko": "작품",
+        "share_pct": 16,
+        "signal": "'작품'"
+      },
+      {
+        "meaning_ko": "작동하다·효과를 내다",
+        "share_pct": 18,
+        "signal": "'작동하다·효과를 내다'"
+      }
+    ],
+    "signal": "① a work of + art/literature면 '작품'. ② works가 복수 명사면 '작품들·저작'. ③ 시스템·기계·방법이 주어면 '작동하다'. ④ working memory는 통째로 심리학 용어 '작업 기억'.",
+    "example_en": "Though not as old as the bridges of Rome, it was absolutely a work of art.",
+    "example_ko": "로마의 다리들만큼 오래되지는 않았지만, 그것은 단연 하나의 예술 작품이었다.",
+    "source_note": "2017년 6월",
+    "context_meaning_index": 1
+  }
+]
