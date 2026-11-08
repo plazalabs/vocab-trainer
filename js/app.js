@@ -2118,31 +2118,31 @@
     registerServiceWorker();
 
     try {
-      const [wordsRes, examRes] = await Promise.all([
-        fetch('./data/words.json'),
-        fetch('./data/exam-words.json')
-      ]);
-
+      const wordsRes = await fetch('./data/words.json');
       if (!wordsRes.ok) {
         throw new Error(`words.json HTTP ${wordsRes.status}`);
       }
-      state.words = await wordsRes.json();
-
-      if (examRes.ok) {
-        const rawExam = await examRes.json();
-        state.examWords = Array.isArray(rawExam)
-          ? rawExam.map((item) => ({
-              ...item,
-              id: `exam-${item.word}`,
-              isExam: true
-            }))
-          : [];
-      } else {
-        state.examWords = [];
-      }
+      const rawWords = await wordsRes.json();
+      state.words = Array.isArray(rawWords) ? rawWords : [];
     } catch (err) {
       showToast('단어 데이터를 불러오지 못했습니다.');
       state.words = [];
+    }
+
+    try {
+      const examRes = await fetch('./data/exam-words.json');
+      if (!examRes.ok) {
+        throw new Error(`exam-words.json HTTP ${examRes.status}`);
+      }
+      const rawExam = await examRes.json();
+      state.examWords = Array.isArray(rawExam)
+        ? rawExam.map((item) => ({
+            ...item,
+            id: `exam-${item.word}`,
+            isExam: true
+          }))
+        : [];
+    } catch (err) {
       state.examWords = [];
     }
 
