@@ -832,50 +832,6 @@
   }
 
   // --- 3. 퀴즈 (기본 3종 + 기출 모드 2종) ---
-  // 기출 다의어 40개 각각의 실제 기출 예문(example_en / example_ko)에 쓰인 exam_meanings 인덱스 매핑
-  const EXAM_CONTEXT_MEANING_INDEX = {
-    account: 1,     // 차지하다 (Subscriptions account for almost 90 percent...)
-    approach: 0,    // 접근법·방법 (This new approach increases...)
-    base: 0,        // ~에 근거하다 (when farmers base decisions on observations...)
-    lead: 0,        // ~로 이어지다, ~을 초래하다 (breakthroughs that lead to a major change...)
-    leave: 0,       // 남기다·~한 채로 두다 (That leaves others having to respond...)
-    matter: 0,      // 중요하다 (...matters less than the fact that they are women.)
-    order: 1,       // 질서·순서 (...ultimately impose order on human experience...)
-    practice: 1,    // 관행·실무 관습 (...management practices and a lack of concerted research.)
-    present: 0,     // 현재의 (...actual past experience or present reality exactly.)
-    sense: 0,       // ~감, ~의식 (...a growing sense of competence and mastery.)
-    subject: 0,     // 피험자·실험 참가자 (For example, subjects who were presented with...)
-    term: 1,        // ~의 측면에서, ~으로 따지면 (In terms of direct expenditures...)
-    turn: 3,        // ~로 판명되다 (It turned out that this simple suggestion...)
-    view: 0,        // 견해·관점 (Scientism is the view that...)
-    address: 0,     // 다루다·해결에 나서다 (...addressing the root causes of the problem.)
-    case: 0,        // 경우 (...until the case is settled...)
-    concern: 1,     // ~을 다루다·와 관련되다 (...are not concerned with results...)
-    conduct: 0,     // 실시하다·수행하다 (Numerous biodiversity experiments have been conducted...)
-    contribute: 0,  // 기여하다·(~의) 한 요인이 되다 (...contribute to a more solid understanding...)
-    cover: 0,       // 다루다·포함하다·(범위를) 아우르다 (...to cover a full spectrum of...)
-    course: 1,      // 물론 (You can still, of course, incorporate...)
-    draw: 1,        // 활용하다·끌어다 쓰다 (...will draw on your experience...)
-    field: 0,       // 분야·영역 (“opened a field up,” “transformed a field,”...)
-    figure: 1,      // 알아내다·생각해 내다 (...work to figure out what you can do better...)
-    follow: 0,      // 따르다·준수하다 (...tend to follow tried-and-true structural patterns.)
-    force: 0,       // 강요하다·억지로 ~하게 하다 (...forces firms to meet certain reporting requirements.)
-    form: 1,        // 형성하다·이루다 (...ability to form internal representations...)
-    function: 1,    // ~로서 기능하다·작용하다 (...the temple functioned as an administrative authority...)
-    mean: 1,        // 수단·방법 (...continuation of politics by other means.)
-    movement: 1,    // (사회·정치) 운동 (...success of the suffragette movement...)
-    nature: 1,      // 본성·본질·성질 (The liquid nature of services...)
-    point: 0,       // 지점·시점 (...to the point of combining into one “entity.”)
-    population: 1,  // 개체군(생물 집단) (...peregrine falcon population...)
-    process: 1,     // 처리하다·가공하다 (...disagreement can be processed or managed...)
-    produce: 1,     // 농산물 (...sales of four types of ethical produce...)
-    project: 1,     // 예상된·전망되는 (It is projected that the share...)
-    reflect: 0,     // 반영하다 (This phenomenon reflects a unique feature...)
-    remain: 2,      // 잔해·유물·음식 찌꺼기 (...from stone tools and food remains.)
-    result: 2,      // 비롯되다 (Creativity results from a complex interaction...)
-    work: 1         // 작품 (...it was absolutely a work of art.)
-  };
-
   function isExamQuizMode(mode) {
     return mode === 'exam-blank' || mode === 'exam-meaning';
   }
@@ -884,13 +840,13 @@
     if (!wordObj || !Array.isArray(wordObj.exam_meanings)) {
       return { meaning_ko: '', share_pct: null, signal: null };
     }
-    const mappedIdx = EXAM_CONTEXT_MEANING_INDEX[wordObj.word];
+    const idx = wordObj.context_meaning_index;
     if (
-      typeof mappedIdx === 'number' &&
-      wordObj.exam_meanings[mappedIdx] &&
-      wordObj.exam_meanings[mappedIdx].meaning_ko
+      typeof idx === 'number' &&
+      wordObj.exam_meanings[idx] &&
+      wordObj.exam_meanings[idx].meaning_ko
     ) {
-      return wordObj.exam_meanings[mappedIdx];
+      return wordObj.exam_meanings[idx];
     }
     const firstValid = wordObj.exam_meanings.find((m) => m && m.meaning_ko);
     return firstValid || { meaning_ko: '', share_pct: null, signal: null };
