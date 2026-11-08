@@ -1072,6 +1072,79 @@
     return [...samePosSafe, ...diffPosSafe, ...fallback].slice(0, 3);
   }
 
+  // 문맥 속 뜻 퀴즈(exam-meaning) 보기 중복·유사(포함 관계) 판별 헬퍼
+  function normalizeMeaningText(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/\([^)]*\)/g, '')
+      .replace(/~/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function getMeaningTokens(text) {
+    const norm = normalizeMeaningText(text);
+    if (!norm) return [];
+    return norm
+      .split(/[·,/]/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+  }
+
+  function isOverlappingMeaning(a, b) {
+    if (!a || !b) return false;
+    const rawA = String(a).trim();
+    const rawB = String(b).trim();
+    if (!rawA || !rawB) return false;
+    if (rawA === rawB) return true;
+
+    const normA = normalizeMeaningText(rawA);
+    const normB = normalizeMeaningText(rawB);
+    if (!normA || !normB) return false;
+    if (normA === normB) return true;
+
+    const noSpaceA = normA.replace(/\s+/g, '');
+    const noSpaceB = normB.replace(/\s+/g, '');
+    if (
+      noSpaceA.length >= 2 &&
+      noSpaceB.length >= 2 &&
+      (noSpaceA.includes(noSpaceB) || noSpaceB.includes(noSpaceA))
+    ) {
+      return true;
+    }
+
+    const tokensA = getMeaningTokens(rawA);
+    const tokensB = getMeaningTokens(rawB);
+    for (const ta of tokensA) {
+      const cleanA = ta.replace(/\s+/g, '');
+      const stemA = cleanA.replace(/하다$/, '');
+      if (!cleanA) continue;
+      for (const tb of tokensB) {
+        const cleanB = tb.replace(/\s+/g, '');
+        const stemB = cleanB.replace(/하다$/, '');
+        if (!cleanB) continue;
+        if (cleanA === cleanB) return true;
+        if (stemA && stemB && stemA === stemB) return true;
+        if (
+          cleanA.length >= 2 &&
+          cleanB.length >= 2 &&
+          (cleanA.includes(cleanB) || cleanB.includes(cleanA))
+        ) {
+          return true;
+        }
+        if (
+          stemA.length >= 2 &&
+          stemB.length >= 2 &&
+          (stemA.includes(stemB) || stemB.includes(stemA))
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   function prepareCurrentQuestionChoices() {
     const currentWord = state.quiz.queue[state.quiz.currentIndex];
     if (!currentWord) {
@@ -1094,11 +1167,11 @@
     if (mode === 'exam-meaning') {
       // 기출 모드 유형 2 — 문맥 속 뜻 (exam_meanings 중에서 고르되, 기본 뜻을 함정으로 포함)
       const correctEntry = getExamContextMeaningObj(currentWord);
-      const usedTexts = new Set();
       const meaningChoices = [];
+      const hasOverlappingChoice = (candidateText) =>
+        meaningChoices.some((c) => isOverlappingMeaning(c.meaning_ko, candidateText));
 
       if (correctEntry && correctEntry.meaning_ko) {
-        usedTexts.add(correctEntry.meaning_ko);
         meaningChoices.push({
           id: 'correct',
           meaning_ko: correctEntry.meaning_ko,
@@ -1109,14 +1182,13 @@
         });
       }
 
-      // 기본 뜻(base_meaning_ko)이 존재하고 정답 뜻과 다르면 함정 선택지로 반드시 포함
+      // 기본 뜻(base_meaning_ko)이 존재하고 기존 보기와 중복·포함 관계가 아니면 함정 선택지로 포함
       if (
         currentWord.base_meaning_ko !== null &&
         currentWord.base_meaning_ko !== undefined &&
         String(currentWord.base_meaning_ko).trim() !== '' &&
-        !usedTexts.has(currentWord.base_meaning_ko)
+        !hasOverlappingChoice(currentWord.base_meaning_ko)
       ) {
-        usedTexts.add(currentWord.base_meaning_ko);
         meaningChoices.push({
           id: 'trap-base',
           meaning_ko: currentWord.base_meaning_ko,
@@ -1127,15 +1199,13 @@
         });
       }
 
-      // 해당 단어의 다른 exam_meanings 추가
+      // 해당 단어의 다른 exam_meanings 추가 (포함·유사 의미 배제)
       const otherOwnMeanings = shuffleArray(
-        (currentWord.exam_meanings || []).filter(
-          (m) => m && m.meaning_ko && !usedTexts.has(m.meaning_ko)
-        )
+        (currentWord.exam_meanings || []).filter((m) => m && m.meaning_ko)
       );
       for (const m of otherOwnMeanings) {
         if (meaningChoices.length >= 4) break;
-        usedTexts.add(m.meaning_ko);
+        if (hasOverlappingChoice(m.meaning_ko)) continue;
         meaningChoices.push({
           id: `own-${meaningChoices.length}`,
           meaning_ko: m.meaning_ko,
@@ -1152,15 +1222,14 @@
         state.examWords.forEach((ew) => {
           if (ew.id === currentWord.id) return;
           (ew.exam_meanings || []).forEach((em) => {
-            if (em && em.meaning_ko && !usedTexts.has(em.meaning_ko)) {
+            if (em && em.meaning_ko) {
               poolFromOtherExamWords.push(em.meaning_ko);
             }
           });
         });
         for (const extraMeaning of shuffleArray(poolFromOtherExamWords)) {
           if (meaningChoices.length >= 4) break;
-          if (usedTexts.has(extraMeaning)) continue;
-          usedTexts.add(extraMeaning);
+          if (hasOverlappingChoice(extraMeaning)) continue;
           meaningChoices.push({
             id: `other-${meaningChoices.length}`,
             meaning_ko: extraMeaning,
