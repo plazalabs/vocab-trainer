@@ -4,7 +4,8 @@
   const STORAGE_KEYS = {
     SRS: 'vocab_trainer_srs_v1',
     WRONG: 'vocab_trainer_wrong_v1',
-    STREAK: 'vocab_trainer_streak_v1'
+    STREAK: 'vocab_trainer_streak_v1',
+    GAMIFICATION: 'vocab_trainer_gamification_v1'
   };
 
   // 간격반복(SRS) 복습 간격 단계: 맞히면 1일 -> 3일 -> 7일 -> 14일 확대
@@ -31,6 +32,7 @@
       todayStudiedIds: [],
       dayOffset: 0
     },
+    gamification: createDefaultGamification(),
     currentView: 'home',
     wordbookTab: 'sample',      // 'sample' | 'exam'
     wordbookFilter: 'all',      // 'all' | '고1' | '고2' | '고3' | 'due'
@@ -45,11 +47,28 @@
       answered: false,
       flipped: false,
       choices: [],
-      results: [] // { wordId, isCorrect, nextInterval, nextReviewDate, mode }
+      results: [], // { wordId, isCorrect, nextInterval, nextReviewDate, mode, xp }
+      sessionCombo: 0,        // 세션 내 연속 정답 수 (오답/몰라요 시 0)
+      sessionXp: 0,           // 세션 누적 획득 XP
+      sessionStartLevel: 1,   // 세션 시작 시점 레벨 (레벨업 배너용)
+      completionRecorded: false // 세션 완료 통계 중복 집계 방지
     }
   };
 
   let deferredInstallPrompt = null;
+
+  // --- 게임화(XP·레벨) 상태 기본값 (DESIGN.md 6.2) ---
+  function createDefaultGamification() {
+    return {
+      version: 1,
+      totalXp: 0,
+      level: 1,
+      weekly: { weekId: null, xp: 0 },
+      dailyXpGuard: { date: null, wordCounts: {} },
+      badges: {},
+      stats: { completedSessions: 0, maxCombo: 0, totalCorrectAnswers: 0 }
+    };
+  }
 
   // --- 날짜 유틸리티 ---
   function formatDateYMD(dateObj) {
@@ -114,6 +133,57 @@
     }
 
     normalizeStreakForToday();
+
+    // 게임화 상태: 없거나 파싱 실패 시 신규 상태만 기본값으로 초기화 (기존 학습 기록은 건드리지 않음, DESIGN.md 6.3)
+    state.gamification = loadGamificationFromStorage();
+    normalizeGamificationForToday();
+  }
+
+  function loadGamificationFromStorage() {
+    const base = createDefaultGamification();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.GAMIFICATION);
+      if (!raw) return base;
+      const p = JSON.parse(raw);
+      if (!p || typeof p !== 'object') return base;
+      const num = (v) => (Number.isFinite(Number(v)) && Number(v) >= 0 ? Math.floor(Number(v)) : 0);
+      base.totalXp = num(p.totalXp);
+      base.level = getLevelFromXp(base.totalXp);
+      if (p.weekly && typeof p.weekly === 'object') {
+        base.weekly = {
+          weekId: typeof p.weekly.weekId === 'string' ? p.weekly.weekId : null,
+          xp: num(p.weekly.xp)
+        };
+      }
+      if (p.dailyXpGuard && typeof p.dailyXpGuard === 'object') {
+        const wc = {};
+        if (p.dailyXpGuard.wordCounts && typeof p.dailyXpGuard.wordCounts === 'object') {
+          Object.keys(p.dailyXpGuard.wordCounts).forEach((k) => {
+            wc[k] = num(p.dailyXpGuard.wordCounts[k]);
+          });
+        }
+        base.dailyXpGuard = {
+          date: typeof p.dailyXpGuard.date === 'string' ? p.dailyXpGuard.date : null,
+          wordCounts: wc
+        };
+      }
+      if (p.badges && typeof p.badges === 'object') {
+        Object.keys(p.badges).forEach((k) => {
+          const b = p.badges[k];
+          if (b && typeof b === 'object') base.badges[k] = { unlockedAt: b.unlockedAt || null };
+        });
+      }
+      if (p.stats && typeof p.stats === 'object') {
+        base.stats = {
+          completedSessions: num(p.stats.completedSessions),
+          maxCombo: num(p.stats.maxCombo),
+          totalCorrectAnswers: num(p.stats.totalCorrectAnswers)
+        };
+      }
+      return base;
+    } catch (e) {
+      return base;
+    }
   }
 
   function saveStateToStorage() {
@@ -121,6 +191,7 @@
       localStorage.setItem(STORAGE_KEYS.SRS, JSON.stringify(state.srs));
       localStorage.setItem(STORAGE_KEYS.WRONG, JSON.stringify(state.wrongNote));
       localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(state.streak));
+      localStorage.setItem(STORAGE_KEYS.GAMIFICATION, JSON.stringify(state.gamification));
     } catch (e) {
       showToast('브라우저 저장소(localStorage)에 기록을 저장할 수 없습니다.');
     }
@@ -141,6 +212,49 @@
         // 어제 학습 기록이 없으면 연속 학습일 초기화
         state.streak.count = 0;
       }
+    }
+  }
+
+  // --- XP · 레벨 · 주간 키 유틸리티 (DESIGN.md 2.4, 3.1, 6.3) ---
+  // 레벨 L 도달 누적 XP: 25(L-1)(L+2) / 레벨 상한 없음 (유보 7.8 확정)
+  function getRequiredTotalXp(level) {
+    return 25 * (level - 1) * (level + 2);
+  }
+
+  function getLevelFromXp(totalXp) {
+    let level = 1;
+    while (getRequiredTotalXp(level + 1) <= totalXp) level += 1;
+    return level;
+  }
+
+  function getLevelProgress(totalXp) {
+    const level = getLevelFromXp(totalXp);
+    const base = getRequiredTotalXp(level);
+    const span = 100 + 50 * (level - 1);
+    const cur = totalXp - base;
+    return { level, cur, span, pct: Math.min(100, Math.floor((cur / span) * 100)) };
+  }
+
+  // 주간 식별자: 해당 주 월요일 날짜 (getTodayStr 기준 → 가상 날짜 반영, 유보 7.5 확정)
+  function getWeekMondayStr(ymdStr) {
+    const parts = ymdStr.split('-').map(Number);
+    const dayIndex = (new Date(parts[0], parts[1] - 1, parts[2]).getDay() + 6) % 7;
+    return addDays(ymdStr, -dayIndex);
+  }
+
+  function getCurrentWeekMondayStr() {
+    return getWeekMondayStr(getTodayStr());
+  }
+
+  function normalizeGamificationForToday() {
+    const g = state.gamification;
+    const today = getTodayStr();
+    if (!g.dailyXpGuard || g.dailyXpGuard.date !== today) {
+      g.dailyXpGuard = { date: today, wordCounts: {} };
+    }
+    const weekId = getCurrentWeekMondayStr();
+    if (!g.weekly || g.weekly.weekId !== weekId) {
+      g.weekly = { weekId, xp: 0 };
     }
   }
 
@@ -305,6 +419,9 @@
       state.streak.lastStudyDate = today;
     }
 
+    // XP · 콤보 · 파밍 방지 처리 (DESIGN.md 2.1~2.3)
+    const xp = awardXpForAnswer(key, isCorrect, modeKey);
+
     saveStateToStorage();
     updateGlobalBadges();
 
@@ -314,8 +431,77 @@
       stage: nextStage,
       intervalDays,
       nextReviewDate,
-      mode: modeKey
+      mode: modeKey,
+      xp
     };
+  }
+
+  // 기본 XP (DESIGN.md 2.1) — 카드 뒤집기 기출은 절반 버림 +7 (유보 7.1 확정)
+  function getBaseXp(effectiveMode, isExam) {
+    if (effectiveMode === 'flashcard') return isExam ? 7 : 5;
+    if (effectiveMode === 'exam-blank' || effectiveMode === 'exam-meaning') return 15;
+    return 10;
+  }
+
+  // 연속 정답 보너스 (DESIGN.md 2.2) — 카드 뒤집기에도 절반 규칙으로 인정 (유보 7.2 확정)
+  function getComboBonus(combo, isFlashcard) {
+    let bonus = 0;
+    if (combo >= 10) bonus = 6;
+    else if (combo >= 5) bonus = 4;
+    else if (combo >= 3) bonus = 2;
+    return isFlashcard ? bonus / 2 : bonus;
+  }
+
+  function awardXpForAnswer(key, isCorrect, effectiveMode) {
+    const g = state.gamification;
+    const result = {
+      earned: 0, baseXp: 0, comboBonus: 0, combo: 0,
+      capped: false, reduced: false, leveledUp: false, prevLevel: g.level, newLevel: g.level
+    };
+    normalizeGamificationForToday();
+
+    if (!isCorrect) {
+      state.quiz.sessionCombo = 0; // 오답/몰라요: 0 XP, 콤보 초기화
+      return result;
+    }
+
+    state.quiz.sessionCombo += 1;
+    const combo = state.quiz.sessionCombo;
+    result.combo = combo;
+    g.stats.totalCorrectAnswers += 1;
+    if (combo > g.stats.maxCombo) g.stats.maxCombo = combo;
+
+    const isExam = key.startsWith('exam-');
+    const isFlash = effectiveMode === 'flashcard';
+    const baseXp = getBaseXp(effectiveMode, isExam);
+    const prevCount = g.dailyXpGuard.wordCounts[key] || 0;
+    result.baseXp = baseXp;
+
+    if (prevCount === 0) {
+      result.comboBonus = getComboBonus(combo, isFlash);
+      result.earned = baseXp + result.comboBonus;
+    } else if (prevCount === 1) {
+      result.earned = Math.max(1, Math.floor(baseXp * 0.2));
+      result.reduced = true;
+    } else {
+      result.earned = 0;
+      result.capped = true;
+    }
+    g.dailyXpGuard.wordCounts[key] = prevCount + 1;
+
+    if (result.earned > 0) {
+      g.totalXp += result.earned;
+      g.weekly.xp += result.earned;
+    }
+    const newLevel = getLevelFromXp(g.totalXp);
+    result.prevLevel = g.level;
+    result.newLevel = newLevel;
+    if (newLevel > g.level) {
+      result.leveledUp = true;
+      g.level = newLevel;
+    }
+    state.quiz.sessionXp += result.earned;
+    return result;
   }
 
   // --- 발음 재생 (브라우저 내장 speechSynthesis 전용) ---
@@ -397,6 +583,11 @@
     const headerStreak = document.getElementById('header-streak-text');
     if (headerStreak) {
       headerStreak.textContent = `${streakCount}일 연속`;
+    }
+
+    const levelText = document.getElementById('header-level-text');
+    if (levelText) {
+      levelText.textContent = `Lv.${state.gamification.level} · ${state.gamification.totalXp} XP`;
     }
 
     const wrongCount = getWrongWords().length;
@@ -503,6 +694,8 @@
       if (el) el.textContent = String(stageCounts[s]);
     }
 
+    renderLevelProgress();
+
     const simDisplay = document.getElementById('sim-date-display');
     if (simDisplay) {
       const offset = state.streak.dayOffset || 0;
@@ -511,6 +704,22 @@
           ? `기준일: ${today} (오늘)`
           : `기준일: ${today} (+${offset}일 경과 시뮬레이션 중)`;
     }
+  }
+
+  // 홈 히어로 카드 레벨 프로그레스 바 (DESIGN.md 2.5-2)
+  function renderLevelProgress() {
+    const box = document.getElementById('home-level-progress');
+    if (!box) return;
+    const prog = getLevelProgress(state.gamification.totalXp);
+    box.innerHTML = `
+      <div class="level-progress-head">
+        <strong>Lv.${prog.level}</strong>
+        <span>현재 구간 ${prog.cur} / ${prog.span} XP (${prog.pct}%)</span>
+      </div>
+      <div class="level-progress-track" aria-hidden="true">
+        <div class="level-progress-fill" style="width: ${prog.pct}%;"></div>
+      </div>
+    `;
   }
 
   // --- 2. 단어장 화면 렌더링 ---
@@ -954,6 +1163,10 @@
     state.quiz.answered = false;
     state.quiz.flipped = false;
     state.quiz.results = [];
+    state.quiz.sessionCombo = 0;
+    state.quiz.sessionXp = 0;
+    state.quiz.sessionStartLevel = state.gamification.level;
+    state.quiz.completionRecorded = false;
 
     // 탭 UI 동기화
     document.querySelectorAll('.quiz-tab-btn').forEach((btn) => {
@@ -1483,17 +1696,17 @@
               </div>
             `
                 : `
-              <p class="flashcard-hint">👆 카드를 클릭하여 뜻과 예문을 확인하세요</p>
+              <p class="flashcard-hint">👆 카드를 클릭하여 뜻과 예문을 확인한 뒤 판정하세요</p>
             `
             }
           </div>
 
           <div class="self-judge-row">
-            <button class="judge-btn unknown" type="button" id="btn-judge-unknown">
+            <button class="judge-btn unknown" type="button" id="btn-judge-unknown" ${isFlipped ? '' : 'disabled'}>
               <span>몰라요 ✕</span>
               <span class="judge-sub">오답노트 저장 · 내일 재출제</span>
             </button>
-            <button class="judge-btn known" type="button" id="btn-judge-known">
+            <button class="judge-btn known" type="button" id="btn-judge-known" ${isFlipped ? '' : 'disabled'}>
               <span>알아요 ○</span>
               <span class="judge-sub">간격 확대 (1→3→7→14일)</span>
             </button>
@@ -1594,6 +1807,7 @@
 
     const outcome = recordQuizAnswer(wordObj.id, isCorrect, mode);
     state.quiz.results.push(outcome);
+    announceLevelUp(outcome.xp);
 
     const feedbackSlot = document.getElementById('quiz-feedback-slot');
     if (feedbackSlot) {
@@ -1616,7 +1830,9 @@
                 ? '정답입니다! 🎉'
                 : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(targetMeaningText)})`
             }</span>
+            ${renderXpGainPill(outcome.xp)}
           </div>
+          ${renderXpCapNotice(outcome.xp)}
           ${
             clickedTrap && wordObj.base_meaning_ko
               ? `<p style="font-size: 0.8rem; color: var(--amber-primary); font-weight: 700; margin-bottom: 4px;">
@@ -1658,18 +1874,51 @@
     }
   }
 
+  // 정답 시 인라인 XP 피드백 (DESIGN.md 2.5-3)
+  function renderXpGainPill(xp) {
+    if (!xp || !xp.combo || xp.combo < 1) return '';
+    const comboHtml = xp.comboBonus > 0
+      ? `<span class="xp-combo-text">${xp.combo}연속 보너스 +${xp.comboBonus} XP</span>`
+      : '';
+    return `<span class="xp-gain-wrap"><span class="xp-gain-pill">+${xp.earned - xp.comboBonus} XP</span>${comboHtml}</span>`;
+  }
+
+  function renderXpCapNotice(xp) {
+    if (!xp || !xp.capped) return '';
+    return `<p class="xp-cap-notice">오늘 이미 충분한 XP를 획득한 단어입니다 (+0 XP)</p>`;
+  }
+
+  // 레벨업 연출 (DESIGN.md 2.5-4)
+  function announceLevelUp(xp) {
+    if (!xp || !xp.leveledUp) return;
+    const pill = document.getElementById('header-level-badge');
+    if (pill) {
+      pill.classList.remove('pulse');
+      void pill.offsetWidth;
+      pill.classList.add('pulse');
+    }
+    showToast(`🎉 레벨 업! Lv.${xp.newLevel} 달성!`);
+  }
+
   function handleFlashcardJudge(isKnown) {
     if (state.quiz.answered) return;
+    if (!state.quiz.flipped) return; // 카드를 뒤집어 확인하기 전에는 판정 불가 (DESIGN.md 2.3-3)
     state.quiz.answered = true;
     const wordObj = state.quiz.queue[state.quiz.currentIndex];
-    const outcome = recordQuizAnswer(wordObj.id, isKnown, state.quiz.mode);
+    const outcome = recordQuizAnswer(wordObj.id, isKnown, 'flashcard');
     state.quiz.results.push(outcome);
 
+    const xpMsg = isKnown
+      ? outcome.xp.capped
+        ? ' · 오늘 이미 충분한 XP를 획득한 단어입니다 (+0 XP)'
+        : ` · +${outcome.xp.earned} XP${outcome.xp.comboBonus > 0 ? ` (${outcome.xp.combo}연속 보너스 +${outcome.xp.comboBonus})` : ''}`
+      : '';
     showToast(
       isKnown
-        ? `⭕ '알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정`
+        ? `⭕ '알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정${xpMsg}`
         : `❌ '몰라요' 판정 → 오답노트 저장 및 내일 재출제`
     );
+    announceLevelUp(outcome.xp);
 
     advanceToNextQuestion();
   }
@@ -1683,6 +1932,15 @@
   }
 
   function renderQuizSummary(container) {
+    if (!state.quiz.completionRecorded) {
+      state.quiz.completionRecorded = true;
+      state.gamification.stats.completedSessions += 1;
+      saveStateToStorage();
+    }
+    const levelUpBanner =
+      state.gamification.level > state.quiz.sessionStartLevel
+        ? `<div class="levelup-banner">🎉 레벨 업! <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
+        : '';
     const total = state.quiz.results.length;
     const correctCount = state.quiz.results.filter((r) => r.isCorrect).length;
     const wrongResults = state.quiz.results.filter((r) => !r.isCorrect);
@@ -1691,6 +1949,7 @@
 
     container.innerHTML = `
       <div class="quiz-stage-card" style="text-align: center;">
+        ${levelUpBanner}
         <span class="hero-date-label">학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
         <h3 class="hero-headline" style="margin-bottom: 14px;">
           총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
@@ -1713,6 +1972,7 @@
             <span class="stat-sub">자동 기록 완료</span>
           </div>
         </div>
+        <p class="session-xp-line">이번 세션 획득 <strong>+${state.quiz.sessionXp} XP</strong> · 현재 Lv.${state.gamification.level} (${state.gamification.totalXp} XP)</p>
 
         <div style="text-align: left; margin-bottom: 18px; max-height: 240px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px;">
           ${state.quiz.results
@@ -2027,6 +2287,7 @@
       simNextDayBtn.addEventListener('click', () => {
         state.streak.dayOffset = (Number(state.streak.dayOffset) || 0) + 1;
         normalizeStreakForToday();
+        normalizeGamificationForToday();
         saveStateToStorage();
         renderHomeView();
         updateGlobalBadges();
@@ -2047,6 +2308,9 @@
           todayStudiedIds: [],
           dayOffset: 0
         };
+        // gamification 상태도 함께 초기화, prefs(다크 모드·효과음)는 제외 (유보 7.7 확정)
+        state.gamification = createDefaultGamification();
+        normalizeGamificationForToday();
         saveStateToStorage();
         state.quiz.queue = [];
         renderHomeView();
