@@ -146,7 +146,7 @@
 
   // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
   function getQuizModeLabel(modeKey) {
-    return QUIZ_MODE_LABELS[modeKey] || '기본 · 뜻 맞히기';
+    return QUIZ_MODE_LABELS[modeKey] || '기록 없음';
   }
 
   function getWordSrs(wordId) {
@@ -195,20 +195,25 @@
     return [...getWrongSampleWords(), ...getWrongExamWords()];
   }
 
-  function getWrongModesForRecord(wrongInfo, isExamWord) {
+  function getWrongModesForRecord(wrongInfo) {
     if (!wrongInfo) return [];
     if (Array.isArray(wrongInfo.wrongModes) && wrongInfo.wrongModes.length > 0) {
-      return wrongInfo.wrongModes;
+      return wrongInfo.wrongModes.filter((m) => Boolean(QUIZ_MODE_LABELS[m]));
     }
-    if (wrongInfo.lastWrongMode) {
+    if (wrongInfo.lastWrongMode && QUIZ_MODE_LABELS[wrongInfo.lastWrongMode]) {
       return [wrongInfo.lastWrongMode];
     }
-    return [isExamWord ? 'exam-blank' : 'meaning'];
+    return [];
   }
 
   function renderWrongModeBadges(wrongInfo, isExamWord, compact) {
     if (!wrongInfo) return '';
-    const modes = getWrongModesForRecord(wrongInfo, isExamWord);
+    const modes = getWrongModesForRecord(wrongInfo);
+    if (modes.length === 0) {
+      const unknownText = compact ? '오답노트 · 기록 없음' : '기록 없음';
+      return `<span class="wrong-mode-badge" data-wrong-mode="unknown">${escapeHtml(unknownText)}</span>`;
+    }
+
     const modeCounts =
       wrongInfo.modeCounts && typeof wrongInfo.modeCounts === 'object'
         ? wrongInfo.modeCounts
@@ -217,7 +222,7 @@
     return modes
       .map((m) => {
         const label = getQuizModeLabel(m);
-        const cls = m.startsWith('exam-') ? 'exam-mode' : 'basic-mode';
+        const cls = String(m).startsWith('exam-') ? 'exam-mode' : 'basic-mode';
         const cnt = Number(modeCounts[m]) || 0;
         const text = compact
           ? `오답노트 · ${label}`
