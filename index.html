@@ -145,25 +145,43 @@
       <!-- 2. 단어장 화면 (Wordbook View) -->
       <section id="view-wordbook" class="view-section" aria-label="단어장 화면">
         <div class="toolbar-card">
+          <div class="wordbook-dataset-tabs" role="tablist" aria-label="단어장 구분 탭">
+            <button class="dataset-tab-btn active" type="button" data-wordbook-tab="sample" id="tab-wordbook-sample" role="tab" aria-selected="true">
+              기본 단어장 (24)
+            </button>
+            <button class="dataset-tab-btn" type="button" data-wordbook-tab="exam" id="tab-wordbook-exam" role="tab" aria-selected="false">
+              기출 다의어 (40)
+            </button>
+          </div>
+
           <div class="search-row">
             <input
               id="wordbook-search"
               class="search-input"
               type="search"
-              placeholder="영단어 또는 한국어 뜻 검색 (예: abandon, 포기하다)"
+              placeholder="영단어, 뜻, 기출 신호 검색 (예: abandon, account, 차지하다)"
               aria-label="단어 검색"
             />
           </div>
-          <div class="filter-pills" role="group" aria-label="단어장 필터">
+
+          <div id="wordbook-sample-filters" class="filter-pills" role="group" aria-label="기본 단어장 필터">
             <button class="filter-pill active" type="button" data-level-filter="all">전체 (24)</button>
             <button class="filter-pill" type="button" data-level-filter="고1">고1 기초</button>
             <button class="filter-pill" type="button" data-level-filter="고2">고2 핵심</button>
             <button class="filter-pill" type="button" data-level-filter="고3">고3 심화</button>
             <button class="filter-pill" type="button" data-level-filter="due">오늘 복습 대상</button>
+            <button class="filter-pill exam-filter-jump" type="button" data-level-filter="exam">기출 다의어 (40)</button>
+          </div>
+
+          <div id="wordbook-exam-filters" class="filter-pills hidden" role="group" aria-label="기출 다의어 필터">
+            <button class="filter-pill active" type="button" data-exam-filter="all" id="filter-exam-all">기출 전체 (40)</button>
+            <button class="filter-pill" type="button" data-exam-filter="S" id="filter-exam-s">S급 (14)</button>
+            <button class="filter-pill" type="button" data-exam-filter="A" id="filter-exam-a">A급 (26)</button>
+            <button class="filter-pill" type="button" data-exam-filter="due" id="filter-exam-due">오늘 복습 대상</button>
           </div>
         </div>
 
-        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+        <p id="wordbook-guide-text" style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
           💡 단어 카드를 클릭하면 브라우저 음성 합성(speechSynthesis)으로 영어 발음을 들을 수 있습니다.
         </p>
 

@@ -12,6 +12,7 @@
 
   const state = {
     words: [],
+    examWords: [],
     srs: {},
     wrongNote: {},
     streak: {
@@ -22,17 +23,19 @@
       dayOffset: 0
     },
     currentView: 'home',
-    wordbookFilter: 'all',
+    wordbookTab: 'sample',      // 'sample' | 'exam'
+    wordbookFilter: 'all',      // 'all' | '고1' | '고2' | '고3' | 'due'
+    examWordbookFilter: 'all',  // 'all' | 'S' | 'A' | 'due'
     wordbookSearch: '',
     quiz: {
-      mode: 'meaning', // 'meaning' | 'blank' | 'flashcard'
-      scope: 'today',  // 'today' | 'all' | 'wrong'
+      mode: 'meaning', // 'meaning' | 'blank' | 'flashcard' | 'exam-blank' | 'exam-meaning'
+      scope: 'today',  // 'today' | 'all' | 'wrong' | 'S' | 'A'
       queue: [],
       currentIndex: 0,
       answered: false,
       flipped: false,
       choices: [],
-      results: [] // { wordId, isCorrect, nextInterval, nextReviewDate }
+      results: [] // { wordId, isCorrect, nextInterval, nextReviewDate, mode }
     }
   };
 
@@ -433,11 +436,246 @@
     };
   }
 
+  function switchWordbookTab(tabName) {
+    state.wordbookTab = tabName === 'exam' ? 'exam' : 'sample';
+    document.querySelectorAll('[data-wordbook-tab]').forEach((btn) => {
+      const isActive = btn.dataset.wordbookTab === state.wordbookTab;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    const sampleFilters = document.getElementById('wordbook-sample-filters');
+    const examFilters = document.getElementById('wordbook-exam-filters');
+    if (sampleFilters) {
+      sampleFilters.classList.toggle('hidden', state.wordbookTab !== 'sample');
+    }
+    if (examFilters) {
+      examFilters.classList.toggle('hidden', state.wordbookTab !== 'exam');
+    }
+
+    renderWordbookView();
+  }
+
+  function renderExamWordCard(w, options) {
+    const opts = options || {};
+    const srsMeta = getSrsBadgeMeta(w.id);
+    const wrongInfo = state.wrongNote[String(w.id)];
+    const isWrong = Boolean(wrongInfo);
+
+    const hasBaseMeaning =
+      w.base_meaning_ko !== null &&
+      w.base_meaning_ko !== undefined &&
+      String(w.base_meaning_ko).trim() !== '';
+
+    const meaningsItemsHtml = Array.isArray(w.exam_meanings)
+      ? w.exam_meanings
+          .map((m) => {
+            if (!m) return '';
+            const hasMeaning =
+              m.meaning_ko !== null &&
+              m.meaning_ko !== undefined &&
+              String(m.meaning_ko).trim() !== '';
+            const hasPct = m.share_pct !== null && m.share_pct !== undefined;
+            const hasSignal =
+              m.signal !== null &&
+              m.signal !== undefined &&
+              String(m.signal).trim() !== '';
+
+            if (!hasMeaning && !hasPct && !hasSignal) return '';
+
+            return `
+              <li class="exam-meaning-item">
+                ${
+                  hasMeaning || hasPct
+                    ? `
+                  <div class="exam-meaning-main">
+                    ${hasMeaning ? `<span class="exam-meaning-ko">${escapeHtml(m.meaning_ko)}</span>` : ''}
+                    ${hasPct ? `<span class="exam-meaning-pct">${escapeHtml(m.share_pct)}%</span>` : ''}
+                  </div>
+                `
+                    : ''
+                }
+                ${hasSignal ? `<div class="exam-meaning-sig">신호: ${escapeHtml(m.signal)}</div>` : ''}
+              </li>
+            `;
+          })
+          .join('')
+      : '';
+
+    const hasWordSignal =
+      w.signal !== null &&
+      w.signal !== undefined &&
+      String(w.signal).trim() !== '';
+
+    const hasSourceNote =
+      w.source_note !== null &&
+      w.source_note !== undefined &&
+      String(w.source_note).trim() !== '';
+
+    const hasExampleEn =
+      w.example_en !== null &&
+      w.example_en !== undefined &&
+      String(w.example_en).trim() !== '';
+
+    const hasExampleKo =
+      w.example_ko !== null &&
+      w.example_ko !== undefined &&
+      String(w.example_ko).trim() !== '';
+
+    const wrongBadgesHtml = opts.wrongBadgesHtml
+      ? opts.wrongBadgesHtml
+      : isWrong
+      ? '<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">오답노트</span>'
+      : '';
+
+    return `
+      <article class="word-card exam-word-card" data-word-id="${escapeHtml(w.id)}" data-speak-word="${escapeHtml(w.word)}" tabindex="0" role="button" aria-label="${escapeHtml(w.word)} 발음 듣기">
+        <div class="word-card-top">
+          <div class="word-title-group">
+            <span class="word-en">${escapeHtml(w.word)}</span>
+            ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}">${escapeHtml(w.grade)}급</span>` : ''}
+            ${hasSourceNote ? `<span class="source-badge">출처: ${escapeHtml(w.source_note)}</span>` : ''}
+            ${wrongBadgesHtml}
+          </div>
+          <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}" aria-label="${escapeHtml(w.word)} 단어 발음 재생">
+            <span aria-hidden="true">🔊</span>
+            <span>발음</span>
+          </button>
+        </div>
+
+        ${
+          hasBaseMeaning
+            ? `
+          <div class="exam-base-meaning">
+            <span class="exam-base-tag">기본 뜻</span>
+            <span class="exam-base-text">${escapeHtml(w.base_meaning_ko)}</span>
+          </div>
+        `
+            : ''
+        }
+
+        ${
+          meaningsItemsHtml
+            ? `
+          <div class="exam-meanings-section">
+            <div class="exam-meanings-header">
+              <span class="exam-meanings-title">시험에서는 이 뜻</span>
+            </div>
+            <ul class="exam-meanings-list">
+              ${meaningsItemsHtml}
+            </ul>
+          </div>
+        `
+            : ''
+        }
+
+        ${
+          hasWordSignal
+            ? `
+          <div class="exam-word-signal">
+            <span class="exam-word-signal-label">💡 판단 신호</span>
+            <p class="exam-word-signal-body">${escapeHtml(w.signal)}</p>
+          </div>
+        `
+            : ''
+        }
+
+        ${
+          hasExampleEn || hasExampleKo || hasSourceNote
+            ? `
+          <div class="word-example-box exam-example-box">
+            ${hasExampleEn ? `<p class="word-example-en">${escapeHtml(w.example_en)}</p>` : ''}
+            ${hasExampleKo ? `<p class="word-example-ko">${escapeHtml(w.example_ko)}</p>` : ''}
+            ${hasSourceNote ? `<div class="exam-example-source">기출 출처: ${escapeHtml(w.source_note)}</div>` : ''}
+          </div>
+        `
+            : ''
+        }
+
+        <div class="word-card-footer">
+          <span class="srs-tag ${srsMeta.cls}">${escapeHtml(srsMeta.text)}</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            ${
+              hasExampleEn
+                ? `
+              <button class="mini-btn" type="button" data-action="speak-sentence" data-speak-text="${escapeHtml(w.example_en)}">
+                🔊 예문 듣기
+              </button>
+            `
+                : ''
+            }
+            ${
+              opts.showRemoveWrongBtn
+                ? `
+              <button class="mini-btn" type="button" data-action="remove-wrong" data-word-id="${escapeHtml(w.id)}">
+                ✓ 암기 완료 (노트에서 제거)
+              </button>
+            `
+                : ''
+            }
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
   function renderWordbookView() {
     const listEl = document.getElementById('wordbook-list');
     if (!listEl) return;
 
     const query = state.wordbookSearch.trim().toLowerCase();
+
+    // 기출 다의어 (40개) 탭 렌더링 — 기존 샘플 24개와 절대 섞지 않음
+    if (state.wordbookTab === 'exam') {
+      const filteredExam = state.examWords.filter((w) => {
+        if (state.examWordbookFilter === 'due') {
+          if (!isWordDueToday(w.id)) return false;
+        } else if (state.examWordbookFilter === 'S' || state.examWordbookFilter === 'A') {
+          if (w.grade !== state.examWordbookFilter) return false;
+        }
+
+        if (query) {
+          const matchWord = w.word.toLowerCase().includes(query);
+          const matchBase = w.base_meaning_ko && w.base_meaning_ko.toLowerCase().includes(query);
+          const matchMeanings =
+            Array.isArray(w.exam_meanings) &&
+            w.exam_meanings.some(
+              (m) =>
+                (m.meaning_ko && m.meaning_ko.toLowerCase().includes(query)) ||
+                (m.signal && m.signal.toLowerCase().includes(query))
+            );
+          const matchSignal = w.signal && w.signal.toLowerCase().includes(query);
+          const matchExEn = w.example_en && w.example_en.toLowerCase().includes(query);
+          const matchExKo = w.example_ko && w.example_ko.toLowerCase().includes(query);
+          const matchSource = w.source_note && w.source_note.toLowerCase().includes(query);
+          return Boolean(
+            matchWord ||
+              matchBase ||
+              matchMeanings ||
+              matchSignal ||
+              matchExEn ||
+              matchExKo ||
+              matchSource
+          );
+        }
+        return true;
+      });
+
+      if (filteredExam.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <p class="empty-title">조건에 맞는 기출 다의어가 없습니다</p>
+            <p class="empty-desc">검색어나 등급 필터(전체 / S급 / A급)를 변경해 보세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filteredExam.map((w) => renderExamWordCard(w)).join('');
+      return;
+    }
+
+    // 기본 샘플 단어장 (24개) 탭 렌더링
     const filtered = state.words.filter((w) => {
       if (state.wordbookFilter === 'due') {
         if (!isWordDueToday(w.id)) return false;
@@ -1098,10 +1336,32 @@
       });
     }
 
+    // 단어장 구분 탭 (기본 단어장 24 vs 기출 다의어 40)
+    document.querySelectorAll('[data-wordbook-tab]').forEach((tabBtn) => {
+      tabBtn.addEventListener('click', () => {
+        switchWordbookTab(tabBtn.dataset.wordbookTab);
+      });
+    });
+
     document.querySelectorAll('[data-level-filter]').forEach((pill) => {
       pill.addEventListener('click', () => {
-        state.wordbookFilter = pill.dataset.levelFilter || 'all';
+        const filterVal = pill.dataset.levelFilter || 'all';
+        if (filterVal === 'exam') {
+          switchWordbookTab('exam');
+          return;
+        }
+        state.wordbookFilter = filterVal;
         document.querySelectorAll('[data-level-filter]').forEach((p) => {
+          p.classList.toggle('active', p === pill);
+        });
+        switchWordbookTab('sample');
+      });
+    });
+
+    document.querySelectorAll('[data-exam-filter]').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        state.examWordbookFilter = pill.dataset.examFilter || 'all';
+        document.querySelectorAll('[data-exam-filter]').forEach((p) => {
           p.classList.toggle('active', p === pill);
         });
         renderWordbookView();
@@ -1203,14 +1463,32 @@
     registerServiceWorker();
 
     try {
-      const response = await fetch('./data/words.json');
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      const [wordsRes, examRes] = await Promise.all([
+        fetch('./data/words.json'),
+        fetch('./data/exam-words.json')
+      ]);
+
+      if (!wordsRes.ok) {
+        throw new Error(`words.json HTTP ${wordsRes.status}`);
       }
-      state.words = await response.json();
+      state.words = await wordsRes.json();
+
+      if (examRes.ok) {
+        const rawExam = await examRes.json();
+        state.examWords = Array.isArray(rawExam)
+          ? rawExam.map((item) => ({
+              ...item,
+              id: `exam-${item.word}`,
+              isExam: true
+            }))
+          : [];
+      } else {
+        state.examWords = [];
+      }
     } catch (err) {
       showToast('단어 데이터를 불러오지 못했습니다.');
       state.words = [];
+      state.examWords = [];
     }
 
     updateGlobalBadges();

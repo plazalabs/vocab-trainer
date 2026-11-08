@@ -509,6 +509,36 @@ button {
   gap: 6px;
 }
 
+.filter-pills.hidden {
+  display: none;
+}
+
+.wordbook-dataset-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  background: var(--bg-page);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+.dataset-tab-btn {
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.dataset-tab-btn.active {
+  background: var(--bg-surface);
+  color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+
 .filter-pill {
   padding: 5px 11px;
   border-radius: var(--radius-pill);
@@ -518,6 +548,13 @@ button {
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   transition: all 0.15s ease;
+}
+
+.filter-pill.exam-filter-jump {
+  border-color: var(--amber-border);
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  font-weight: 700;
 }
 
 .filter-pill.active {
@@ -607,6 +644,167 @@ button {
 .level-고3 {
   background: var(--amber-soft);
   color: var(--amber-primary);
+}
+
+/* Exam Word Card Badges & Sections */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: -0.01em;
+}
+
+.grade-S {
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
+}
+
+.grade-A {
+  background: var(--info-soft);
+  color: var(--info-primary);
+  border: 1px solid #BAE6FD;
+}
+
+.source-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.exam-base-meaning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 10px;
+  padding: 6px 10px;
+  background: var(--bg-page);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-strong);
+  font-size: 0.84rem;
+}
+
+.exam-base-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.exam-base-text {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.exam-meanings-section {
+  margin: 8px 0 12px;
+  border: 1px solid var(--brand-border);
+  background: #F9FCFB;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.exam-meanings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.exam-meanings-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+  letter-spacing: -0.01em;
+}
+
+.exam-meanings-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.exam-meaning-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(15, 110, 86, 0.1);
+}
+
+.exam-meaning-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.exam-meaning-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exam-meaning-ko {
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.exam-meaning-pct {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  font-variant-numeric: tabular-nums;
+}
+
+.exam-meaning-sig {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: var(--font-en), var(--font-sans);
+}
+
+.exam-word-signal {
+  margin-bottom: 10px;
+  padding: 8px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-border);
+}
+
+.exam-word-signal-label {
+  display: inline-block;
+  font-size: 0.73rem;
+  font-weight: 800;
+  color: var(--amber-primary);
+  margin-bottom: 2px;
+}
+
+.exam-word-signal-body {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.exam-example-source {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .speak-btn {
