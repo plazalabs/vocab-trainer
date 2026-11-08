@@ -1185,15 +1185,15 @@
 
   function maskWordInSentence(sentence, targetWord) {
     const escaped = targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`\\b${escaped}[a-z]*\\b`, 'gi');
+    const regex = new RegExp(`\\b(${escaped}[a-z]*)\\b`, 'gi');
     const safeSentence = escapeHtml(sentence);
     if (regex.test(safeSentence)) {
       return safeSentence.replace(
-        new RegExp(`\\b${escaped}[a-z]*\\b`, 'gi'),
-        '<span class="blank-slot">_______</span>'
+        new RegExp(`\\b(${escaped}[a-z]*)\\b`, 'gi'),
+        '<span class="blank-slot" data-original="$1">_______</span>'
       );
     }
-    return `${safeSentence} (<span class="blank-slot">_______</span>)`;
+    return `${safeSentence} (<span class="blank-slot" data-original="${escapeHtml(targetWord)}">_______</span>)`;
   }
 
   function highlightWordInSentence(sentence, targetWord) {
@@ -1493,9 +1493,9 @@
     const correctChoiceId = mode === 'exam-meaning' ? 'correct' : String(wordObj.id);
     const isCorrect = String(chosenId) === correctChoiceId;
 
-    // 빈칸 채우기 모드일 경우 모든 빈칸에 정답 채워 넣기
+    // 빈칸 채우기 모드일 경우 모든 빈칸에 마스킹됐던 원문 굴절형 그대로 채워 넣기
     document.querySelectorAll('#quiz-active-area .blank-slot').forEach((slot) => {
-      slot.textContent = wordObj.word;
+      slot.textContent = slot.dataset.original || wordObj.word;
     });
 
     document.querySelectorAll('#quiz-active-area .choice-btn').forEach((btn) => {
