@@ -1,0 +1,1221 @@
+(function () {
+  'use strict';
+
+  const STORAGE_KEYS = {
+    SRS: 'vocab_trainer_srs_v1',
+    WRONG: 'vocab_trainer_wrong_v1',
+    STREAK: 'vocab_trainer_streak_v1'
+  };
+
+  // 간격반복(SRS) 복습 간격 단계: 맞히면 1일 -> 3일 -> 7일 -> 14일 확대
+  const SRS_INTERVALS = [1, 3, 7, 14];
+
+  const state = {
+    words: [],
+    srs: {},
+    wrongNote: {},
+    streak: {
+      count: 0,
+      lastStudyDate: null,
+      todayDate: null,
+      todayStudiedIds: [],
+      dayOffset: 0
+    },
+    currentView: 'home',
+    wordbookFilter: 'all',
+    wordbookSearch: '',
+    quiz: {
+      mode: 'meaning', // 'meaning' | 'blank' | 'flashcard'
+      scope: 'today',  // 'today' | 'all' | 'wrong'
+      queue: [],
+      currentIndex: 0,
+      answered: false,
+      flipped: false,
+      choices: [],
+      results: [] // { wordId, isCorrect, nextInterval, nextReviewDate }
+    }
+  };
+
+  let deferredInstallPrompt = null;
+
+  // --- 날짜 유틸리티 ---
+  function formatDateYMD(dateObj) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function getTodayStr() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    if (state.streak && state.streak.dayOffset) {
+      now.setDate(now.getDate() + Number(state.streak.dayOffset));
+    }
+    return formatDateYMD(now);
+  }
+
+  function addDays(ymdStr, days) {
+    const parts = ymdStr.split('-').map(Number);
+    const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    dt.setDate(dt.getDate() + days);
+    return formatDateYMD(dt);
+  }
+
+  function formatKoreanShortDate(ymdStr) {
+    if (!ymdStr) return '-';
+    const parts = ymdStr.split('-').map(Number);
+    return `${parts[1]}월 ${parts[2]}일`;
+  }
+
+  // --- localStorage 입출력 ---
+  function loadStateFromStorage() {
+    try {
+      const rawSrs = localStorage.getItem(STORAGE_KEYS.SRS);
+      state.srs = rawSrs ? JSON.parse(rawSrs) : {};
+    } catch (e) {
+      state.srs = {};
+    }
+
+    try {
+      const rawWrong = localStorage.getItem(STORAGE_KEYS.WRONG);
+      state.wrongNote = rawWrong ? JSON.parse(rawWrong) : {};
+    } catch (e) {
+      state.wrongNote = {};
+    }
+
+    try {
+      const rawStreak = localStorage.getItem(STORAGE_KEYS.STREAK);
+      if (rawStreak) {
+        const parsed = JSON.parse(rawStreak);
+        state.streak = {
+          count: Number(parsed.count) || 0,
+          lastStudyDate: parsed.lastStudyDate || null,
+          todayDate: parsed.todayDate || null,
+          todayStudiedIds: Array.isArray(parsed.todayStudiedIds) ? parsed.todayStudiedIds : [],
+          dayOffset: Number(parsed.dayOffset) || 0
+        };
+      }
+    } catch (e) {
+      // 기본값 유지
+    }
+
+    normalizeStreakForToday();
+  }
+
+  function saveStateToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.SRS, JSON.stringify(state.srs));
+      localStorage.setItem(STORAGE_KEYS.WRONG, JSON.stringify(state.wrongNote));
+      localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(state.streak));
+    } catch (e) {
+      showToast('브라우저 저장소(localStorage)에 기록을 저장할 수 없습니다.');
+    }
+  }
+
+  function normalizeStreakForToday() {
+    const today = getTodayStr();
+    if (state.streak.todayDate !== today) {
+      state.streak.todayDate = today;
+      state.streak.todayStudiedIds = [];
+    }
+    if (state.streak.lastStudyDate) {
+      const yesterday = addDays(today, -1);
+      if (
+        state.streak.lastStudyDate !== today &&
+        state.streak.lastStudyDate !== yesterday
+      ) {
+        // 어제 학습 기록이 없으면 연속 학습일 초기화
+        state.streak.count = 0;
+      }
+    }
+  }
+
+  // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
+  function getWordSrs(wordId) {
+    return state.srs[String(wordId)] || null;
+  }
+
+  function isWordDueToday(wordId) {
+    const rec = getWordSrs(wordId);
+    if (!rec || !rec.nextReviewDate) return false;
+    return rec.nextReviewDate <= getTodayStr();
+  }
+
+  function getDueWords() {
+    return state.words.filter((w) => isWordDueToday(w.id));
+  }
+
+  function getNewWords() {
+    return state.words.filter((w) => !getWordSrs(w.id));
+  }
+
+  function getWrongWords() {
+    return state.words.filter((w) => Boolean(state.wrongNote[String(w.id)]));
+  }
+
+  function recordQuizAnswer(wordId, isCorrect) {
+    const key = String(wordId);
+    const today = getTodayStr();
+    const prev = state.srs[key];
+
+    let nextStage = 0;
+    let intervalDays = 1;
+
+    if (isCorrect) {
+      const prevStage = prev && typeof prev.stage === 'number' ? prev.stage : 0;
+      nextStage = Math.min(prevStage + 1, SRS_INTERVALS.length);
+      intervalDays = SRS_INTERVALS[nextStage - 1];
+    } else {
+      // 틀리면 간격 단계 초기화 및 내일(+1일) 재출제
+      nextStage = 0;
+      intervalDays = 1;
+    }
+
+    const nextReviewDate = addDays(today, intervalDays);
+
+    state.srs[key] = {
+      stage: nextStage,
+      intervalDays,
+      nextReviewDate,
+      lastReviewedDate: today,
+      lastResult: isCorrect ? 'correct' : 'wrong',
+      reviewCount: (prev && prev.reviewCount ? prev.reviewCount : 0) + 1
+    };
+
+    // 오답노트 자동 저장
+    if (!isCorrect) {
+      const prevWrong = state.wrongNote[key];
+      state.wrongNote[key] = {
+        wrongCount: (prevWrong && prevWrong.wrongCount ? prevWrong.wrongCount : 0) + 1,
+        lastWrongDate: today
+      };
+    }
+
+    // 오늘 학습 기록 및 연속 학습일(Streak) 갱신
+    normalizeStreakForToday();
+    if (!state.streak.todayStudiedIds.includes(wordId)) {
+      state.streak.todayStudiedIds.push(wordId);
+    }
+
+    if (state.streak.lastStudyDate !== today) {
+      const yesterday = addDays(today, -1);
+      if (state.streak.lastStudyDate === yesterday) {
+        state.streak.count += 1;
+      } else {
+        state.streak.count = 1;
+      }
+      state.streak.lastStudyDate = today;
+    }
+
+    saveStateToStorage();
+    updateGlobalBadges();
+
+    return {
+      wordId,
+      isCorrect,
+      stage: nextStage,
+      intervalDays,
+      nextReviewDate
+    };
+  }
+
+  // --- 발음 재생 (브라우저 내장 speechSynthesis 전용) ---
+  function speakEnglish(text, activeCardEl) {
+    if (!('speechSynthesis' in window)) {
+      showToast('이 브라우저는 음성 합성(speechSynthesis)을 지원하지 않습니다.');
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.92;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice =
+        voices.find((v) => v.lang === 'en-US' && v.localService) ||
+        voices.find((v) => v.lang && v.lang.startsWith('en'));
+      if (enVoice) {
+        utterance.voice = enVoice;
+      }
+
+      document.querySelectorAll('.word-card.speaking').forEach((el) => {
+        el.classList.remove('speaking');
+      });
+
+      if (activeCardEl) {
+        activeCardEl.classList.add('speaking');
+        const clearHighlight = () => activeCardEl.classList.remove('speaking');
+        utterance.onend = clearHighlight;
+        utterance.onerror = clearHighlight;
+      }
+
+      window.speechSynthesis.speak(utterance);
+      showToast(`🔊 발음 재생: "${text}"`);
+    } catch (err) {
+      showToast('발음 재생 중 오류가 발생했습니다.');
+    }
+  }
+
+  // --- 토스트 알림 ---
+  let toastTimer = null;
+  function showToast(message) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    container.innerHTML = `<div class="toast-msg">${escapeHtml(message)}</div>`;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      container.innerHTML = '';
+    }, 2200);
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function shuffleArray(arr) {
+    const copy = arr.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = copy[i];
+      copy[i] = copy[j];
+      copy[j] = tmp;
+    }
+    return copy;
+  }
+
+  // --- 상단/하단 글로벌 배지 갱신 ---
+  function updateGlobalBadges() {
+    normalizeStreakForToday();
+    const streakCount = state.streak.count;
+    const headerStreak = document.getElementById('header-streak-text');
+    if (headerStreak) {
+      headerStreak.textContent = `${streakCount}일 연속`;
+    }
+
+    const wrongCount = getWrongWords().length;
+    const wrongBadge = document.getElementById('nav-wrong-badge');
+    if (wrongBadge) {
+      wrongBadge.textContent = String(wrongCount);
+      wrongBadge.classList.toggle('hidden', wrongCount === 0);
+    }
+  }
+
+  // --- 화면 전환 ---
+  function switchView(viewName) {
+    state.currentView = viewName;
+    document.querySelectorAll('.view-section').forEach((sec) => {
+      sec.classList.toggle('active', sec.id === `view-${viewName}`);
+    });
+    document.querySelectorAll('.nav-item').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.navTarget === viewName);
+    });
+
+    updateGlobalBadges();
+
+    if (viewName === 'home') {
+      renderHomeView();
+    } else if (viewName === 'wordbook') {
+      renderWordbookView();
+    } else if (viewName === 'quiz') {
+      if (state.quiz.queue.length === 0) {
+        initQuizSession(state.quiz.mode, state.quiz.scope);
+      } else {
+        renderQuizView();
+      }
+    } else if (viewName === 'wrong') {
+      renderWrongNoteView();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // --- 1. 홈 화면 렌더링 ---
+  function renderHomeView() {
+    const today = getTodayStr();
+    const dueWords = getDueWords();
+    const newWords = getNewWords();
+    const totalWords = state.words.length;
+    const learnedCount = totalWords - newWords.length;
+    const scheduledFutureCount = learnedCount - dueWords.length;
+    const todayStudiedCount = state.streak.todayStudiedIds.length;
+
+    const dateBadge = document.getElementById('home-date-badge');
+    if (dateBadge) {
+      dateBadge.textContent = `학습 기준일 · ${formatKoreanShortDate(today)}`;
+    }
+
+    const greetingTitle = document.getElementById('home-greeting-title');
+    if (greetingTitle) {
+      if (dueWords.length > 0) {
+        greetingTitle.textContent = `오늘 복습할 단어가 ${dueWords.length}개 있습니다`;
+      } else if (newWords.length > 0) {
+        greetingTitle.textContent = `오늘의 복습 완료! 새 단어 ${newWords.length}개를 학습해 보세요`;
+      } else {
+        greetingTitle.textContent = `오늘 예정된 모든 단어 복습을 마쳤습니다!`;
+      }
+    }
+
+    document.getElementById('stat-due-count').textContent = String(dueWords.length);
+    document.getElementById('stat-due-sub').textContent =
+      scheduledFutureCount > 0
+        ? `예정된 복습 ${scheduledFutureCount}개`
+        : '오늘 복습 대상';
+
+    document.getElementById('stat-new-count').textContent = String(newWords.length);
+    document.getElementById('stat-learned-sub').textContent = `학습 경험 ${learnedCount}/${totalWords}개`;
+
+    document.getElementById('stat-streak-count').textContent = `${state.streak.count}일`;
+    document.getElementById('stat-today-done').textContent = `오늘 ${todayStudiedCount}개 학습`;
+
+    const startBtnText = document.getElementById('btn-hero-start-text');
+    if (startBtnText) {
+      if (dueWords.length > 0) {
+        startBtnText.textContent = `오늘 복습할 단어 ${dueWords.length}개 퀴즈 시작하기`;
+      } else if (newWords.length > 0) {
+        startBtnText.textContent = `새 단어 학습 퀴즈 시작하기 (${newWords.length}개)`;
+      } else {
+        startBtnText.textContent = `전체 단어 복습 퀴즈 시작하기 (${totalWords}개)`;
+      }
+    }
+
+    // 간격반복 단계별 단어 수 집계
+    const stageCounts = [0, 0, 0, 0, 0];
+    state.words.forEach((w) => {
+      const rec = getWordSrs(w.id);
+      if (!rec || !rec.stage) {
+        stageCounts[0] += 1;
+      } else {
+        const idx = Math.min(Math.max(rec.stage, 0), 4);
+        stageCounts[idx] += 1;
+      }
+    });
+
+    for (let s = 0; s <= 4; s++) {
+      const el = document.getElementById(`srs-count-${s}`);
+      if (el) el.textContent = String(stageCounts[s]);
+    }
+
+    const simDisplay = document.getElementById('sim-date-display');
+    if (simDisplay) {
+      const offset = state.streak.dayOffset || 0;
+      simDisplay.textContent =
+        offset === 0
+          ? `기준일: ${today} (오늘)`
+          : `기준일: ${today} (+${offset}일 경과 시뮬레이션 중)`;
+    }
+  }
+
+  // --- 2. 단어장 화면 렌더링 ---
+  function getSrsBadgeMeta(wordId) {
+    const rec = getWordSrs(wordId);
+    if (!rec) {
+      return { text: '미학습', cls: '' };
+    }
+    const today = getTodayStr();
+    if (rec.nextReviewDate <= today) {
+      return {
+        text: `오늘 복습 대상 (${rec.intervalDays}일 주기)`,
+        cls: 'due'
+      };
+    }
+    return {
+      text: `${rec.intervalDays}일 간격 · ${formatKoreanShortDate(rec.nextReviewDate)} 복습 예정`,
+      cls: 'scheduled'
+    };
+  }
+
+  function renderWordbookView() {
+    const listEl = document.getElementById('wordbook-list');
+    if (!listEl) return;
+
+    const query = state.wordbookSearch.trim().toLowerCase();
+    const filtered = state.words.filter((w) => {
+      if (state.wordbookFilter === 'due') {
+        if (!isWordDueToday(w.id)) return false;
+      } else if (state.wordbookFilter !== 'all') {
+        if (w.level !== state.wordbookFilter) return false;
+      }
+
+      if (query) {
+        const matchWord = w.word.toLowerCase().includes(query);
+        const matchMeaning = w.meaning_ko.toLowerCase().includes(query);
+        const matchEx = w.example_en.toLowerCase().includes(query);
+        return matchWord || matchMeaning || matchEx;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-title">조건에 맞는 단어가 없습니다</p>
+          <p class="empty-desc">검색어나 난이도 필터를 변경해 보세요.</p>
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = filtered
+      .map((w) => {
+        const srsMeta = getSrsBadgeMeta(w.id);
+        const isWrong = Boolean(state.wrongNote[String(w.id)]);
+        return `
+          <article class="word-card" data-word-id="${w.id}" data-speak-word="${escapeHtml(w.word)}" tabindex="0" role="button" aria-label="${escapeHtml(w.word)} 발음 듣기">
+            <div class="word-card-top">
+              <div class="word-title-group">
+                <span class="word-en">${escapeHtml(w.word)}</span>
+                <span class="word-pos">${escapeHtml(w.pos)}</span>
+                <span class="level-badge level-${escapeHtml(w.level)}">${escapeHtml(w.level)}</span>
+                ${isWrong ? '<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">오답노트</span>' : ''}
+              </div>
+              <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}" aria-label="${escapeHtml(w.word)} 단어 발음 재생">
+                <span aria-hidden="true">🔊</span>
+                <span>발음</span>
+              </button>
+            </div>
+
+            <p class="word-meaning">${escapeHtml(w.meaning_ko)}</p>
+
+            <div class="word-example-box">
+              <p class="word-example-en">${escapeHtml(w.example_en)}</p>
+              <p class="word-example-ko">${escapeHtml(w.example_ko)}</p>
+            </div>
+
+            <div class="word-card-footer">
+              <span class="srs-tag ${srsMeta.cls}">${escapeHtml(srsMeta.text)}</span>
+              <button class="mini-btn" type="button" data-action="speak-sentence" data-speak-text="${escapeHtml(w.example_en)}">
+                🔊 예문 듣기
+              </button>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+  }
+
+  // --- 3. 퀴즈 3종 (뜻 맞히기 / 예문 빈칸 채우기 / 카드 뒤집기) ---
+  function buildQuizQueue(scope) {
+    if (scope === 'wrong') {
+      const wrongList = getWrongWords();
+      return shuffleArray(wrongList);
+    }
+    if (scope === 'today') {
+      const due = getDueWords();
+      const unseen = getNewWords();
+      // 오늘 복습할 단어를 최우선 출제하고, 부족하면 미학습 단어 추가 (최대 12문항 세션)
+      const combined = [...shuffleArray(due), ...shuffleArray(unseen)];
+      if (combined.length > 0) {
+        return combined.slice(0, Math.max(due.length, Math.min(12, combined.length)));
+      }
+      return shuffleArray(state.words).slice(0, 10);
+    }
+    return shuffleArray(state.words);
+  }
+
+  function initQuizSession(mode, scope) {
+    state.quiz.mode = mode || state.quiz.mode || 'meaning';
+    state.quiz.scope = scope || state.quiz.scope || 'today';
+    state.quiz.queue = buildQuizQueue(state.quiz.scope);
+    state.quiz.currentIndex = 0;
+    state.quiz.answered = false;
+    state.quiz.flipped = false;
+    state.quiz.results = [];
+
+    // 탭 및 셀렉트 UI 동기화
+    document.querySelectorAll('.quiz-tab-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.quizMode === state.quiz.mode);
+    });
+    const scopeSelect = document.getElementById('quiz-scope-select');
+    if (scopeSelect) {
+      scopeSelect.value = state.quiz.scope;
+    }
+
+    prepareCurrentQuestionChoices();
+    renderQuizView();
+  }
+
+  function prepareCurrentQuestionChoices() {
+    const currentWord = state.quiz.queue[state.quiz.currentIndex];
+    if (!currentWord) {
+      state.quiz.choices = [];
+      return;
+    }
+
+    state.quiz.answered = false;
+    state.quiz.flipped = false;
+
+    const others = state.words.filter((w) => w.id !== currentWord.id);
+    // 같은 품사를 우선 오답 보기로 섞어 변별력 향상
+    const samePos = shuffleArray(others.filter((w) => w.pos === currentWord.pos));
+    const diffPos = shuffleArray(others.filter((w) => w.pos !== currentWord.pos));
+    const distractors = [...samePos, ...diffPos].slice(0, 3);
+
+    state.quiz.choices = shuffleArray([currentWord, ...distractors]);
+  }
+
+  function maskWordInSentence(sentence, targetWord) {
+    const escaped = targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${escaped}[a-z]*\\b`, 'gi');
+    if (regex.test(sentence)) {
+      return sentence.replace(
+        regex,
+        '<span class="blank-slot" id="blank-slot-text">_______</span>'
+      );
+    }
+    return `${escapeHtml(sentence)} (<span class="blank-slot" id="blank-slot-text">_______</span>)`;
+  }
+
+  function renderQuizView() {
+    const container = document.getElementById('quiz-active-area');
+    if (!container) return;
+
+    if (state.quiz.queue.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-title">선택한 범위에 출제할 단어가 없습니다</p>
+          <p class="empty-desc">오답노트가 비어 있거나 모든 단어를 학습했습니다. 출제 범위를 '전체 단어 24개'로 변경해 보세요.</p>
+          <button class="primary-cta-btn" type="button" id="btn-Fallback-all-quiz" style="max-width: 280px; margin: 0 auto;">
+            전체 단어로 퀴즈 시작하기
+          </button>
+        </div>
+      `;
+      const fbBtn = document.getElementById('btn-Fallback-all-quiz');
+      if (fbBtn) {
+        fbBtn.addEventListener('click', () => initQuizSession(state.quiz.mode, 'all'));
+      }
+      return;
+    }
+
+    // 모든 문제를 다 푼 경우 결과 요약 화면 표시
+    if (state.quiz.currentIndex >= state.quiz.queue.length) {
+      renderQuizSummary(container);
+      return;
+    }
+
+    const total = state.quiz.queue.length;
+    const idx = state.quiz.currentIndex;
+    const progressPct = Math.round(((idx + 1) / total) * 100);
+    const wordObj = state.quiz.queue[idx];
+    const mode = state.quiz.mode;
+
+    let questionBodyHtml = '';
+
+    if (mode === 'meaning') {
+      // (a) 뜻 맞히기 4지선다
+      questionBodyHtml = `
+        <div class="quiz-question-box">
+          <div style="margin-bottom: 6px;">
+            <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
+            <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+          </div>
+          <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">위 영단어의 알맞은 한국어 뜻을 고르세요</p>
+        </div>
+        <div class="choices-grid" role="group" aria-label="한국어 뜻 4지선다 보기">
+          ${state.quiz.choices
+            .map(
+              (choice, cIdx) => `
+            <button class="choice-btn" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num">${cIdx + 1}</span>
+              <span>${escapeHtml(choice.meaning_ko)}</span>
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+    } else if (mode === 'blank') {
+      // (b) 예문 빈칸 채우기 4지선다
+      const maskedSentence = maskWordInSentence(wordObj.example_en, wordObj.word);
+      questionBodyHtml = `
+        <div class="quiz-question-box">
+          <div style="margin-bottom: 10px;">
+            <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
+            <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+            <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 4px;">뜻 힌트: <strong>${escapeHtml(wordObj.meaning_ko)}</strong></span>
+          </div>
+          <p class="quiz-blank-sentence">${maskedSentence}</p>
+          <p class="quiz-blank-ko">${escapeHtml(wordObj.example_ko)}</p>
+        </div>
+        <div class="choices-grid" role="group" aria-label="빈칸 영단어 4지선다 보기">
+          ${state.quiz.choices
+            .map(
+              (choice, cIdx) => `
+            <button class="choice-btn" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num">${cIdx + 1}</span>
+              <span style="font-family: var(--font-en); font-weight: 700;">${escapeHtml(choice.word)}</span>
+              <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: auto;">${escapeHtml(choice.pos)}</span>
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+    } else {
+      // (c) 카드 뒤집기 자기 판정 (알아요 / 몰라요)
+      const isFlipped = state.quiz.flipped;
+      questionBodyHtml = `
+        <div class="flashcard-container">
+          <div class="flashcard-box ${isFlipped ? 'flipped' : ''}" id="flashcard-flip-box" role="button" tabindex="0" aria-label="플래시카드 뒤집기">
+            <div>
+              <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
+              <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+            </div>
+            <h3 class="quiz-target-word" style="margin-top: 8px;">${escapeHtml(wordObj.word)}</h3>
+
+            ${
+              isFlipped
+                ? `
+              <div class="flashcard-back-details">
+                <p class="flashcard-meaning">${escapeHtml(wordObj.meaning_ko)}</p>
+                <p class="word-example-en" style="margin-bottom: 4px;">"${escapeHtml(wordObj.example_en)}"</p>
+                <p class="word-example-ko">${escapeHtml(wordObj.example_ko)}</p>
+              </div>
+            `
+                : `
+              <p class="flashcard-hint">👆 카드를 클릭하여 뜻과 예문을 확인하세요</p>
+            `
+            }
+          </div>
+
+          <div class="self-judge-row">
+            <button class="judge-btn unknown" type="button" id="btn-judge-unknown">
+              <span>몰라요 ✕</span>
+              <span class="judge-sub">오답노트 저장 · 내일 재출제</span>
+            </button>
+            <button class="judge-btn known" type="button" id="btn-judge-known">
+              <span>알아요 ○</span>
+              <span class="judge-sub">간격 확대 (1→3→7→14일)</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="quiz-progress-header">
+        <span>문제 ${idx + 1} / ${total}</span>
+        <span>정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개</span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" style="width: ${progressPct}%;"></div>
+      </div>
+
+      <div class="quiz-stage-card">
+        <div class="quiz-prompt-top">
+          <span class="srs-tag">${escapeHtml(getSrsBadgeMeta(wordObj.id).text)}</span>
+          <button class="speak-btn" type="button" id="btn-quiz-speak" data-speak-text="${escapeHtml(wordObj.word)}">
+            <span aria-hidden="true">🔊</span>
+            <span>발음 듣기</span>
+          </button>
+        </div>
+
+        ${questionBodyHtml}
+
+        <div id="quiz-feedback-slot"></div>
+      </div>
+    `;
+
+    // 이벤트 연결
+    const speakBtn = document.getElementById('btn-quiz-speak');
+    if (speakBtn) {
+      speakBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        speakEnglish(wordObj.word);
+      });
+    }
+
+    if (mode === 'meaning' || mode === 'blank') {
+      container.querySelectorAll('.choice-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (state.quiz.answered) return;
+          const chosenId = Number(btn.dataset.choiceId);
+          handleMultipleChoiceAnswer(chosenId, btn);
+        });
+      });
+    } else if (mode === 'flashcard') {
+      const flipBox = document.getElementById('flashcard-flip-box');
+      if (flipBox) {
+        flipBox.addEventListener('click', () => {
+          state.quiz.flipped = !state.quiz.flipped;
+          renderQuizView();
+        });
+      }
+      const btnUnknown = document.getElementById('btn-judge-unknown');
+      const btnKnown = document.getElementById('btn-judge-known');
+      if (btnUnknown) {
+        btnUnknown.addEventListener('click', () => handleFlashcardJudge(false));
+      }
+      if (btnKnown) {
+        btnKnown.addEventListener('click', () => handleFlashcardJudge(true));
+      }
+    }
+  }
+
+  function handleMultipleChoiceAnswer(chosenId, clickedBtn) {
+    state.quiz.answered = true;
+    const wordObj = state.quiz.queue[state.quiz.currentIndex];
+    const isCorrect = chosenId === wordObj.id;
+
+    // 빈칸 채우기 모드일 경우 빈칸에 정답 채워 넣기
+    const blankSlot = document.getElementById('blank-slot-text');
+    if (blankSlot) {
+      blankSlot.textContent = wordObj.word;
+    }
+
+    document.querySelectorAll('#quiz-active-area .choice-btn').forEach((btn) => {
+      const cid = Number(btn.dataset.choiceId);
+      btn.disabled = true;
+      if (cid === wordObj.id) {
+        btn.classList.add('correct');
+      } else if (btn === clickedBtn && !isCorrect) {
+        btn.classList.add('wrong');
+      }
+    });
+
+    const outcome = recordQuizAnswer(wordObj.id, isCorrect);
+    state.quiz.results.push(outcome);
+
+    const feedbackSlot = document.getElementById('quiz-feedback-slot');
+    if (feedbackSlot) {
+      const scheduleMsg = isCorrect
+        ? `복습 간격 ${outcome.intervalDays}일 적용 (${formatKoreanShortDate(outcome.nextReviewDate)} 복습 예정)`
+        : `오답노트 자동 저장 · 내일(${formatKoreanShortDate(outcome.nextReviewDate)}) 재출제`;
+
+      feedbackSlot.innerHTML = `
+        <div class="quiz-feedback">
+          <div class="feedback-header ${isCorrect ? 'correct' : 'wrong'}">
+            <span>${isCorrect ? '정답입니다! 🎉' : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(wordObj.meaning_ko)})`}</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 4px;">
+            <strong>예문:</strong> ${escapeHtml(wordObj.example_en)}
+          </p>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">
+            📅 간격반복(SRS): ${escapeHtml(scheduleMsg)}
+          </p>
+          <button class="next-question-btn" type="button" id="btn-next-question">
+            ${state.quiz.currentIndex + 1 < state.quiz.queue.length ? '다음 문제 →' : '결과 확인하기 →'}
+          </button>
+        </div>
+      `;
+
+      const nextBtn = document.getElementById('btn-next-question');
+      if (nextBtn) {
+        nextBtn.addEventListener('click', advanceToNextQuestion);
+      }
+    }
+  }
+
+  function handleFlashcardJudge(isKnown) {
+    if (state.quiz.answered) return;
+    state.quiz.answered = true;
+    const wordObj = state.quiz.queue[state.quiz.currentIndex];
+    const outcome = recordQuizAnswer(wordObj.id, isKnown);
+    state.quiz.results.push(outcome);
+
+    showToast(
+      isKnown
+        ? `⭕ '알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정`
+        : `❌ '몰라요' 판정 → 오답노트 저장 및 내일 재출제`
+    );
+
+    advanceToNextQuestion();
+  }
+
+  function advanceToNextQuestion() {
+    state.quiz.currentIndex += 1;
+    if (state.quiz.currentIndex < state.quiz.queue.length) {
+      prepareCurrentQuestionChoices();
+    }
+    renderQuizView();
+  }
+
+  function renderQuizSummary(container) {
+    const total = state.quiz.results.length;
+    const correctCount = state.quiz.results.filter((r) => r.isCorrect).length;
+    const wrongResults = state.quiz.results.filter((r) => !r.isCorrect);
+    const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    container.innerHTML = `
+      <div class="quiz-stage-card" style="text-align: center;">
+        <span class="hero-date-label">학습 세션 완료</span>
+        <h3 class="hero-headline" style="margin-bottom: 14px;">
+          총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
+        </h3>
+
+        <div class="hero-stats-grid" style="margin-bottom: 18px;">
+          <div class="stat-box highlight-due">
+            <span class="stat-label">간격 확대(정답)</span>
+            <strong class="stat-value">${correctCount}</strong>
+            <span class="stat-sub">1→3→7→14일</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">내일 재출제(오답)</span>
+            <strong class="stat-value" style="color: var(--danger-primary);">${wrongResults.length}</strong>
+            <span class="stat-sub">오답노트 저장됨</span>
+          </div>
+          <div class="stat-box highlight-streak">
+            <span class="stat-label">연속 학습일</span>
+            <strong class="stat-value">${state.streak.count}일</strong>
+            <span class="stat-sub">자동 기록 완료</span>
+          </div>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 18px; max-height: 240px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px;">
+          ${state.quiz.results
+            .map((res) => {
+              const w = state.words.find((item) => item.id === res.wordId);
+              if (!w) return '';
+              return `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem;">
+                  <div>
+                    <strong style="font-family: var(--font-en);">${escapeHtml(w.word)}</strong>
+                    <span style="color: var(--text-secondary); margin-left: 6px;">${escapeHtml(w.meaning_ko)}</span>
+                  </div>
+                  <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
+                    ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}
+                  </span>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${
+            wrongResults.length > 0
+              ? `
+            <button class="primary-cta-btn" type="button" id="btn-summary-retry-wrong" style="background: var(--danger-primary);">
+              오답 단어(${wrongResults.length}개)만 바로 복습하기
+            </button>
+          `
+              : ''
+          }
+          <button class="primary-cta-btn" type="button" id="btn-summary-restart">
+            같은 모드로 한 번 더 학습하기
+          </button>
+          <button class="mini-btn" type="button" id="btn-summary-home" style="padding: 11px;">
+            홈 화면으로 이동
+          </button>
+        </div>
+      </div>
+    `;
+
+    const retryWrongBtn = document.getElementById('btn-summary-retry-wrong');
+    if (retryWrongBtn) {
+      retryWrongBtn.addEventListener('click', () => {
+        initQuizSession(state.quiz.mode, 'wrong');
+      });
+    }
+
+    const restartBtn = document.getElementById('btn-summary-restart');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        initQuizSession(state.quiz.mode, state.quiz.scope);
+      });
+    }
+
+    const homeBtn = document.getElementById('btn-summary-home');
+    if (homeBtn) {
+      homeBtn.addEventListener('click', () => switchView('home'));
+    }
+  }
+
+  // --- 4. 오답노트 화면 렌더링 ---
+  function renderWrongNoteView() {
+    const headerEl = document.getElementById('wrong-note-header');
+    const listEl = document.getElementById('wrong-note-list');
+    if (!headerEl || !listEl) return;
+
+    const wrongWords = getWrongWords();
+
+    if (wrongWords.length === 0) {
+      headerEl.innerHTML = '';
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-title">오답노트에 저장된 단어가 없습니다</p>
+          <p class="empty-desc">퀴즈에서 틀리거나 '몰라요'를 선택한 단어가 이곳에 자동으로 기록됩니다.</p>
+          <button class="primary-cta-btn" type="button" id="btn-wrong-go-quiz" style="max-width: 240px; margin: 0 auto;">
+            퀴즈 풀러 가기
+          </button>
+        </div>
+      `;
+      const goQuizBtn = document.getElementById('btn-wrong-go-quiz');
+      if (goQuizBtn) {
+        goQuizBtn.addEventListener('click', () => {
+          initQuizSession('meaning', 'today');
+          switchView('quiz');
+        });
+      }
+      return;
+    }
+
+    headerEl.innerHTML = `
+      <div class="wrong-banner">
+        <h2 class="wrong-banner-title">오답노트 집중 복습 (${wrongWords.length}개 단어)</h2>
+        <p class="wrong-banner-desc">
+          틀린 단어는 내일 복습 대상에 자동 포함됩니다. 아래 버튼을 눌러 오답 단어만으로 퀴즈를 다시 시작할 수 있습니다.
+        </p>
+        <div class="wrong-quiz-btns">
+          <button class="wrong-start-btn" type="button" data-wrong-quiz="meaning" id="btn-wrong-quiz-meaning">
+            오답 뜻 맞히기 퀴즈 시작
+          </button>
+          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="blank" id="btn-wrong-quiz-blank">
+            오답 예문 빈칸 퀴즈
+          </button>
+          <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="flashcard" id="btn-wrong-quiz-flashcard">
+            오답 카드 뒤집기
+          </button>
+        </div>
+      </div>
+    `;
+
+    headerEl.querySelectorAll('[data-wrong-quiz]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.wrongQuiz;
+        initQuizSession(mode, 'wrong');
+        switchView('quiz');
+      });
+    });
+
+    listEl.innerHTML = wrongWords
+      .map((w) => {
+        const wrongInfo = state.wrongNote[String(w.id)] || { wrongCount: 1 };
+        const srsMeta = getSrsBadgeMeta(w.id);
+        return `
+          <article class="word-card" data-word-id="${w.id}" data-speak-word="${escapeHtml(w.word)}">
+            <div class="word-card-top">
+              <div class="word-title-group">
+                <span class="word-en">${escapeHtml(w.word)}</span>
+                <span class="word-pos">${escapeHtml(w.pos)}</span>
+                <span class="level-badge level-${escapeHtml(w.level)}">${escapeHtml(w.level)}</span>
+                <span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">
+                  오답 ${wrongInfo.wrongCount}회
+                </span>
+              </div>
+              <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}">
+                <span aria-hidden="true">🔊</span>
+                <span>발음</span>
+              </button>
+            </div>
+
+            <p class="word-meaning">${escapeHtml(w.meaning_ko)}</p>
+
+            <div class="word-example-box">
+              <p class="word-example-en">${escapeHtml(w.example_en)}</p>
+              <p class="word-example-ko">${escapeHtml(w.example_ko)}</p>
+            </div>
+
+            <div class="word-card-footer">
+              <span class="srs-tag ${srsMeta.cls}">${escapeHtml(srsMeta.text)}</span>
+              <button class="mini-btn" type="button" data-action="remove-wrong" data-word-id="${w.id}">
+                ✓ 암기 완료 (노트에서 제거)
+              </button>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+  }
+
+  // --- 이벤트 위임 및 초기화 ---
+  function bindEvents() {
+    // 하단 내비게이션 탭 전환
+    document.querySelectorAll('.nav-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.navTarget;
+        if (target) switchView(target);
+      });
+    });
+
+    // 홈 화면 메인 시작 버튼
+    const heroStartBtn = document.getElementById('btn-hero-start');
+    if (heroStartBtn) {
+      heroStartBtn.addEventListener('click', () => {
+        initQuizSession('meaning', 'today');
+        switchView('quiz');
+      });
+    }
+
+    // 홈 화면 퀴즈 3종 바로 시작 카드
+    document.querySelectorAll('[data-start-mode]').forEach((card) => {
+      card.addEventListener('click', () => {
+        const mode = card.dataset.startMode;
+        initQuizSession(mode, 'today');
+        switchView('quiz');
+      });
+    });
+
+    // 홈 화면 +1일 경과 시뮬레이션 버튼 (간격반복 예정일 확인용)
+    const simNextDayBtn = document.getElementById('btn-sim-next-day');
+    if (simNextDayBtn) {
+      simNextDayBtn.addEventListener('click', () => {
+        state.streak.dayOffset = (Number(state.streak.dayOffset) || 0) + 1;
+        normalizeStreakForToday();
+        saveStateToStorage();
+        renderHomeView();
+        updateGlobalBadges();
+        showToast(`📅 기준일이 ${getTodayStr()}로 +1일 이동했습니다.`);
+      });
+    }
+
+    // 홈 화면 기록 초기화 버튼
+    const resetBtn = document.getElementById('btn-reset-storage');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        state.srs = {};
+        state.wrongNote = {};
+        state.streak = {
+          count: 0,
+          lastStudyDate: null,
+          todayDate: getTodayStr(),
+          todayStudiedIds: [],
+          dayOffset: 0
+        };
+        saveStateToStorage();
+        state.quiz.queue = [];
+        renderHomeView();
+        updateGlobalBadges();
+        showToast('모든 학습 기록이 초기화되었습니다.');
+      });
+    }
+
+    // 단어장 검색 및 필터
+    const searchInput = document.getElementById('wordbook-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        state.wordbookSearch = e.target.value || '';
+        renderWordbookView();
+      });
+    }
+
+    document.querySelectorAll('[data-level-filter]').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        state.wordbookFilter = pill.dataset.levelFilter || 'all';
+        document.querySelectorAll('[data-level-filter]').forEach((p) => {
+          p.classList.toggle('active', p === pill);
+        });
+        renderWordbookView();
+      });
+    });
+
+    // 단어장 및 오답노트 카드 클릭 시 발음 재생 (이벤트 위임)
+    document.addEventListener('click', (e) => {
+      const removeWrongBtn = e.target.closest('[data-action="remove-wrong"]');
+      if (removeWrongBtn) {
+        e.stopPropagation();
+        const wid = String(removeWrongBtn.dataset.wordId);
+        delete state.wrongNote[wid];
+        saveStateToStorage();
+        updateGlobalBadges();
+        renderWrongNoteView();
+        showToast('오답노트에서 제거되었습니다.');
+        return;
+      }
+
+      const speakSentenceBtn = e.target.closest('[data-action="speak-sentence"]');
+      if (speakSentenceBtn) {
+        e.stopPropagation();
+        const card = speakSentenceBtn.closest('.word-card');
+        speakEnglish(speakSentenceBtn.dataset.speakText, card);
+        return;
+      }
+
+      const speakWordBtn = e.target.closest('[data-action="speak-word"]');
+      if (speakWordBtn) {
+        e.stopPropagation();
+        const card = speakWordBtn.closest('.word-card');
+        speakEnglish(speakWordBtn.dataset.speakText, card);
+        return;
+      }
+
+      const wordCard = e.target.closest('.word-card');
+      if (wordCard && wordCard.dataset.speakWord) {
+        speakEnglish(wordCard.dataset.speakWord, wordCard);
+      }
+    });
+
+    // 퀴즈 화면 상단 모드 탭 & 출제 범위
+    document.querySelectorAll('.quiz-tab-btn').forEach((tabBtn) => {
+      tabBtn.addEventListener('click', () => {
+        const mode = tabBtn.dataset.quizMode;
+        initQuizSession(mode, state.quiz.scope);
+      });
+    });
+
+    const scopeSelect = document.getElementById('quiz-scope-select');
+    if (scopeSelect) {
+      scopeSelect.addEventListener('change', (e) => {
+        initQuizSession(state.quiz.mode, e.target.value);
+      });
+    }
+
+    const restartQuizBtn = document.getElementById('btn-restart-quiz');
+    if (restartQuizBtn) {
+      restartQuizBtn.addEventListener('click', () => {
+        initQuizSession(state.quiz.mode, state.quiz.scope);
+        showToast('문제를 새로 섞었습니다.');
+      });
+    }
+
+    // PWA 설치 버튼
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installBtn = document.getElementById('btn-pwa-install');
+      if (installBtn) installBtn.classList.add('visible');
+    });
+
+    const installBtn = document.getElementById('btn-pwa-install');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        installBtn.classList.remove('visible');
+      });
+    }
+  }
+
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {
+          // 로컬 파일 프로토콜 등에서는 무시
+        });
+      });
+    }
+  }
+
+  async function initApp() {
+    loadStateFromStorage();
+    bindEvents();
+    registerServiceWorker();
+
+    try {
+      const response = await fetch('./data/words.json');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      state.words = await response.json();
+    } catch (err) {
+      showToast('단어 데이터를 불러오지 못했습니다.');
+      state.words = [];
+    }
+
+    updateGlobalBadges();
+    renderHomeView();
+  }
+
+  document.addEventListener('DOMContentLoaded', initApp);
+})();
