@@ -1,0 +1,218 @@
+[
+  {
+    "id": 1,
+    "word": "abandon",
+    "pos": "v.",
+    "meaning_ko": "포기하다, 버리다",
+    "example_en": "They had to abandon the outdoor concert because of the sudden storm.",
+    "example_ko": "그들은 갑작스러운 폭풍 때문에 야외 콘서트를 포기해야 했다.",
+    "level": "고1"
+  },
+  {
+    "id": 2,
+    "word": "accommodate",
+    "pos": "v.",
+    "meaning_ko": "수용하다, 편의를 제공하다",
+    "example_en": "The new dormitory can accommodate up to four hundred students.",
+    "example_ko": "새 기숙사는 최대 400명의 학생을 수용할 수 있다.",
+    "level": "고2"
+  },
+  {
+    "id": 3,
+    "word": "accurate",
+    "pos": "adj.",
+    "meaning_ko": "정확한, 정밀한",
+    "example_en": "Please check the timetable again to get accurate departure information.",
+    "example_ko": "정확한 출발 정보를 얻기 위해 시간표를 다시 확인해 주세요.",
+    "level": "고1"
+  },
+  {
+    "id": 4,
+    "word": "acknowledge",
+    "pos": "v.",
+    "meaning_ko": "인정하다, 감사를 표하다",
+    "example_en": "True leaders always acknowledge their mistakes and learn from them.",
+    "example_ko": "진정한 리더는 항상 자신의 실수를 인정하고 그로부터 배운다.",
+    "level": "고2"
+  },
+  {
+    "id": 5,
+    "word": "adapt",
+    "pos": "v.",
+    "meaning_ko": "적응하다, 맞추다",
+    "example_en": "Plants in the desert adapt quickly to extreme changes in temperature.",
+    "example_ko": "사막의 식물들은 극심한 기온 변화에 빠르게 적응한다.",
+    "level": "고1"
+  },
+  {
+    "id": 6,
+    "word": "adequate",
+    "pos": "adj.",
+    "meaning_ko": "충분한, 적절한",
+    "example_en": "Getting adequate sleep before an exam improves memory and focus.",
+    "example_ko": "시험 전에 충분한 수면을 취하면 기억력과 집중력이 향상된다.",
+    "level": "고2"
+  },
+  {
+    "id": 7,
+    "word": "advocate",
+    "pos": "v.",
+    "meaning_ko": "옹호하다, 지지하다",
+    "example_en": "Many scientists advocate reducing plastic waste to protect marine life.",
+    "example_ko": "많은 과학자들이 해양 생물을 보호하기 위해 플라스틱 쓰레기 감축을 옹호한다.",
+    "level": "고3"
+  },
+  {
+    "id": 8,
+    "word": "ambiguous",
+    "pos": "adj.",
+    "meaning_ko": "모호한, 애매한",
+    "example_en": "His instructions were too ambiguous for the team to follow clearly.",
+    "example_ko": "그의 지시는 팀원들이 명확하게 따르기에 너무 모호했다.",
+    "level": "고3"
+  },
+  {
+    "id": 9,
+    "word": "anticipate",
+    "pos": "v.",
+    "meaning_ko": "예상하다, 기대하다",
+    "example_en": "Organizers anticipate a large crowd at the science fair this weekend.",
+    "example_ko": "주최 측은 이번 주말 과학 박람회에 많은 인파가 몰릴 것으로 예상한다.",
+    "level": "고2"
+  },
+  {
+    "id": 10,
+    "word": "apparent",
+    "pos": "adj.",
+    "meaning_ko": "분명한, 명백한",
+    "example_en": "It soon became apparent that the two sides had different goals.",
+    "example_ko": "양측이 서로 다른 목표를 가지고 있다는 사실이 곧 분명해졌다.",
+    "level": "고2"
+  },
+  {
+    "id": 11,
+    "word": "candidate",
+    "pos": "n.",
+    "meaning_ko": "지원자, 후보자",
+    "example_en": "Each candidate had five minutes to present a plan to the student council.",
+    "example_ko": "각 후보자는 학생회에 계획을 발표할 시간 5분을 부여받았다.",
+    "level": "고1"
+  },
+  {
+    "id": 12,
+    "word": "capacity",
+    "pos": "n.",
+    "meaning_ko": "수용력, 용량, 능력",
+    "example_en": "The stadium reached its full capacity an hour before the final match.",
+    "example_ko": "경기장은 결승전 한 시간 전에 최대 수용 인원에 도달했다.",
+    "level": "고2"
+  },
+  {
+    "id": 13,
+    "word": "collaborate",
+    "pos": "v.",
+    "meaning_ko": "협력하다, 공동 작업하다",
+    "example_en": "Students from three schools will collaborate on a community garden project.",
+    "example_ko": "세 학교의 학생들이 지역 정원 프로젝트에 협력할 예정이다.",
+    "level": "고2"
+  },
+  {
+    "id": 14,
+    "word": "compel",
+    "pos": "v.",
+    "meaning_ko": "강요하다, 어쩔 수 없이 ~하게 하다",
+    "example_en": "Heavy snowfall may compel the city to close mountain roads tonight.",
+    "example_ko": "폭설로 인해 시 당국이 오늘 밤 산간 도로를 어쩔 수 없이 폐쇄할 수도 있다.",
+    "level": "고3"
+  },
+  {
+    "id": 15,
+    "word": "comprehensive",
+    "pos": "adj.",
+    "meaning_ko": "포괄적인, 종합적인",
+    "example_en": "The library offers a comprehensive guide to writing research papers.",
+    "example_ko": "도서관은 연구 논문 작성에 관한 종합적인 안내서를 제공한다.",
+    "level": "고3"
+  },
+  {
+    "id": 16,
+    "word": "consequence",
+    "pos": "n.",
+    "meaning_ko": "결과, 영향",
+    "example_en": "Skipping regular practice often leads to an unwanted consequence.",
+    "example_ko": "규칙적인 연습을 거르는 것은 종종 원치 않는 결과로 이어진다.",
+    "level": "고1"
+  },
+  {
+    "id": 17,
+    "word": "consistent",
+    "pos": "adj.",
+    "meaning_ko": "일관된, 꾸준한",
+    "example_en": "Consistent daily reading is the most reliable way to build vocabulary.",
+    "example_ko": "꾸준한 매일의 독서는 어휘력을 기르는 가장 확실한 방법이다.",
+    "level": "고2"
+  },
+  {
+    "id": 18,
+    "word": "contribute",
+    "pos": "v.",
+    "meaning_ko": "기여하다, 공헌하다",
+    "example_en": "Every volunteer can contribute fresh ideas to the neighborhood festival.",
+    "example_ko": "모든 자원봉사자는 동네 축제에 신선한 아이디어를 기여할 수 있다.",
+    "level": "고1"
+  },
+  {
+    "id": 19,
+    "word": "conventional",
+    "pos": "adj.",
+    "meaning_ko": "관습적인, 기존의",
+    "example_en": "Solar panels provide a clean alternative to conventional energy sources.",
+    "example_ko": "태양광 패널은 기존의 에너지원에 대한 깨끗한 대안을 제공한다.",
+    "level": "고3"
+  },
+  {
+    "id": 20,
+    "word": "crucial",
+    "pos": "adj.",
+    "meaning_ko": "결정적인, 매우 중요한",
+    "example_en": "Honest communication plays a crucial role in maintaining strong friendships.",
+    "example_ko": "솔직한 소통은 돈독한 우정을 유지하는 데 매우 중요한 역할을 한다.",
+    "level": "고1"
+  },
+  {
+    "id": 21,
+    "word": "decline",
+    "pos": "v.",
+    "meaning_ko": "거절하다, 감소하다",
+    "example_en": "Polite guests know how to decline an invitation without hurting feelings.",
+    "example_ko": "예의 바른 손님은 상대방의 기분을 상하게 하지 않고 초대를 거절하는 법을 안다.",
+    "level": "고1"
+  },
+  {
+    "id": 22,
+    "word": "deliberate",
+    "pos": "adj.",
+    "meaning_ko": "신중한, 의도적인",
+    "example_en": "The committee made a deliberate choice to invest more in student safety.",
+    "example_ko": "위원회는 학생 안전에 더 많이 투자하기로 신중한 선택을 내렸다.",
+    "level": "고3"
+  },
+  {
+    "id": 23,
+    "word": "diminish",
+    "pos": "v.",
+    "meaning_ko": "줄이다, 약화시키다",
+    "example_en": "Even a short break can diminish stress during a busy exam week.",
+    "example_ko": "바쁜 시험 주간에는 짧은 휴식조차도 스트레스를 줄여 줄 수 있다.",
+    "level": "고3"
+  },
+  {
+    "id": 24,
+    "word": "inevitable",
+    "pos": "adj.",
+    "meaning_ko": "불가피한, 피할 수 없는",
+    "example_en": "Delays were inevitable after the main bridge was closed for repairs.",
+    "example_ko": "주 교량이 보수 공사로 폐쇄된 후 지연은 불가피했다.",
+    "level": "고3"
+  }
+]
