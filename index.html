@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F6E56" />
+  <meta name="description" content="간격반복(SRS), 3종 퀴즈, 오답노트를 지원하는 고등 필수 영어 어휘 학습 PWA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="영단어 트레이너" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>수능·고등 영단어 트레이너 | 간격반복 어휘 학습</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand-group">
+          <img src="./icons/icon.svg" alt="영단어 트레이너 로고" class="brand-logo" width="34" height="34" />
+          <div>
+            <h1 class="brand-title">고등 영단어 트레이너</h1>
+            <span class="brand-subtitle">간격반복 · 3종 퀴즈 · 오답노트</span>
+          </div>
+        </div>
+        <div class="header-badges">
+          <button id="btn-pwa-install" class="install-btn" type="button" aria-label="앱 설치하기">
+            <span>앱 설치</span>
+          </button>
+          <div id="header-streak-badge" class="streak-pill" title="연속 학습일">
+            <span aria-hidden="true">🔥</span>
+            <span id="header-streak-text">0일 연속</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- 1. 홈 화면 (Home View) -->
+      <section id="view-home" class="view-section active" aria-label="홈 화면">
+        <div class="hero-card">
+          <div class="hero-top-row">
+            <div>
+              <span id="home-date-badge" class="hero-date-label">오늘의 학습 브리핑</span>
+              <h2 id="home-greeting-title" class="hero-headline">오늘 복습할 단어를 확인하세요</h2>
+            </div>
+          </div>
+
+          <div class="hero-stats-grid">
+            <div class="stat-box highlight-due">
+              <span class="stat-label">오늘 복습할 단어</span>
+              <strong id="stat-due-count" class="stat-value">0</strong>
+              <span id="stat-due-sub" class="stat-sub">복습 대기 중</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">미학습 새 단어</span>
+              <strong id="stat-new-count" class="stat-value">24</strong>
+              <span id="stat-learned-sub" class="stat-sub">전체 24개 중</span>
+            </div>
+            <div class="stat-box highlight-streak">
+              <span class="stat-label">연속 학습일</span>
+              <strong id="stat-streak-count" class="stat-value">0일</strong>
+              <span id="stat-today-done" class="stat-sub">오늘 0개 학습</span>
+            </div>
+          </div>
+
+          <button id="btn-hero-start" class="primary-cta-btn" type="button">
+            <span id="btn-hero-start-text">새 학습 / 오늘의 복습 퀴즈 시작하기</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="section-header">
+          <h3 class="section-title">퀴즈 3종 바로 시작</h3>
+          <span class="section-caption">원하는 학습 방식을 선택하세요</span>
+        </div>
+
+        <div class="quiz-mode-grid">
+          <button class="mode-card" type="button" data-start-mode="meaning" id="btn-home-mode-meaning">
+            <span class="mode-badge">유형 A · 4지선다</span>
+            <span class="mode-card-title">뜻 맞히기 퀴즈</span>
+            <span class="mode-card-desc">제시된 고등 필수 영단어를 보고 알맞은 한국어 뜻을 고릅니다.</span>
+          </button>
+
+          <button class="mode-card" type="button" data-start-mode="blank" id="btn-home-mode-blank">
+            <span class="mode-badge">유형 B · 문맥 추론</span>
+            <span class="mode-card-title">예문 빈칸 채우기</span>
+            <span class="mode-card-desc">영어 예문과 해석을 참고해 빈칸에 들어갈 알맞은 영단어를 고릅니다.</span>
+          </button>
+
+          <button class="mode-card" type="button" data-start-mode="flashcard" id="btn-home-mode-flashcard">
+            <span class="mode-badge">유형 C · 자기 판정</span>
+            <span class="mode-card-title">카드 뒤집기 학습</span>
+            <span class="mode-card-desc">카드를 뒤집어 뜻과 예문을 확인한 뒤 '알아요 / 몰라요'를 스스로 판정합니다.</span>
+          </button>
+        </div>
+
+        <div class="section-header">
+          <h3 class="section-title">간격반복(SRS) 복습 단계 현황</h3>
+          <span class="section-caption">정답 시 1일 → 3일 → 7일 → 14일 확대</span>
+        </div>
+
+        <div class="srs-panel">
+          <div class="srs-stages-grid">
+            <div class="srs-stage-item">
+              <span class="srs-stage-interval">미학습/재출제</span>
+              <strong id="srs-count-0" class="srs-stage-count">24</strong>
+            </div>
+            <div class="srs-stage-item">
+              <span class="srs-stage-interval">1일 간격</span>
+              <strong id="srs-count-1" class="srs-stage-count">0</strong>
+            </div>
+            <div class="srs-stage-item">
+              <span class="srs-stage-interval">3일 간격</span>
+              <strong id="srs-count-2" class="srs-stage-count">0</strong>
+            </div>
+            <div class="srs-stage-item">
+              <span class="srs-stage-interval">7일 간격</span>
+              <strong id="srs-count-3" class="srs-stage-count">0</strong>
+            </div>
+            <div class="srs-stage-item">
+              <span class="srs-stage-interval">14일 완성</span>
+              <strong id="srs-count-4" class="srs-stage-count">0</strong>
+            </div>
+          </div>
+
+          <div class="srs-helper-bar">
+            <span id="sim-date-display">기준일: 오늘</span>
+            <div class="srs-sim-actions">
+              <button id="btn-sim-next-day" class="mini-btn" type="button" title="간격반복 테스트를 위해 가상 기준일을 하루 앞으로 이동합니다">
+                +1일 경과 테스트
+              </button>
+              <button id="btn-reset-storage" class="mini-btn danger" type="button" title="모든 학습 기록을 초기화합니다">
+                기록 초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 단어장 화면 (Wordbook View) -->
+      <section id="view-wordbook" class="view-section" aria-label="단어장 화면">
+        <div class="toolbar-card">
+          <div class="search-row">
+            <input
+              id="wordbook-search"
+              class="search-input"
+              type="search"
+              placeholder="영단어 또는 한국어 뜻 검색 (예: abandon, 포기하다)"
+              aria-label="단어 검색"
+            />
+          </div>
+          <div class="filter-pills" role="group" aria-label="단어장 필터">
+            <button class="filter-pill active" type="button" data-level-filter="all">전체 (24)</button>
+            <button class="filter-pill" type="button" data-level-filter="고1">고1 기초</button>
+            <button class="filter-pill" type="button" data-level-filter="고2">고2 핵심</button>
+            <button class="filter-pill" type="button" data-level-filter="고3">고3 심화</button>
+            <button class="filter-pill" type="button" data-level-filter="due">오늘 복습 대상</button>
+          </div>
+        </div>
+
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+          💡 단어 카드를 클릭하면 브라우저 음성 합성(speechSynthesis)으로 영어 발음을 들을 수 있습니다.
+        </p>
+
+        <div id="wordbook-list" class="word-list" aria-live="polite"></div>
+      </section>
+
+      <!-- 3. 퀴즈 화면 (Quiz View) -->
+      <section id="view-quiz" class="view-section" aria-label="퀴즈 화면">
+        <div class="quiz-config-bar">
+          <div class="quiz-tabs" role="tablist" aria-label="퀴즈 유형 선택">
+            <button class="quiz-tab-btn active" type="button" data-quiz-mode="meaning" id="tab-quiz-meaning">
+              (a) 뜻 맞히기
+            </button>
+            <button class="quiz-tab-btn" type="button" data-quiz-mode="blank" id="tab-quiz-blank">
+              (b) 예문 빈칸
+            </button>
+            <button class="quiz-tab-btn" type="button" data-quiz-mode="flashcard" id="tab-quiz-flashcard">
+              (c) 카드 뒤집기
+            </button>
+          </div>
+
+          <div class="quiz-scope-row">
+            <label for="quiz-scope-select" style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">
+              출제 범위:
+            </label>
+            <select id="quiz-scope-select" class="scope-select" aria-label="퀴즈 출제 범위">
+              <option value="today">오늘 복습 + 미학습 단어 (추천)</option>
+              <option value="all">전체 단어 24개</option>
+              <option value="wrong">오답노트 단어만</option>
+            </select>
+            <button id="btn-restart-quiz" class="mini-btn" type="button">다시 섞기</button>
+          </div>
+        </div>
+
+        <div id="quiz-active-area"></div>
+      </section>
+
+      <!-- 4. 오답노트 화면 (Wrong Answer Note View) -->
+      <section id="view-wrong" class="view-section" aria-label="오답노트 화면">
+        <div id="wrong-note-header"></div>
+        <div id="wrong-note-list" class="word-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" aria-label="주요 메뉴">
+      <div class="bottom-nav-inner">
+        <button class="nav-item active" type="button" data-nav-target="home" id="nav-btn-home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" />
+          </svg>
+          <span>홈</span>
+        </button>
+
+        <button class="nav-item" type="button" data-nav-target="wordbook" id="nav-btn-wordbook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          <span>단어장</span>
+        </button>
+
+        <button class="nav-item" type="button" data-nav-target="quiz" id="nav-btn-quiz">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <span>퀴즈 3종</span>
+        </button>
+
+        <button class="nav-item" type="button" data-nav-target="wrong" id="nav-btn-wrong">
+          <span id="nav-wrong-badge" class="nav-badge hidden">0</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="9" y1="13" x2="15" y2="13" />
+            <line x1="9" y1="17" x2="13" y2="17" />
+          </svg>
+          <span>오답노트</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>
