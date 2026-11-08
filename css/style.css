@@ -1657,3 +1657,49 @@ button {
   color: var(--xp-primary);
   white-space: nowrap;
 }
+
+/* ---------- 배지 컬렉션 (DESIGN.md 4.2) ---------- */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.badge-name {
+  font-size: 0.8rem;
+}
+
+.badge-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.badge-item.unlocked {
+  border-color: var(--amber-border);
+  background: var(--amber-soft);
+}
+
+.badge-item.locked .badge-icon,
+.badge-item.locked .badge-name {
+  filter: grayscale(1);
+  opacity: 0.48;
+}

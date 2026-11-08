@@ -350,6 +350,91 @@
     `;
   }
 
+  // --- 배지 시스템 (DESIGN.md 4장, 7종) ---
+  const BADGE_DEFS = [
+    { id: 'first_clear', name: '첫 완주', icon: '🏁', desc: '퀴즈 세션을 1개 끝까지 완료' },
+    { id: 'streak_3', name: '3일 연속 학습', icon: '🌱', desc: '연속 학습일 3일 이상' },
+    { id: 'streak_7', name: '7일 연속', icon: '🔥', desc: '연속 학습일 7일 이상' },
+    { id: 'combo_10', name: '10연속 정답', icon: '⚡', desc: '한 세션에서 10문제 연속 정답' },
+    { id: 'exam_s_all', name: '기출 S급 전파', icon: '👑', desc: '기출 S급 14개 모두 SRS 1단계 이상' },
+    { id: 'srs_stage4_10', name: '장기 기억 마스터', icon: '🧠', desc: 'SRS 4단계(14일 완성) 단어 10개 이상' },
+    { id: 'all_64_learned', name: '64단어 전수 학습', icon: '🎓', desc: '기본 24 + 기출 40단어 모두 1회 이상 학습' }
+  ];
+
+  function isBadgeConditionMet(badgeId) {
+    const g = state.gamification;
+    switch (badgeId) {
+      case 'first_clear':
+        return g.stats.completedSessions >= 1;
+      case 'streak_3':
+        return state.streak.count >= 3;
+      case 'streak_7':
+        return state.streak.count >= 7;
+      case 'combo_10':
+        return g.stats.maxCombo >= 10;
+      case 'exam_s_all': {
+        const sWords = state.examWords.filter((w) => w.grade === 'S');
+        return (
+          sWords.length > 0 &&
+          sWords.every((w) => {
+            const rec = state.srs[String(w.id)];
+            return rec && Number(rec.stage) >= 1;
+          })
+        );
+      }
+      case 'srs_stage4_10':
+        return Object.keys(state.srs).filter((k) => state.srs[k] && Number(state.srs[k].stage) >= 4).length >= 10;
+      case 'all_64_learned': {
+        const all = [...state.words, ...state.examWords];
+        return all.length > 0 && all.every((w) => state.srs[String(w.id)]);
+      }
+      default:
+        return false;
+    }
+  }
+
+  // 단방향 해금: 한 번 해금된 배지는 박탈하지 않음. 새로 해금된 배지 목록 반환.
+  function evaluateBadges() {
+    const g = state.gamification;
+    const today = getTodayStr();
+    const unlocked = [];
+    BADGE_DEFS.forEach((def) => {
+      if (!g.badges[def.id] && isBadgeConditionMet(def.id)) {
+        g.badges[def.id] = { unlockedAt: today };
+        unlocked.push(def);
+      }
+    });
+    if (unlocked.length > 0) {
+      saveStateToStorage();
+      const names = unlocked.map((d) => d.name).join(', ');
+      // 같은 틱의 다른 토스트(카드 판정 안내 등)에 덮어쓰이지 않도록 지연 표시
+      setTimeout(() => showToast(`🏅 새 배지 획득: ${names}`), 0);
+    }
+    return unlocked;
+  }
+
+  function formatBadgeDate(ymdStr) {
+    if (!ymdStr) return '-';
+    const parts = ymdStr.split('-');
+    return `${parts[1]}월 ${parts[2]}일`;
+  }
+
+  function renderBadgeCollection() {
+    const box = document.getElementById('home-badge-grid');
+    if (!box) return;
+    box.innerHTML = BADGE_DEFS.map((def) => {
+      const got = state.gamification.badges[def.id];
+      return `
+        <div class="badge-item ${got ? 'unlocked' : 'locked'}">
+          <span class="badge-icon" aria-hidden="true">${def.icon}</span>
+          <strong class="badge-name">${escapeHtml(def.name)}</strong>
+          <span class="badge-sub">${
+            got ? `${escapeHtml(formatBadgeDate(got.unlockedAt))} 획득` : escapeHtml(def.desc)
+          }</span>
+        </div>`;
+    }).join('');
+  }
+
   // --- 간격반복(SRS) 및 오답노트 핵심 로직 ---
   function getQuizModeLabel(modeKey) {
     return QUIZ_MODE_LABELS[modeKey] || '기록 없음';
@@ -515,6 +600,7 @@
     const xp = awardXpForAnswer(key, isCorrect, modeKey);
 
     saveStateToStorage();
+    evaluateBadges();
     updateGlobalBadges();
 
     return {
@@ -788,6 +874,7 @@
 
     renderLevelProgress();
     renderLeagueCard();
+    renderBadgeCollection();
 
     const simDisplay = document.getElementById('sim-date-display');
     if (simDisplay) {
@@ -2030,6 +2117,7 @@
       state.gamification.stats.completedSessions += 1;
       saveStateToStorage();
     }
+    evaluateBadges();
     const levelUpBanner =
       state.gamification.level > state.quiz.sessionStartLevel
         ? `<div class="levelup-banner">🎉 레벨 업! <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
@@ -2576,6 +2664,8 @@
       state.examWords = [];
     }
 
+    // 기존 사용자 소급 해금: 단어 데이터 로딩 후 기존 srs·streak만으로 판정 (XP는 0에서 시작, 유보 7.3)
+    evaluateBadges();
     updateGlobalBadges();
     renderHomeView();
   }
