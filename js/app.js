@@ -740,11 +740,133 @@
       .join('');
   }
 
-  // --- 3. 퀴즈 3종 (뜻 맞히기 / 예문 빈칸 채우기 / 카드 뒤집기) ---
-  function buildQuizQueue(scope) {
+  // --- 3. 퀴즈 (기본 3종 + 기출 모드 2종) ---
+  // 기출 다의어 40개 각각의 실제 기출 예문(example_en / example_ko)에 쓰인 exam_meanings 인덱스 매핑
+  const EXAM_CONTEXT_MEANING_INDEX = {
+    account: 1,     // 차지하다 (Subscriptions account for almost 90 percent...)
+    approach: 0,    // 접근법·방법 (This new approach increases...)
+    base: 0,        // ~에 근거하다 (when farmers base decisions on observations...)
+    lead: 0,        // ~로 이어지다, ~을 초래하다 (breakthroughs that lead to a major change...)
+    leave: 0,       // 남기다·~한 채로 두다 (That leaves others having to respond...)
+    matter: 0,      // 중요하다 (...matters less than the fact that they are women.)
+    order: 1,       // 질서·순서 (...ultimately impose order on human experience...)
+    practice: 1,    // 관행·실무 관습 (...management practices and a lack of concerted research.)
+    present: 0,     // 현재의 (...actual past experience or present reality exactly.)
+    sense: 0,       // ~감, ~의식 (...a growing sense of competence and mastery.)
+    subject: 0,     // 피험자·실험 참가자 (For example, subjects who were presented with...)
+    term: 1,        // ~의 측면에서, ~으로 따지면 (In terms of direct expenditures...)
+    turn: 3,        // ~로 판명되다 (It turned out that this simple suggestion...)
+    view: 0,        // 견해·관점 (Scientism is the view that...)
+    address: 0,     // 다루다·해결에 나서다 (...addressing the root causes of the problem.)
+    case: 0,        // 경우 (...until the case is settled...)
+    concern: 1,     // ~을 다루다·와 관련되다 (...are not concerned with results...)
+    conduct: 0,     // 실시하다·수행하다 (Numerous biodiversity experiments have been conducted...)
+    contribute: 0,  // 기여하다·(~의) 한 요인이 되다 (...contribute to a more solid understanding...)
+    cover: 0,       // 다루다·포함하다·(범위를) 아우르다 (...to cover a full spectrum of...)
+    course: 1,      // 물론 (You can still, of course, incorporate...)
+    draw: 1,        // 활용하다·끌어다 쓰다 (...will draw on your experience...)
+    field: 0,       // 분야·영역 (“opened a field up,” “transformed a field,”...)
+    figure: 1,      // 알아내다·생각해 내다 (...work to figure out what you can do better...)
+    follow: 0,      // 따르다·준수하다 (...tend to follow tried-and-true structural patterns.)
+    force: 0,       // 강요하다·억지로 ~하게 하다 (...forces firms to meet certain reporting requirements.)
+    form: 1,        // 형성하다·이루다 (...ability to form internal representations...)
+    function: 1,    // ~로서 기능하다·작용하다 (...the temple functioned as an administrative authority...)
+    mean: 1,        // 수단·방법 (...continuation of politics by other means.)
+    movement: 1,    // (사회·정치) 운동 (...success of the suffragette movement...)
+    nature: 1,      // 본성·본질·성질 (The liquid nature of services...)
+    point: 0,       // 지점·시점 (...to the point of combining into one “entity.”)
+    population: 1,  // 개체군(생물 집단) (...peregrine falcon population...)
+    process: 1,     // 처리하다·가공하다 (...disagreement can be processed or managed...)
+    produce: 1,     // 농산물 (...sales of four types of ethical produce...)
+    project: 1,     // 예상된·전망되는 (It is projected that the share...)
+    reflect: 0,     // 반영하다 (This phenomenon reflects a unique feature...)
+    remain: 2,      // 잔해·유물·음식 찌꺼기 (...from stone tools and food remains.)
+    result: 2,      // 비롯되다 (Creativity results from a complex interaction...)
+    work: 1         // 작품 (...it was absolutely a work of art.)
+  };
+
+  function isExamQuizMode(mode) {
+    return mode === 'exam-blank' || mode === 'exam-meaning';
+  }
+
+  function getExamContextMeaningObj(wordObj) {
+    if (!wordObj || !Array.isArray(wordObj.exam_meanings)) {
+      return { meaning_ko: '', share_pct: null, signal: null };
+    }
+    const mappedIdx = EXAM_CONTEXT_MEANING_INDEX[wordObj.word];
+    if (
+      typeof mappedIdx === 'number' &&
+      wordObj.exam_meanings[mappedIdx] &&
+      wordObj.exam_meanings[mappedIdx].meaning_ko
+    ) {
+      return wordObj.exam_meanings[mappedIdx];
+    }
+    const firstValid = wordObj.exam_meanings.find((m) => m && m.meaning_ko);
+    return firstValid || { meaning_ko: '', share_pct: null, signal: null };
+  }
+
+  function findWordById(wordId) {
+    const key = String(wordId);
+    return (
+      state.words.find((w) => String(w.id) === key) ||
+      state.examWords.find((w) => String(w.id) === key) ||
+      null
+    );
+  }
+
+  function syncQuizScopeSelect(mode, requestedScope) {
+    const scopeSelect = document.getElementById('quiz-scope-select');
+    if (!scopeSelect) return requestedScope || 'today';
+
+    if (isExamQuizMode(mode)) {
+      const validExamScopes = ['today', 'all', 'S', 'A', 'wrong'];
+      const nextScope = validExamScopes.includes(requestedScope) ? requestedScope : 'today';
+      scopeSelect.innerHTML = `
+        <option value="today">오늘 복습 + 미학습 기출 단어 (추천)</option>
+        <option value="all">전체 기출 다의어 40개</option>
+        <option value="S">S급 기출 다의어 (14개)</option>
+        <option value="A">A급 기출 다의어 (26개)</option>
+        <option value="wrong">오답노트 기출 단어만</option>
+      `;
+      scopeSelect.value = nextScope;
+      return nextScope;
+    }
+
+    const validSampleScopes = ['today', 'all', 'wrong'];
+    const nextScope = validSampleScopes.includes(requestedScope) ? requestedScope : 'today';
+    scopeSelect.innerHTML = `
+      <option value="today">오늘 복습 + 미학습 단어 (추천)</option>
+      <option value="all">전체 단어 24개</option>
+      <option value="wrong">오답노트 단어만</option>
+    `;
+    scopeSelect.value = nextScope;
+    return nextScope;
+  }
+
+  function buildQuizQueue(scope, mode) {
+    if (isExamQuizMode(mode)) {
+      if (scope === 'wrong') {
+        const wrongExamList = state.examWords.filter((w) => Boolean(state.wrongNote[String(w.id)]));
+        return shuffleArray(wrongExamList);
+      }
+      if (scope === 'S' || scope === 'A') {
+        return shuffleArray(state.examWords.filter((w) => w.grade === scope));
+      }
+      if (scope === 'today') {
+        const dueExam = state.examWords.filter((w) => isWordDueToday(w.id));
+        const unseenExam = state.examWords.filter((w) => !getWordSrs(w.id));
+        const combined = [...shuffleArray(dueExam), ...shuffleArray(unseenExam)];
+        if (combined.length > 0) {
+          return combined.slice(0, Math.max(dueExam.length, Math.min(15, combined.length)));
+        }
+        return shuffleArray(state.examWords).slice(0, 12);
+      }
+      return shuffleArray(state.examWords);
+    }
+
     if (scope === 'wrong') {
-      const wrongList = getWrongWords();
-      return shuffleArray(wrongList);
+      const wrongSampleList = state.words.filter((w) => Boolean(state.wrongNote[String(w.id)]));
+      return shuffleArray(wrongSampleList);
     }
     if (scope === 'today') {
       const due = getDueWords();
@@ -761,21 +883,17 @@
 
   function initQuizSession(mode, scope) {
     state.quiz.mode = mode || state.quiz.mode || 'meaning';
-    state.quiz.scope = scope || state.quiz.scope || 'today';
-    state.quiz.queue = buildQuizQueue(state.quiz.scope);
+    state.quiz.scope = syncQuizScopeSelect(state.quiz.mode, scope || state.quiz.scope || 'today');
+    state.quiz.queue = buildQuizQueue(state.quiz.scope, state.quiz.mode);
     state.quiz.currentIndex = 0;
     state.quiz.answered = false;
     state.quiz.flipped = false;
     state.quiz.results = [];
 
-    // 탭 및 셀렉트 UI 동기화
+    // 탭 UI 동기화
     document.querySelectorAll('.quiz-tab-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.quizMode === state.quiz.mode);
     });
-    const scopeSelect = document.getElementById('quiz-scope-select');
-    if (scopeSelect) {
-      scopeSelect.value = state.quiz.scope;
-    }
 
     prepareCurrentQuestionChoices();
     renderQuizView();
@@ -791,6 +909,103 @@
     state.quiz.answered = false;
     state.quiz.flipped = false;
 
+    const mode = state.quiz.mode;
+
+    if (mode === 'exam-blank') {
+      // 기출 모드 유형 1 — 기출 예문 빈칸 (오답 선택지는 다른 기출 단어에서)
+      const otherExamWords = state.examWords.filter((w) => w.id !== currentWord.id);
+      const sameGrade = shuffleArray(otherExamWords.filter((w) => w.grade === currentWord.grade));
+      const diffGrade = shuffleArray(otherExamWords.filter((w) => w.grade !== currentWord.grade));
+      const distractors = [...sameGrade, ...diffGrade].slice(0, 3);
+      state.quiz.choices = shuffleArray([currentWord, ...distractors]);
+      return;
+    }
+
+    if (mode === 'exam-meaning') {
+      // 기출 모드 유형 2 — 문맥 속 뜻 (exam_meanings 중에서 고르되, 기본 뜻을 함정으로 포함)
+      const correctEntry = getExamContextMeaningObj(currentWord);
+      const usedTexts = new Set();
+      const meaningChoices = [];
+
+      if (correctEntry && correctEntry.meaning_ko) {
+        usedTexts.add(correctEntry.meaning_ko);
+        meaningChoices.push({
+          id: 'correct',
+          meaning_ko: correctEntry.meaning_ko,
+          share_pct: correctEntry.share_pct,
+          signal: correctEntry.signal,
+          isCorrect: true,
+          isTrap: false
+        });
+      }
+
+      // 기본 뜻(base_meaning_ko)이 존재하고 정답 뜻과 다르면 함정 선택지로 반드시 포함
+      if (
+        currentWord.base_meaning_ko !== null &&
+        currentWord.base_meaning_ko !== undefined &&
+        String(currentWord.base_meaning_ko).trim() !== '' &&
+        !usedTexts.has(currentWord.base_meaning_ko)
+      ) {
+        usedTexts.add(currentWord.base_meaning_ko);
+        meaningChoices.push({
+          id: 'trap-base',
+          meaning_ko: currentWord.base_meaning_ko,
+          share_pct: null,
+          signal: null,
+          isCorrect: false,
+          isTrap: true
+        });
+      }
+
+      // 해당 단어의 다른 exam_meanings 추가
+      const otherOwnMeanings = shuffleArray(
+        (currentWord.exam_meanings || []).filter(
+          (m) => m && m.meaning_ko && !usedTexts.has(m.meaning_ko)
+        )
+      );
+      for (const m of otherOwnMeanings) {
+        if (meaningChoices.length >= 4) break;
+        usedTexts.add(m.meaning_ko);
+        meaningChoices.push({
+          id: `own-${meaningChoices.length}`,
+          meaning_ko: m.meaning_ko,
+          share_pct: m.share_pct,
+          signal: m.signal,
+          isCorrect: false,
+          isTrap: false
+        });
+      }
+
+      // 만약 해당 단어 자체의 뜻 개수가 4개 미만이면 다른 기출 단어의 실제 exam_meanings에서 보충 (없는 뜻을 지어내지 않음)
+      if (meaningChoices.length < 4) {
+        const poolFromOtherExamWords = [];
+        state.examWords.forEach((ew) => {
+          if (ew.id === currentWord.id) return;
+          (ew.exam_meanings || []).forEach((em) => {
+            if (em && em.meaning_ko && !usedTexts.has(em.meaning_ko)) {
+              poolFromOtherExamWords.push(em.meaning_ko);
+            }
+          });
+        });
+        for (const extraMeaning of shuffleArray(poolFromOtherExamWords)) {
+          if (meaningChoices.length >= 4) break;
+          if (usedTexts.has(extraMeaning)) continue;
+          usedTexts.add(extraMeaning);
+          meaningChoices.push({
+            id: `other-${meaningChoices.length}`,
+            meaning_ko: extraMeaning,
+            share_pct: null,
+            signal: null,
+            isCorrect: false,
+            isTrap: false
+          });
+        }
+      }
+
+      state.quiz.choices = shuffleArray(meaningChoices);
+      return;
+    }
+
     const others = state.words.filter((w) => w.id !== currentWord.id);
     // 같은 품사를 우선 오답 보기로 섞어 변별력 향상
     const samePos = shuffleArray(others.filter((w) => w.pos === currentWord.pos));
@@ -803,26 +1018,47 @@
   function maskWordInSentence(sentence, targetWord) {
     const escaped = targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(`\\b${escaped}[a-z]*\\b`, 'gi');
-    if (regex.test(sentence)) {
-      return sentence.replace(
-        regex,
-        '<span class="blank-slot" id="blank-slot-text">_______</span>'
+    const safeSentence = escapeHtml(sentence);
+    if (regex.test(safeSentence)) {
+      return safeSentence.replace(
+        new RegExp(`\\b${escaped}[a-z]*\\b`, 'gi'),
+        '<span class="blank-slot">_______</span>'
       );
     }
-    return `${escapeHtml(sentence)} (<span class="blank-slot" id="blank-slot-text">_______</span>)`;
+    return `${safeSentence} (<span class="blank-slot">_______</span>)`;
+  }
+
+  function highlightWordInSentence(sentence, targetWord) {
+    const escaped = targetWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const safeSentence = escapeHtml(sentence);
+    const regex = new RegExp(`\\b(${escaped}[a-z]*)\\b`, 'gi');
+    if (regex.test(safeSentence)) {
+      return safeSentence.replace(
+        new RegExp(`\\b(${escaped}[a-z]*)\\b`, 'gi'),
+        '<mark class="exam-highlight-word">$1</mark>'
+      );
+    }
+    return safeSentence;
   }
 
   function renderQuizView() {
     const container = document.getElementById('quiz-active-area');
     if (!container) return;
 
+    const mode = state.quiz.mode;
+    const isExamMode = isExamQuizMode(mode);
+
     if (state.quiz.queue.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
           <p class="empty-title">선택한 범위에 출제할 단어가 없습니다</p>
-          <p class="empty-desc">오답노트가 비어 있거나 모든 단어를 학습했습니다. 출제 범위를 '전체 단어 24개'로 변경해 보세요.</p>
+          <p class="empty-desc">${
+            isExamMode
+              ? "기출 오답노트가 비어 있거나 해당 범위의 기출 단어가 없습니다. '전체 기출 다의어 40개'로 시작해 보세요."
+              : "오답노트가 비어 있거나 모든 단어를 학습했습니다. 출제 범위를 '전체 단어 24개'로 변경해 보세요."
+          }</p>
           <button class="primary-cta-btn" type="button" id="btn-Fallback-all-quiz" style="max-width: 280px; margin: 0 auto;">
-            전체 단어로 퀴즈 시작하기
+            ${isExamMode ? '전체 기출 40단어로 시작하기' : '전체 단어로 퀴즈 시작하기'}
           </button>
         </div>
       `;
@@ -843,11 +1079,73 @@
     const idx = state.quiz.currentIndex;
     const progressPct = Math.round(((idx + 1) / total) * 100);
     const wordObj = state.quiz.queue[idx];
-    const mode = state.quiz.mode;
 
     let questionBodyHtml = '';
 
-    if (mode === 'meaning') {
+    if (mode === 'exam-blank') {
+      // 기출 모드 유형 1 — 기출 예문 빈칸 4지선다
+      const maskedSentence = maskWordInSentence(wordObj.example_en, wordObj.word);
+      const contextMeaningObj = getExamContextMeaningObj(wordObj);
+      questionBodyHtml = `
+        <div class="quiz-question-box">
+          <div style="margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+            <span class="mode-badge exam-badge">기출 모드 · 유형 1 (예문 빈칸)</span>
+            ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
+            ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
+            ${
+              contextMeaningObj && contextMeaningObj.meaning_ko
+                ? `<span style="font-size: 0.8rem; color: var(--text-secondary);">문맥 뜻: <strong>${escapeHtml(contextMeaningObj.meaning_ko)}</strong></span>`
+                : ''
+            }
+          </div>
+          <p class="quiz-blank-sentence">${maskedSentence}</p>
+          ${wordObj.example_ko ? `<p class="quiz-blank-ko">${escapeHtml(wordObj.example_ko)}</p>` : ''}
+        </div>
+        <div class="choices-grid" role="group" aria-label="기출 예문 빈칸 4지선다 보기">
+          ${state.quiz.choices
+            .map(
+              (choice, cIdx) => `
+            <button class="choice-btn" type="button" data-choice-id="${escapeHtml(choice.id)}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num">${cIdx + 1}</span>
+              <span style="font-family: var(--font-en); font-weight: 700;">${escapeHtml(choice.word)}</span>
+              ${choice.grade ? `<span class="grade-badge grade-${escapeHtml(choice.grade)}" style="margin-left: auto;">${escapeHtml(choice.grade)}급</span>` : ''}
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+    } else if (mode === 'exam-meaning') {
+      // 기출 모드 유형 2 — 문맥 속 뜻 4지선다 (기본 뜻 함정 포함)
+      const highlightedSentence = highlightWordInSentence(wordObj.example_en, wordObj.word);
+      questionBodyHtml = `
+        <div class="quiz-question-box">
+          <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+            <span class="mode-badge exam-badge">기출 모드 · 유형 2 (문맥 속 뜻)</span>
+            ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
+            ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
+          </div>
+          <h3 class="quiz-target-word" style="font-size: 1.65rem; margin-bottom: 8px;">${escapeHtml(wordObj.word)}</h3>
+          <p class="quiz-blank-sentence" style="margin-bottom: 8px;">${highlightedSentence}</p>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            위 기출 문장에서 <strong>${escapeHtml(wordObj.word)}</strong>가 어떤 뜻으로 쓰였는지 고르세요
+            ${wordObj.base_meaning_ko ? `(기본 뜻 함정 주의!)` : ''}
+          </p>
+        </div>
+        <div class="choices-grid" role="group" aria-label="문맥 속 뜻 4지선다 보기">
+          ${state.quiz.choices
+            .map(
+              (choice, cIdx) => `
+            <button class="choice-btn" type="button" data-choice-id="${escapeHtml(choice.id)}" data-is-trap="${choice.isTrap ? 'true' : 'false'}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num">${cIdx + 1}</span>
+              <span>${escapeHtml(choice.meaning_ko)}</span>
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+    } else if (mode === 'meaning') {
       // (a) 뜻 맞히기 4지선다
       questionBodyHtml = `
         <div class="quiz-question-box">
@@ -972,11 +1270,11 @@
       });
     }
 
-    if (mode === 'meaning' || mode === 'blank') {
+    if (mode === 'meaning' || mode === 'blank' || mode === 'exam-blank' || mode === 'exam-meaning') {
       container.querySelectorAll('.choice-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           if (state.quiz.answered) return;
-          const chosenId = Number(btn.dataset.choiceId);
+          const chosenId = btn.dataset.choiceId;
           handleMultipleChoiceAnswer(chosenId, btn);
         });
       });
@@ -1001,26 +1299,35 @@
 
   function handleMultipleChoiceAnswer(chosenId, clickedBtn) {
     state.quiz.answered = true;
+    const mode = state.quiz.mode;
     const wordObj = state.quiz.queue[state.quiz.currentIndex];
-    const isCorrect = chosenId === wordObj.id;
+    const isExamMode = isExamQuizMode(mode);
 
-    // 빈칸 채우기 모드일 경우 빈칸에 정답 채워 넣기
-    const blankSlot = document.getElementById('blank-slot-text');
-    if (blankSlot) {
-      blankSlot.textContent = wordObj.word;
-    }
+    const correctChoiceId = mode === 'exam-meaning' ? 'correct' : String(wordObj.id);
+    const isCorrect = String(chosenId) === correctChoiceId;
+
+    // 빈칸 채우기 모드일 경우 모든 빈칸에 정답 채워 넣기
+    document.querySelectorAll('#quiz-active-area .blank-slot').forEach((slot) => {
+      slot.textContent = wordObj.word;
+    });
 
     document.querySelectorAll('#quiz-active-area .choice-btn').forEach((btn) => {
-      const cid = Number(btn.dataset.choiceId);
+      const cid = String(btn.dataset.choiceId);
       btn.disabled = true;
-      if (cid === wordObj.id) {
+      if (cid === correctChoiceId) {
         btn.classList.add('correct');
       } else if (btn === clickedBtn && !isCorrect) {
         btn.classList.add('wrong');
       }
+      if (mode === 'exam-meaning' && btn.dataset.isTrap === 'true') {
+        const trapTag = document.createElement('span');
+        trapTag.className = 'trap-pill';
+        trapTag.textContent = '기본 뜻 함정';
+        btn.appendChild(trapTag);
+      }
     });
 
-    const outcome = recordQuizAnswer(wordObj.id, isCorrect);
+    const outcome = recordQuizAnswer(wordObj.id, isCorrect, mode);
     state.quiz.results.push(outcome);
 
     const feedbackSlot = document.getElementById('quiz-feedback-slot');
@@ -1029,14 +1336,47 @@
         ? `복습 간격 ${outcome.intervalDays}일 적용 (${formatKoreanShortDate(outcome.nextReviewDate)} 복습 예정)`
         : `오답노트 자동 저장 · 내일(${formatKoreanShortDate(outcome.nextReviewDate)}) 재출제`;
 
+      const contextMeaningObj = isExamMode ? getExamContextMeaningObj(wordObj) : null;
+      const targetMeaningText = isExamMode
+        ? (contextMeaningObj && contextMeaningObj.meaning_ko) || ''
+        : wordObj.meaning_ko || '';
+
+      const clickedTrap = mode === 'exam-meaning' && clickedBtn && clickedBtn.dataset.isTrap === 'true';
+
       feedbackSlot.innerHTML = `
         <div class="quiz-feedback">
           <div class="feedback-header ${isCorrect ? 'correct' : 'wrong'}">
-            <span>${isCorrect ? '정답입니다! 🎉' : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(wordObj.meaning_ko)})`}</span>
+            <span>${
+              isCorrect
+                ? '정답입니다! 🎉'
+                : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(targetMeaningText)})`
+            }</span>
           </div>
+          ${
+            clickedTrap && wordObj.base_meaning_ko
+              ? `<p style="font-size: 0.8rem; color: var(--amber-primary); font-weight: 700; margin-bottom: 4px;">
+                  ⚠️ 기본 뜻('${escapeHtml(wordObj.base_meaning_ko)}') 함정에 주의하세요! 이 기출 문장에서는 '${escapeHtml(targetMeaningText)}' 뜻으로 쓰였습니다.
+                </p>`
+              : ''
+          }
           <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 4px;">
             <strong>예문:</strong> ${escapeHtml(wordObj.example_en)}
           </p>
+          ${
+            isExamMode && wordObj.example_ko
+              ? `<p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">
+                  <strong>해석:</strong> ${escapeHtml(wordObj.example_ko)}
+                  ${wordObj.source_note ? `<span style="color: var(--text-muted);">(${escapeHtml(wordObj.source_note)} 기출)</span>` : ''}
+                </p>`
+              : ''
+          }
+          ${
+            isExamMode && wordObj.signal
+              ? `<p style="font-size: 0.78rem; color: var(--amber-primary); margin-bottom: 4px;">
+                  <strong>💡 판단 신호:</strong> ${escapeHtml(wordObj.signal)}
+                </p>`
+              : ''
+          }
           <p style="font-size: 0.78rem; color: var(--text-muted);">
             📅 간격반복(SRS): ${escapeHtml(scheduleMsg)}
           </p>
@@ -1057,7 +1397,7 @@
     if (state.quiz.answered) return;
     state.quiz.answered = true;
     const wordObj = state.quiz.queue[state.quiz.currentIndex];
-    const outcome = recordQuizAnswer(wordObj.id, isKnown);
+    const outcome = recordQuizAnswer(wordObj.id, isKnown, state.quiz.mode);
     state.quiz.results.push(outcome);
 
     showToast(
@@ -1111,13 +1451,17 @@
         <div style="text-align: left; margin-bottom: 18px; max-height: 240px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px;">
           ${state.quiz.results
             .map((res) => {
-              const w = state.words.find((item) => item.id === res.wordId);
+              const w = findWordById(res.wordId);
               if (!w) return '';
+              const meaningLabel = w.isExam
+                ? getExamContextMeaningObj(w).meaning_ko || ''
+                : w.meaning_ko || '';
               return `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem;">
                   <div>
                     <strong style="font-family: var(--font-en);">${escapeHtml(w.word)}</strong>
-                    <span style="color: var(--text-secondary); margin-left: 6px;">${escapeHtml(w.meaning_ko)}</span>
+                    ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}" style="margin-left: 4px;">${escapeHtml(w.grade)}급</span>` : ''}
+                    <span style="color: var(--text-secondary); margin-left: 6px;">${escapeHtml(meaningLabel)}</span>
                   </div>
                   <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
                     ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}

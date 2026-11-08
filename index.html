@@ -191,6 +191,7 @@
       <!-- 3. 퀴즈 화면 (Quiz View) -->
       <section id="view-quiz" class="view-section" aria-label="퀴즈 화면">
         <div class="quiz-config-bar">
+          <div class="quiz-group-caption">기본 퀴즈 3종 (샘플 24단어)</div>
           <div class="quiz-tabs" role="tablist" aria-label="퀴즈 유형 선택">
             <button class="quiz-tab-btn active" type="button" data-quiz-mode="meaning" id="tab-quiz-meaning">
               (a) 뜻 맞히기
@@ -200,6 +201,16 @@
             </button>
             <button class="quiz-tab-btn" type="button" data-quiz-mode="flashcard" id="tab-quiz-flashcard">
               (c) 카드 뒤집기
+            </button>
+          </div>
+
+          <div class="quiz-group-caption exam-caption">기출 모드 (수능·모의고사 다의어 40단어)</div>
+          <div class="quiz-tabs exam-quiz-tabs" role="tablist" aria-label="기출 모드 유형 선택">
+            <button class="quiz-tab-btn exam-tab-btn" type="button" data-quiz-mode="exam-blank" id="tab-quiz-exam-blank">
+              유형 1 · 기출 예문 빈칸
+            </button>
+            <button class="quiz-tab-btn exam-tab-btn" type="button" data-quiz-mode="exam-meaning" id="tab-quiz-exam-meaning">
+              유형 2 · 문맥 속 뜻
             </button>
           </div>
 
