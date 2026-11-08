@@ -861,6 +861,23 @@
     );
   }
 
+  function getEffectiveQuestionMode(quizMode, wordObj) {
+    const isExamWord = Boolean(wordObj && wordObj.isExam);
+    if (quizMode === 'flashcard') {
+      return 'flashcard';
+    }
+    if (isExamWord) {
+      if (quizMode === 'meaning' || quizMode === 'exam-meaning') {
+        return 'exam-meaning';
+      }
+      return 'exam-blank';
+    }
+    if (quizMode === 'blank' || quizMode === 'exam-blank') {
+      return 'blank';
+    }
+    return 'meaning';
+  }
+
   function syncQuizScopeSelect(mode, requestedScope) {
     const scopeSelect = document.getElementById('quiz-scope-select');
     if (!scopeSelect) return requestedScope || 'today';
@@ -869,7 +886,7 @@
       const validExamScopes = ['today', 'all', 'S', 'A', 'wrong'];
       const nextScope = validExamScopes.includes(requestedScope) ? requestedScope : 'today';
       scopeSelect.innerHTML = `
-        <option value="today">오늘 복습 + 미학습 기출 단어 (추천)</option>
+        <option value="today">오늘 복습 + 미학습 단어 (샘플+기출 통합)</option>
         <option value="all">전체 기출 다의어 40개</option>
         <option value="S">S급 기출 다의어 (14개)</option>
         <option value="A">A급 기출 다의어 (26개)</option>
@@ -882,7 +899,7 @@
     const validSampleScopes = ['today', 'all', 'wrong'];
     const nextScope = validSampleScopes.includes(requestedScope) ? requestedScope : 'today';
     scopeSelect.innerHTML = `
-      <option value="today">오늘 복습 + 미학습 단어 (추천)</option>
+      <option value="today">오늘 복습 + 미학습 단어 (샘플+기출 통합)</option>
       <option value="all">전체 단어 24개</option>
       <option value="wrong">오답노트 단어만</option>
     `;
@@ -891,6 +908,19 @@
   }
 
   function buildQuizQueue(scope, mode) {
+    // 복습 시작(today) 시 홈 화면 '오늘 복습할 단어 N개'와 일치하도록 샘플+기출 통합 출제
+    if (scope === 'today') {
+      const dueAll = getDueWords();
+      if (dueAll.length > 0) {
+        return shuffleArray(dueAll);
+      }
+      const unseenAll = getNewWords();
+      if (unseenAll.length > 0) {
+        return shuffleArray(unseenAll);
+      }
+      return shuffleArray([...state.words, ...state.examWords]);
+    }
+
     if (isExamQuizMode(mode)) {
       if (scope === 'wrong') {
         return shuffleArray(getWrongExamWords());
@@ -898,30 +928,11 @@
       if (scope === 'S' || scope === 'A') {
         return shuffleArray(state.examWords.filter((w) => w.grade === scope));
       }
-      if (scope === 'today') {
-        const dueExam = getDueExamWords();
-        const unseenExam = getNewExamWords();
-        const combined = [...shuffleArray(dueExam), ...shuffleArray(unseenExam)];
-        if (combined.length > 0) {
-          return combined.slice(0, Math.max(dueExam.length, Math.min(15, combined.length)));
-        }
-        return shuffleArray(state.examWords).slice(0, 12);
-      }
       return shuffleArray(state.examWords);
     }
 
     if (scope === 'wrong') {
       return shuffleArray(getWrongSampleWords());
-    }
-    if (scope === 'today') {
-      const due = getDueSampleWords();
-      const unseen = getNewSampleWords();
-      // 오늘 복습할 단어를 최우선 출제하고, 부족하면 미학습 단어 추가 (최대 12문항 세션)
-      const combined = [...shuffleArray(due), ...shuffleArray(unseen)];
-      if (combined.length > 0) {
-        return combined.slice(0, Math.max(due.length, Math.min(12, combined.length)));
-      }
-      return shuffleArray(state.words).slice(0, 10);
     }
     return shuffleArray(state.words);
   }
@@ -1062,7 +1073,7 @@
     state.quiz.answered = false;
     state.quiz.flipped = false;
 
-    const mode = state.quiz.mode;
+    const mode = getEffectiveQuestionMode(state.quiz.mode, currentWord);
 
     if (mode === 'exam-blank') {
       // 기출 모드 유형 1 — 기출 예문 빈칸 (빈칸에 넣어도 문장이 성립하는 단어 배제)
@@ -1202,20 +1213,20 @@
     const container = document.getElementById('quiz-active-area');
     if (!container) return;
 
-    const mode = state.quiz.mode;
-    const isExamMode = isExamQuizMode(mode);
+    const sessionMode = state.quiz.mode;
+    const isExamSessionMode = isExamQuizMode(sessionMode);
 
     if (state.quiz.queue.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
           <p class="empty-title">선택한 범위에 출제할 단어가 없습니다</p>
           <p class="empty-desc">${
-            isExamMode
+            isExamSessionMode
               ? "기출 오답노트가 비어 있거나 해당 범위의 기출 단어가 없습니다. '전체 기출 다의어 40개'로 시작해 보세요."
               : "오답노트가 비어 있거나 모든 단어를 학습했습니다. 출제 범위를 '전체 단어 24개'로 변경해 보세요."
           }</p>
           <button class="primary-cta-btn" type="button" id="btn-Fallback-all-quiz" style="max-width: 280px; margin: 0 auto;">
-            ${isExamMode ? '전체 기출 40단어로 시작하기' : '전체 단어로 퀴즈 시작하기'}
+            ${isExamSessionMode ? '전체 기출 40단어로 시작하기' : '전체 단어로 퀴즈 시작하기'}
           </button>
         </div>
       `;
@@ -1236,6 +1247,7 @@
     const idx = state.quiz.currentIndex;
     const progressPct = Math.round(((idx + 1) / total) * 100);
     const wordObj = state.quiz.queue[idx];
+    const mode = getEffectiveQuestionMode(sessionMode, wordObj);
 
     let questionBodyHtml = '';
 
@@ -1354,14 +1366,27 @@
         </div>
       `;
     } else {
-      // (c) 카드 뒤집기 자기 판정 (알아요 / 몰라요)
+      // (c) 카드 뒤집기 자기 판정 (알아요 / 몰라요) — 샘플 단어 및 기출 다의어 통합 지원
       const isFlipped = state.quiz.flipped;
+      const isExamCard = Boolean(wordObj.isExam);
+      const cardMeaning = isExamCard
+        ? getExamContextMeaningObj(wordObj).meaning_ko || ''
+        : wordObj.meaning_ko || '';
+      const cardMetaHtml = isExamCard
+        ? `
+          ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
+          ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
+        `
+        : `
+          <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
+          <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+        `;
+
       questionBodyHtml = `
         <div class="flashcard-container">
           <div class="flashcard-box ${isFlipped ? 'flipped' : ''}" id="flashcard-flip-box" role="button" tabindex="0" aria-label="플래시카드 뒤집기">
             <div>
-              <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
-              <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+              ${cardMetaHtml}
             </div>
             <h3 class="quiz-target-word" style="margin-top: 8px;">${escapeHtml(wordObj.word)}</h3>
 
@@ -1369,7 +1394,12 @@
               isFlipped
                 ? `
               <div class="flashcard-back-details">
-                <p class="flashcard-meaning">${escapeHtml(wordObj.meaning_ko)}</p>
+                <p class="flashcard-meaning">${escapeHtml(cardMeaning)}</p>
+                ${
+                  isExamCard && wordObj.base_meaning_ko
+                    ? `<p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">기본 뜻: ${escapeHtml(wordObj.base_meaning_ko)}</p>`
+                    : ''
+                }
                 <p class="word-example-en" style="margin-bottom: 4px;">"${escapeHtml(wordObj.example_en)}"</p>
                 <p class="word-example-ko">${escapeHtml(wordObj.example_ko)}</p>
               </div>
@@ -1456,8 +1486,8 @@
 
   function handleMultipleChoiceAnswer(chosenId, clickedBtn) {
     state.quiz.answered = true;
-    const mode = state.quiz.mode;
     const wordObj = state.quiz.queue[state.quiz.currentIndex];
+    const mode = getEffectiveQuestionMode(state.quiz.mode, wordObj);
     const isExamMode = isExamQuizMode(mode);
 
     const correctChoiceId = mode === 'exam-meaning' ? 'correct' : String(wordObj.id);
