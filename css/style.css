@@ -213,7 +213,6 @@ button {
 .league-summary strong,
 .league-rank,
 .league-xp,
-.summary-row-tag,
 .nav-badge,
 .badge-item.unlocked .badge-sub {
   font-family: var(--font-num);
@@ -254,6 +253,11 @@ button {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.brand-group > div {
   min-width: 0;
 }
 
@@ -271,6 +275,9 @@ button {
   line-height: 1.45;
   letter-spacing: -0.015em;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-subtitle {
@@ -291,6 +298,7 @@ button {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 /* 스트릭·레벨 칩: 동일한 무채색 칩 */
