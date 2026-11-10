@@ -494,13 +494,13 @@
 
   // --- 배지 시스템 (DESIGN.md 4장, 7종) ---
   const BADGE_DEFS = [
-    { id: 'first_clear', name: '첫 완주', icon: 'flag', desc: '퀴즈 세션을 1개 끝까지 완료' },
-    { id: 'streak_3', name: '3일 연속 학습', icon: 'sprout', desc: '연속 학습일 3일 이상' },
-    { id: 'streak_7', name: '7일 연속', icon: 'flame', desc: '연속 학습일 7일 이상' },
-    { id: 'combo_10', name: '10연속 정답', icon: 'zap', desc: '한 세션에서 10문제 연속 정답' },
-    { id: 'exam_s_all', name: '기출 S급 전파', icon: 'award', desc: '기출 S급 14개 모두 SRS 1단계 이상' },
-    { id: 'srs_stage4_10', name: '장기 기억 마스터', icon: 'layers', desc: 'SRS 4단계(14일 완성) 단어 10개 이상' },
-    { id: 'all_64_learned', name: '64단어 전수 학습', icon: 'graduation-cap', desc: '기본 24 + 기출 40단어 모두 1회 이상 학습' }
+    { id: 'first_clear', name: '첫 완주', icon: '🏁', desc: '퀴즈 세션을 1개 끝까지 완료' },
+    { id: 'streak_3', name: '3일 연속 학습', icon: '🌱', desc: '연속 학습일 3일 이상' },
+    { id: 'streak_7', name: '7일 연속', icon: '🔥', desc: '연속 학습일 7일 이상' },
+    { id: 'combo_10', name: '10연속 정답', icon: '⚡', desc: '한 세션에서 10문제 연속 정답' },
+    { id: 'exam_s_all', name: '기출 S급 전파', icon: '👑', desc: '기출 S급 14개 모두 SRS 1단계 이상' },
+    { id: 'srs_stage4_10', name: '장기 기억 마스터', icon: '🧠', desc: 'SRS 4단계(14일 완성) 단어 10개 이상' },
+    { id: 'all_64_learned', name: '64단어 전수 학습', icon: '🎓', desc: '기본 24 + 기출 40단어 모두 1회 이상 학습' }
   ];
 
   function isBadgeConditionMet(badgeId) {
@@ -552,7 +552,7 @@
       saveStateToStorage();
       const names = unlocked.map((d) => d.name).join(', ');
       // 같은 틱의 다른 토스트(카드 판정 안내 등)에 덮어쓰이지 않도록 지연 표시
-      setTimeout(() => showToast(`새 배지 획득: ${names}`), 0);
+      setTimeout(() => showToast(`🏆 새 배지 획득: ${names}`), 0);
       playBadgeSfx();
       unlocked.forEach((d) => justUnlockedBadgeIds.add(d.id));
     }
@@ -572,7 +572,7 @@
       const got = state.gamification.badges[def.id];
       return `
         <div class="badge-item ${got ? 'unlocked' : 'locked'}${justUnlockedBadgeIds.has(def.id) ? ' just-unlocked' : ''}">
-          <span class="badge-icon" aria-hidden="true">${svgIcon(def.icon)}</span>
+          <span class="badge-icon" aria-hidden="true">${def.icon}</span>
           <strong class="badge-name">${escapeHtml(def.name)}</strong>
           <span class="badge-sub">${
             got ? `${escapeHtml(formatBadgeDate(got.unlockedAt))} 획득` : escapeHtml(def.desc)
@@ -895,14 +895,7 @@
     volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />',
     'volume-off': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />',
     moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />',
-    sun: '<circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />',
-    flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />',
-    sprout: '<path d="M7 20h10" /><path d="M10 20c5.5-2.5.8-6.4 3-10" /><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" /><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />',
-    flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />',
-    zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />',
-    award: '<circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />',
-    layers: '<polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" />',
-    'graduation-cap': '<path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />'
+    sun: '<circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />'
   };
 
   function svgIcon(name) {
@@ -994,7 +987,7 @@
       } else if (newWords.length > 0) {
         greetingTitle.textContent = `오늘의 복습 완료! 새 단어 ${newWords.length}개를 학습해 보세요`;
       } else {
-        greetingTitle.textContent = `오늘 예정된 모든 단어 복습을 마쳤습니다!`;
+        greetingTitle.textContent = `✨ 오늘 예정된 모든 복습을 마쳤습니다!`;
       }
     }
 
@@ -1224,7 +1217,7 @@
           hasWordSignal
             ? `
           <div class="exam-word-signal">
-            <span class="exam-word-signal-label">판단 신호</span>
+            <span class="exam-word-signal-label">💡 판단 신호</span>
             <p class="exam-word-signal-body">${escapeHtml(w.signal)}</p>
           </div>
         `
@@ -1858,7 +1851,7 @@
     if (state.quiz.queue.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
-          <p class="empty-title">선택한 범위에 출제할 단어가 없습니다</p>
+          <p class="empty-title">${state.quiz.scope === 'today' ? '✨ 오늘 예정된 모든 복습을 마쳤습니다!' : '선택한 범위에 출제할 단어가 없습니다'}</p>
           <p class="empty-desc">${
             isExamSessionMode
               ? "기출 오답노트가 비어 있거나 해당 범위의 기출 단어가 없습니다. '전체 기출 다의어 40개'로 시작해 보세요."
@@ -2178,7 +2171,7 @@
           <div class="feedback-header ${isCorrect ? 'correct' : 'wrong'}">
             <span>${
               isCorrect
-                ? '정답입니다'
+                ? '🎉 정답입니다!'
                 : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(targetMeaningText)})`
             }</span>
             ${renderXpGainPill(outcome.xp)}
@@ -2205,7 +2198,7 @@
           ${
             isExamMode && wordObj.signal
               ? `<p class="feedback-line feedback-signal">
-                  <strong>판단 신호:</strong> ${escapeHtml(wordObj.signal)}
+                  <strong>💡 판단 신호:</strong> ${escapeHtml(wordObj.signal)}
                 </p>`
               : ''
           }
@@ -2249,7 +2242,7 @@
       pill.classList.add('pulse');
     }
     playLevelUpSfx();
-    showToast(`레벨 업 · Lv.${xp.newLevel} 달성`);
+    showToast(`🎉 레벨 업! Lv.${xp.newLevel} 달성!`);
   }
 
   function handleFlashcardJudge(isKnown) {
@@ -2294,7 +2287,7 @@
     evaluateBadges();
     const levelUpBanner =
       state.gamification.level > state.quiz.sessionStartLevel
-        ? `<div class="levelup-banner">레벨 업 · <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
+        ? `<div class="levelup-banner">🎉 레벨 업! <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
         : '';
     const total = state.quiz.results.length;
     const correctCount = state.quiz.results.filter((r) => r.isCorrect).length;
@@ -2305,7 +2298,7 @@
     container.innerHTML = `
       <div class="quiz-stage-card quiz-summary">
         ${levelUpBanner}
-        <span class="hero-date-label">학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
+        <span class="hero-date-label">🎯 학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
         <h3 class="hero-headline">
           총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
         </h3>
