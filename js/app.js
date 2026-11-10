@@ -179,7 +179,7 @@
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     const btn = document.getElementById('btn-toggle-theme');
     if (btn) {
-      btn.textContent = dark ? '☀️' : '🌙';
+      btn.innerHTML = svgIcon(dark ? 'sun' : 'moon');
       btn.setAttribute('aria-label', dark ? '라이트 모드로 전환' : '다크 모드로 전환');
     }
   }
@@ -187,7 +187,7 @@
   function applySoundToggleUi() {
     const btn = document.getElementById('btn-toggle-sound');
     if (btn) {
-      btn.textContent = state.prefs.soundEnabled ? '🔊' : '🔇';
+      btn.innerHTML = svgIcon(state.prefs.soundEnabled ? 'volume' : 'volume-off');
       btn.setAttribute('aria-label', state.prefs.soundEnabled ? '효과음 끄기' : '효과음 켜기');
     }
   }
@@ -494,13 +494,13 @@
 
   // --- 배지 시스템 (DESIGN.md 4장, 7종) ---
   const BADGE_DEFS = [
-    { id: 'first_clear', name: '첫 완주', icon: '🏁', desc: '퀴즈 세션을 1개 끝까지 완료' },
-    { id: 'streak_3', name: '3일 연속 학습', icon: '🌱', desc: '연속 학습일 3일 이상' },
-    { id: 'streak_7', name: '7일 연속', icon: '🔥', desc: '연속 학습일 7일 이상' },
-    { id: 'combo_10', name: '10연속 정답', icon: '⚡', desc: '한 세션에서 10문제 연속 정답' },
-    { id: 'exam_s_all', name: '기출 S급 전파', icon: '👑', desc: '기출 S급 14개 모두 SRS 1단계 이상' },
-    { id: 'srs_stage4_10', name: '장기 기억 마스터', icon: '🧠', desc: 'SRS 4단계(14일 완성) 단어 10개 이상' },
-    { id: 'all_64_learned', name: '64단어 전수 학습', icon: '🎓', desc: '기본 24 + 기출 40단어 모두 1회 이상 학습' }
+    { id: 'first_clear', name: '첫 완주', icon: 'flag', desc: '퀴즈 세션을 1개 끝까지 완료' },
+    { id: 'streak_3', name: '3일 연속 학습', icon: 'sprout', desc: '연속 학습일 3일 이상' },
+    { id: 'streak_7', name: '7일 연속', icon: 'flame', desc: '연속 학습일 7일 이상' },
+    { id: 'combo_10', name: '10연속 정답', icon: 'zap', desc: '한 세션에서 10문제 연속 정답' },
+    { id: 'exam_s_all', name: '기출 S급 전파', icon: 'award', desc: '기출 S급 14개 모두 SRS 1단계 이상' },
+    { id: 'srs_stage4_10', name: '장기 기억 마스터', icon: 'layers', desc: 'SRS 4단계(14일 완성) 단어 10개 이상' },
+    { id: 'all_64_learned', name: '64단어 전수 학습', icon: 'graduation-cap', desc: '기본 24 + 기출 40단어 모두 1회 이상 학습' }
   ];
 
   function isBadgeConditionMet(badgeId) {
@@ -552,7 +552,7 @@
       saveStateToStorage();
       const names = unlocked.map((d) => d.name).join(', ');
       // 같은 틱의 다른 토스트(카드 판정 안내 등)에 덮어쓰이지 않도록 지연 표시
-      setTimeout(() => showToast(`🏅 새 배지 획득: ${names}`), 0);
+      setTimeout(() => showToast(`새 배지 획득: ${names}`), 0);
       playBadgeSfx();
       unlocked.forEach((d) => justUnlockedBadgeIds.add(d.id));
     }
@@ -572,7 +572,7 @@
       const got = state.gamification.badges[def.id];
       return `
         <div class="badge-item ${got ? 'unlocked' : 'locked'}${justUnlockedBadgeIds.has(def.id) ? ' just-unlocked' : ''}">
-          <span class="badge-icon" aria-hidden="true">${def.icon}</span>
+          <span class="badge-icon" aria-hidden="true">${svgIcon(def.icon)}</span>
           <strong class="badge-name">${escapeHtml(def.name)}</strong>
           <span class="badge-sub">${
             got ? `${escapeHtml(formatBadgeDate(got.unlockedAt))} 획득` : escapeHtml(def.desc)
@@ -863,7 +863,7 @@
       }
 
       window.speechSynthesis.speak(utterance);
-      showToast(`🔊 발음 재생: "${text}"`);
+      showToast(`발음 재생: "${text}"`);
     } catch (err) {
       showToast('발음 재생 중 오류가 발생했습니다.');
     }
@@ -888,6 +888,25 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  // --- 단색 선형 SVG 아이콘 (DESIGN_REDESIGN.md 5.2 · 5.3). 크기는 CSS에서 지정 ---
+  const ICON_PATHS = {
+    volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />',
+    'volume-off': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />',
+    moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />',
+    sun: '<circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />',
+    flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />',
+    sprout: '<path d="M7 20h10" /><path d="M10 20c5.5-2.5.8-6.4 3-10" /><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" /><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />',
+    flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />',
+    zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />',
+    award: '<circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />',
+    layers: '<polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" />',
+    'graduation-cap': '<path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />'
+  };
+
+  function svgIcon(name) {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
   }
 
   function shuffleArray(arr) {
@@ -1170,7 +1189,7 @@
             ${wrongBadgesHtml}
           </div>
           <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}" aria-label="${escapeHtml(w.word)} 단어 발음 재생">
-            <span aria-hidden="true">🔊</span>
+            ${svgIcon('volume')}
             <span>발음</span>
           </button>
         </div>
@@ -1205,7 +1224,7 @@
           hasWordSignal
             ? `
           <div class="exam-word-signal">
-            <span class="exam-word-signal-label">💡 판단 신호</span>
+            <span class="exam-word-signal-label">판단 신호</span>
             <p class="exam-word-signal-body">${escapeHtml(w.signal)}</p>
           </div>
         `
@@ -1226,12 +1245,13 @@
 
         <div class="word-card-footer">
           <span class="srs-tag ${srsMeta.cls}">${escapeHtml(srsMeta.text)}</span>
-          <div style="display: flex; gap: 6px; align-items: center;">
+          <div class="word-card-actions">
             ${
               hasExampleEn
                 ? `
               <button class="mini-btn" type="button" data-action="speak-sentence" data-speak-text="${escapeHtml(w.example_en)}">
-                🔊 예문 듣기
+                ${svgIcon('volume')}
+                예문 듣기
               </button>
             `
                 : ''
@@ -1352,7 +1372,7 @@
                 ${wrongInfo ? renderWrongModeBadges(wrongInfo, false, true) : ''}
               </div>
               <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}" aria-label="${escapeHtml(w.word)} 단어 발음 재생">
-                <span aria-hidden="true">🔊</span>
+                ${svgIcon('volume')}
                 <span>발음</span>
               </button>
             </div>
@@ -1367,7 +1387,8 @@
             <div class="word-card-footer">
               <span class="srs-tag ${srsMeta.cls}">${escapeHtml(srsMeta.text)}</span>
               <button class="mini-btn" type="button" data-action="speak-sentence" data-speak-text="${escapeHtml(w.example_en)}">
-                🔊 예문 듣기
+                ${svgIcon('volume')}
+                예문 듣기
               </button>
             </div>
           </article>
@@ -1843,7 +1864,7 @@
               ? "기출 오답노트가 비어 있거나 해당 범위의 기출 단어가 없습니다. '전체 기출 다의어 40개'로 시작해 보세요."
               : "오답노트가 비어 있거나 모든 단어를 학습했습니다. 출제 범위를 '전체 단어 24개'로 변경해 보세요."
           }</p>
-          <button class="primary-cta-btn" type="button" id="btn-Fallback-all-quiz" style="max-width: 280px; margin: 0 auto;">
+          <button class="primary-cta-btn" type="button" id="btn-Fallback-all-quiz">
             ${isExamSessionMode ? '전체 기출 40단어로 시작하기' : '전체 단어로 퀴즈 시작하기'}
           </button>
         </div>
@@ -1875,13 +1896,13 @@
       const contextMeaningObj = getExamContextMeaningObj(wordObj);
       questionBodyHtml = `
         <div class="quiz-question-box">
-          <div style="margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+          <div class="quiz-meta-row">
             <span class="mode-badge exam-badge">기출 모드 · 유형 1 (예문 빈칸)</span>
             ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
             ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
             ${
               contextMeaningObj && contextMeaningObj.meaning_ko
-                ? `<span style="font-size: 0.8rem; color: var(--text-secondary);">문맥 뜻: <strong>${escapeHtml(contextMeaningObj.meaning_ko)}</strong></span>`
+                ? `<span class="quiz-context-meaning">문맥 뜻: <strong>${escapeHtml(contextMeaningObj.meaning_ko)}</strong></span>`
                 : ''
             }
           </div>
@@ -1894,8 +1915,8 @@
               (choice, cIdx) => `
             <button class="choice-btn" type="button" data-choice-id="${escapeHtml(choice.id)}" id="quiz-choice-${cIdx + 1}">
               <span class="choice-num">${cIdx + 1}</span>
-              <span style="font-family: var(--font-en); font-weight: 700;">${escapeHtml(choice.word)}</span>
-              ${choice.grade ? `<span class="grade-badge grade-${escapeHtml(choice.grade)}" style="margin-left: auto;">${escapeHtml(choice.grade)}급</span>` : ''}
+              <span class="choice-word">${escapeHtml(choice.word)}</span>
+              ${choice.grade ? `<span class="grade-badge grade-${escapeHtml(choice.grade)}">${escapeHtml(choice.grade)}급</span>` : ''}
             </button>
           `
             )
@@ -1907,14 +1928,14 @@
       const highlightedSentence = highlightWordInSentence(wordObj.example_en, wordObj.word);
       questionBodyHtml = `
         <div class="quiz-question-box">
-          <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+          <div class="quiz-meta-row">
             <span class="mode-badge exam-badge">기출 모드 · 유형 2 (문맥 속 뜻)</span>
             ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
             ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
           </div>
-          <h3 class="quiz-target-word" style="font-size: 1.65rem; margin-bottom: 8px;">${escapeHtml(wordObj.word)}</h3>
-          <p class="quiz-blank-sentence" style="margin-bottom: 8px;">${highlightedSentence}</p>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
+          <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
+          <p class="quiz-blank-sentence">${highlightedSentence}</p>
+          <p class="quiz-hint-text">
             위 기출 문장에서 <strong>${escapeHtml(wordObj.word)}</strong>가 어떤 뜻으로 쓰였는지 고르세요
             ${wordObj.base_meaning_ko ? `(기본 뜻 함정 주의!)` : ''}
           </p>
@@ -1936,12 +1957,12 @@
       // (a) 뜻 맞히기 4지선다
       questionBodyHtml = `
         <div class="quiz-question-box">
-          <div style="margin-bottom: 6px;">
+          <div class="quiz-meta-row">
             <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
             <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
           </div>
           <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">위 영단어의 알맞은 한국어 뜻을 고르세요</p>
+          <p class="quiz-hint-text">위 영단어의 알맞은 한국어 뜻을 고르세요</p>
         </div>
         <div class="choices-grid" role="group" aria-label="한국어 뜻 4지선다 보기">
           ${state.quiz.choices
@@ -1961,10 +1982,10 @@
       const maskedSentence = maskWordInSentence(wordObj.example_en, wordObj.word);
       questionBodyHtml = `
         <div class="quiz-question-box">
-          <div style="margin-bottom: 10px;">
+          <div class="quiz-meta-row">
             <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
             <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
-            <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 4px;">뜻 힌트: <strong>${escapeHtml(wordObj.meaning_ko)}</strong></span>
+            <span class="quiz-context-meaning">뜻 힌트: <strong>${escapeHtml(wordObj.meaning_ko)}</strong></span>
           </div>
           <p class="quiz-blank-sentence">${maskedSentence}</p>
           <p class="quiz-blank-ko">${escapeHtml(wordObj.example_ko)}</p>
@@ -1975,8 +1996,8 @@
               (choice, cIdx) => `
             <button class="choice-btn" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
               <span class="choice-num">${cIdx + 1}</span>
-              <span style="font-family: var(--font-en); font-weight: 700;">${escapeHtml(choice.word)}</span>
-              <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: auto;">${escapeHtml(choice.pos)}</span>
+              <span class="choice-word">${escapeHtml(choice.word)}</span>
+              <span class="choice-pos">${escapeHtml(choice.pos)}</span>
             </button>
           `
             )
@@ -2006,7 +2027,7 @@
             <div>
               ${cardMetaHtml}
             </div>
-            <h3 class="quiz-target-word" style="margin-top: 8px;">${escapeHtml(wordObj.word)}</h3>
+            <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
 
             ${
               isFlipped
@@ -2015,15 +2036,15 @@
                 <p class="flashcard-meaning">${escapeHtml(cardMeaning)}</p>
                 ${
                   isExamCard && wordObj.base_meaning_ko
-                    ? `<p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">기본 뜻: ${escapeHtml(wordObj.base_meaning_ko)}</p>`
+                    ? `<p class="flashcard-base-note">기본 뜻: ${escapeHtml(wordObj.base_meaning_ko)}</p>`
                     : ''
                 }
-                <p class="word-example-en" style="margin-bottom: 4px;">"${escapeHtml(wordObj.example_en)}"</p>
+                <p class="word-example-en">"${escapeHtml(wordObj.example_en)}"</p>
                 <p class="word-example-ko">${escapeHtml(wordObj.example_ko)}</p>
               </div>
             `
                 : `
-              <p class="flashcard-hint">👆 카드를 클릭하여 뜻과 예문을 확인한 뒤 판정하세요</p>
+              <p class="flashcard-hint">카드를 눌러 뜻과 예문을 확인하세요</p>
             `
             }
           </div>
@@ -2055,7 +2076,7 @@
         <div class="quiz-prompt-top">
           <span class="srs-tag">${escapeHtml(getSrsBadgeMeta(wordObj.id).text)}</span>
           <button class="speak-btn" type="button" id="btn-quiz-speak" data-speak-text="${escapeHtml(wordObj.word)}">
-            <span aria-hidden="true">🔊</span>
+            ${svgIcon('volume')}
             <span>발음 듣기</span>
           </button>
         </div>
@@ -2157,7 +2178,7 @@
           <div class="feedback-header ${isCorrect ? 'correct' : 'wrong'}">
             <span>${
               isCorrect
-                ? '정답입니다! 🎉'
+                ? '정답입니다'
                 : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(targetMeaningText)})`
             }</span>
             ${renderXpGainPill(outcome.xp)}
@@ -2165,31 +2186,31 @@
           ${renderXpCapNotice(outcome.xp)}
           ${
             clickedTrap && wordObj.base_meaning_ko
-              ? `<p style="font-size: 0.8rem; color: var(--amber-primary); font-weight: 700; margin-bottom: 4px;">
-                  ⚠️ 기본 뜻('${escapeHtml(wordObj.base_meaning_ko)}') 함정에 주의하세요! 이 기출 문장에서는 '${escapeHtml(targetMeaningText)}' 뜻으로 쓰였습니다.
+              ? `<p class="feedback-trap">
+                  [기본 뜻 함정 주의] 기본 뜻('${escapeHtml(wordObj.base_meaning_ko)}') 함정에 주의하세요! 이 기출 문장에서는 '${escapeHtml(targetMeaningText)}' 뜻으로 쓰였습니다.
                 </p>`
               : ''
           }
-          <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 4px;">
+          <p class="feedback-line">
             <strong>예문:</strong> ${escapeHtml(wordObj.example_en)}
           </p>
           ${
             isExamMode && wordObj.example_ko
-              ? `<p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">
+              ? `<p class="feedback-line">
                   <strong>해석:</strong> ${escapeHtml(wordObj.example_ko)}
-                  ${wordObj.source_note ? `<span style="color: var(--text-muted);">(${escapeHtml(wordObj.source_note)} 기출)</span>` : ''}
+                  ${wordObj.source_note ? `<span class="feedback-source">(${escapeHtml(wordObj.source_note)} 기출)</span>` : ''}
                 </p>`
               : ''
           }
           ${
             isExamMode && wordObj.signal
-              ? `<p style="font-size: 0.78rem; color: var(--amber-primary); margin-bottom: 4px;">
-                  <strong>💡 판단 신호:</strong> ${escapeHtml(wordObj.signal)}
+              ? `<p class="feedback-line feedback-signal">
+                  <strong>판단 신호:</strong> ${escapeHtml(wordObj.signal)}
                 </p>`
               : ''
           }
-          <p style="font-size: 0.78rem; color: var(--text-muted);">
-            📅 간격반복(SRS): ${escapeHtml(scheduleMsg)}
+          <p class="feedback-meta">
+            간격반복(SRS): ${escapeHtml(scheduleMsg)}
           </p>
           <button class="next-question-btn" type="button" id="btn-next-question">
             ${state.quiz.currentIndex + 1 < state.quiz.queue.length ? '다음 문제 →' : '결과 확인하기 →'}
@@ -2228,7 +2249,7 @@
       pill.classList.add('pulse');
     }
     playLevelUpSfx();
-    showToast(`🎉 레벨 업! Lv.${xp.newLevel} 달성!`);
+    showToast(`레벨 업 · Lv.${xp.newLevel} 달성`);
   }
 
   function handleFlashcardJudge(isKnown) {
@@ -2246,8 +2267,8 @@
       : '';
     showToast(
       isKnown
-        ? `⭕ '알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정${xpMsg}`
-        : `❌ '몰라요' 판정 → 오답노트 저장 및 내일 재출제`
+        ? `'알아요' 판정 → ${outcome.intervalDays}일 뒤 복습 예정${xpMsg}`
+        : `'몰라요' 판정 → 오답노트 저장 및 내일 재출제`
     );
     if (isKnown) playJudgeKnownSfx();
     else playWrongSfx();
@@ -2273,7 +2294,7 @@
     evaluateBadges();
     const levelUpBanner =
       state.gamification.level > state.quiz.sessionStartLevel
-        ? `<div class="levelup-banner">🎉 레벨 업! <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
+        ? `<div class="levelup-banner">레벨 업 · <strong>Lv.${state.quiz.sessionStartLevel} → Lv.${state.gamification.level}</strong></div>`
         : '';
     const total = state.quiz.results.length;
     const correctCount = state.quiz.results.filter((r) => r.isCorrect).length;
@@ -2282,14 +2303,14 @@
     const currentModeLabel = getQuizModeLabel(state.quiz.mode);
 
     container.innerHTML = `
-      <div class="quiz-stage-card" style="text-align: center;">
+      <div class="quiz-stage-card quiz-summary">
         ${levelUpBanner}
         <span class="hero-date-label">학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
-        <h3 class="hero-headline" style="margin-bottom: 14px;">
+        <h3 class="hero-headline">
           총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
         </h3>
 
-        <div class="hero-stats-grid" style="margin-bottom: 18px;">
+        <div class="hero-stats-grid">
           <div class="stat-box highlight-due">
             <span class="stat-label">간격 확대(정답)</span>
             <strong class="stat-value">${correctCount}</strong>
@@ -2297,7 +2318,7 @@
           </div>
           <div class="stat-box">
             <span class="stat-label">내일 재출제(오답)</span>
-            <strong class="stat-value" style="color: var(--danger-primary);">${wrongResults.length}</strong>
+            <strong class="stat-value stat-value-danger">${wrongResults.length}</strong>
             <span class="stat-sub">오답노트 저장됨</span>
           </div>
           <div class="stat-box highlight-streak">
@@ -2308,7 +2329,7 @@
         </div>
         <p class="session-xp-line">이번 세션 획득 <strong>+${state.quiz.sessionXp} XP</strong> · 현재 Lv.${state.gamification.level} (${state.gamification.totalXp} XP)</p>
 
-        <div style="text-align: left; margin-bottom: 18px; max-height: 240px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px;">
+        <div class="summary-list">
           ${state.quiz.results
             .map((res) => {
               const w = findWordById(res.wordId);
@@ -2318,13 +2339,13 @@
                 : w.meaning_ko || '';
               const modeLabel = getQuizModeLabel(res.mode || state.quiz.mode);
               return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; gap: 8px; flex-wrap: wrap;">
+                <div class="summary-row">
                   <div>
-                    <strong style="font-family: var(--font-en);">${escapeHtml(w.word)}</strong>
-                    ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}" style="margin-left: 4px;">${escapeHtml(w.grade)}급</span>` : ''}
-                    <span style="color: var(--text-secondary); margin-left: 6px;">${escapeHtml(meaningLabel)}</span>
+                    <strong class="summary-row-word">${escapeHtml(w.word)}</strong>
+                    ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}">${escapeHtml(w.grade)}급</span>` : ''}
+                    <span class="summary-row-meaning">${escapeHtml(meaningLabel)}</span>
                   </div>
-                  <div style="display: flex; align-items: center; gap: 6px;">
+                  <div class="summary-row-tags">
                     ${
                       !res.isCorrect
                         ? `<span class="wrong-mode-badge ${w.isExam ? 'exam-mode' : 'basic-mode'}">${escapeHtml(modeLabel)} 오답</span>`
@@ -2340,11 +2361,11 @@
             .join('')}
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="summary-actions">
           ${
             wrongResults.length > 0
               ? `
-            <button class="primary-cta-btn" type="button" id="btn-summary-retry-wrong" style="background: var(--danger-primary);">
+            <button class="primary-cta-btn is-danger" type="button" id="btn-summary-retry-wrong">
               오답 단어(${wrongResults.length}개)만 바로 복습하기
             </button>
           `
@@ -2353,7 +2374,7 @@
           <button class="primary-cta-btn" type="button" id="btn-summary-restart">
             같은 모드로 한 번 더 학습하기
           </button>
-          <button class="mini-btn" type="button" id="btn-summary-home" style="padding: 11px;">
+          <button class="mini-btn block" type="button" id="btn-summary-home">
             홈 화면으로 이동
           </button>
         </div>
@@ -2396,11 +2417,11 @@
         <div class="empty-state">
           <p class="empty-title">오답노트에 저장된 단어가 없습니다</p>
           <p class="empty-desc">기본 퀴즈 3종 또는 기출 모드 2종에서 틀린 단어가 어떤 모드에서 틀렸는지 구분되어 이곳에 자동 기록됩니다.</p>
-          <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-            <button class="primary-cta-btn" type="button" id="btn-wrong-go-quiz" style="max-width: 220px;">
+          <div class="empty-action-row">
+            <button class="primary-cta-btn secondary" type="button" id="btn-wrong-go-quiz">
               기본 퀴즈 풀러 가기
             </button>
-            <button class="primary-cta-btn" type="button" id="btn-wrong-go-exam-quiz" style="max-width: 220px; background: var(--amber-primary);">
+            <button class="primary-cta-btn secondary" type="button" id="btn-wrong-go-exam-quiz">
               기출 모드 풀러 가기
             </button>
           </div>
@@ -2441,23 +2462,23 @@
         <p class="wrong-banner-desc">
           틀린 단어는 어떤 모드에서 틀렸는지 구분되어 기록되며 내일 복습 대상에 자동 포함됩니다.
         </p>
-        <div class="wrong-quiz-btns" style="margin-bottom: 8px;">
+        <div class="wrong-quiz-btns">
           <button class="wrong-start-btn exam-btn" type="button" data-wrong-quiz="exam-blank" id="btn-wrong-quiz-exam-blank">
-            기출 · 예문 빈칸 오답 퀴즈 (${wrongExamWords.length})
+            기출 · 예문 빈칸 오답 퀴즈 <span class="wrong-start-count">(${wrongExamWords.length})</span>
           </button>
           <button class="wrong-start-btn exam-btn-secondary" type="button" data-wrong-quiz="exam-meaning" id="btn-wrong-quiz-exam-meaning">
-            기출 · 문맥 속 뜻 오답 퀴즈 (${wrongExamWords.length})
+            기출 · 문맥 속 뜻 오답 퀴즈 <span class="wrong-start-count">(${wrongExamWords.length})</span>
           </button>
         </div>
         <div class="wrong-quiz-btns">
           <button class="wrong-start-btn" type="button" data-wrong-quiz="meaning" id="btn-wrong-quiz-meaning">
-            오답 뜻 맞히기 퀴즈 시작 (${wrongSampleWords.length})
+            오답 뜻 맞히기 퀴즈 시작 <span class="wrong-start-count">(${wrongSampleWords.length})</span>
           </button>
           <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="blank" id="btn-wrong-quiz-blank">
-            오답 예문 빈칸 퀴즈 (${wrongSampleWords.length})
+            오답 예문 빈칸 퀴즈 <span class="wrong-start-count">(${wrongSampleWords.length})</span>
           </button>
           <button class="wrong-start-btn secondary" type="button" data-wrong-quiz="flashcard" id="btn-wrong-quiz-flashcard">
-            오답 카드 뒤집기 (${wrongSampleWords.length})
+            오답 카드 뒤집기 <span class="wrong-start-count">(${wrongSampleWords.length})</span>
           </button>
         </div>
       </div>
@@ -2538,7 +2559,7 @@
       .map((w) => {
         const wrongInfo = state.wrongNote[String(w.id)] || { wrongCount: 1 };
         const modeBadges = renderWrongModeBadges(wrongInfo, Boolean(w.isExam), false);
-        const countBadge = `<span class="level-badge" style="background: var(--danger-soft); color: var(--danger-primary);">총 오답 ${wrongInfo.wrongCount || 1}회</span>`;
+        const countBadge = `<span class="wrong-count-badge">총 오답 ${wrongInfo.wrongCount || 1}회</span>`;
 
         if (w.isExam) {
           return renderExamWordCard(w, {
@@ -2559,7 +2580,7 @@
                 ${modeBadges}
               </div>
               <button class="speak-btn" type="button" data-action="speak-word" data-speak-text="${escapeHtml(w.word)}">
-                <span aria-hidden="true">🔊</span>
+                ${svgIcon('volume')}
                 <span>발음</span>
               </button>
             </div>
@@ -2625,7 +2646,7 @@
         saveStateToStorage();
         renderHomeView();
         updateGlobalBadges();
-        showToast(`📅 기준일이 ${getTodayStr()}로 +1일 이동했습니다.`);
+        showToast(`기준일이 ${getTodayStr()}로 +1일 이동했습니다.`);
       });
     }
 
@@ -2761,7 +2782,7 @@
         savePrefsToStorage();
         applySoundToggleUi();
         if (state.prefs.soundEnabled) playJudgeKnownSfx();
-        showToast(state.prefs.soundEnabled ? '🔊 효과음이 켜졌습니다.' : '🔇 효과음이 꺼졌습니다. (단어 발음 듣기는 그대로 동작)');
+        showToast(state.prefs.soundEnabled ? '효과음이 켜졌습니다.' : '효과음이 꺼졌습니다. (단어 발음 듣기는 그대로 동작)');
       });
     }
 

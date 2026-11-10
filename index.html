@@ -49,15 +49,13 @@
             <span>앱 설치</span>
           </button>
           <div id="header-streak-badge" class="streak-pill" title="연속 학습일">
-            <span aria-hidden="true">🔥</span>
             <span id="header-streak-text">0일 연속</span>
           </div>
           <div id="header-level-badge" class="level-pill" title="레벨 · 누적 XP">
-            <span aria-hidden="true">⚡</span>
             <span id="header-level-text">Lv.1 · 0 XP</span>
           </div>
-          <button id="btn-toggle-sound" class="icon-toggle-btn" type="button" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기">🔊</button>
-          <button id="btn-toggle-theme" class="icon-toggle-btn" type="button" aria-label="다크 모드 전환" title="다크 모드 전환">🌙</button>
+          <button id="btn-toggle-sound" class="icon-toggle-btn" type="button" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg></button>
+          <button id="btn-toggle-theme" class="icon-toggle-btn" type="button" aria-label="다크 모드 전환" title="다크 모드 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></button>
         </div>
       </div>
     </header>
@@ -168,7 +166,7 @@
         </div>
 
         <div class="section-header">
-          <h3 class="section-title">🏆 주간 연습 리그</h3>
+          <h3 class="section-title">주간 연습 리그</h3>
           <span class="section-caption">월~일 주간 XP · 봇 9명 + 나</span>
         </div>
         <div id="home-league-card" class="league-card"></div>
@@ -219,8 +217,8 @@
           </div>
         </div>
 
-        <p id="wordbook-guide-text" style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
-          💡 단어 카드를 클릭하면 브라우저 음성 합성(speechSynthesis)으로 영어 발음을 들을 수 있습니다.
+        <p id="wordbook-guide-text" class="guide-text">
+          단어 카드를 클릭하면 브라우저 음성 합성(speechSynthesis)으로 영어 발음을 들을 수 있습니다.
         </p>
 
         <div id="wordbook-list" class="word-list" aria-live="polite"></div>
@@ -253,7 +251,7 @@
           </div>
 
           <div class="quiz-scope-row">
-            <label for="quiz-scope-select" style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">
+            <label for="quiz-scope-select" class="quiz-scope-label">
               출제 범위:
             </label>
             <select id="quiz-scope-select" class="scope-select" aria-label="퀴즈 출제 범위">
