@@ -1,63 +1,65 @@
 /* ==========================================================================
-   고등 영단어 트레이너 — 디자인 개편 스타일시트 (DESIGN_REDESIGN.md)
-   Editorial Study Sheet & High-Craft Utility
+   고등 영단어 트레이너 (vocab-trainer) 디자인 개편 스타일시트 v2 (DESIGN_REDESIGN.md)
+   밝고 경쾌한 고등학생용 학습 앱 시각 체계 (말해보카 · 산타토익 · 듀오링고 기반)
    ========================================================================== */
 
-/* ---------- 1. 디자인 토큰 (라이트) — DESIGN_REDESIGN.md 1.2 / 2.1 / 3.1~3.3 ---------- */
+/* ---------- 1. 디자인 토큰 (라이트 기본) — DESIGN_REDESIGN.md 1.4 / 2.1 / 3.1~3.3 ---------- */
 :root {
-  /* 배경 */
-  --bg-page: #F6F5F0;
+  /* 배경 (Surface) — 1.4 */
+  --bg-page: #F7F9FC;
   --bg-surface: #FFFFFF;
-  --bg-subtle: #EFECE6;
-  --bg-muted: #E4E0D8;
-  --bg-header-glass: #F6F5F0;
-  --bg-nav-glass: #FFFFFF;
+  --bg-subtle: #F1F5F9;
+  --bg-muted: #E2E8F0;
+  --bg-tint-blue: #F8FAFF;
+  --bg-header-glass: rgba(255, 255, 255, 0.88);
+  --bg-nav-glass: rgba(255, 255, 255, 0.92);
 
-  /* 텍스트 */
-  --text-primary: #18181B;
-  --text-secondary: #52525B;
-  --text-muted: #78756E;
+  /* 텍스트 (Typography) — 1.4 */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
   --text-on-solid: #FFFFFF;
 
-  /* 테두리 */
-  --border-subtle: #E2DFD7;
-  --border-strong: #C8C4BA;
-  --border-focus: #18181B;
+  /* 테두리 (Border) — 1.4 */
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --border-focus: #2563EB;
 
-  /* 주조색 / 정답 (Forest) */
-  --brand-primary: #165B45;
-  --brand-primary-hover: #0F4433;
-  --brand-soft: #EBF3EF;
-  --brand-border: #BBD5C9;
+  /* 포인트 1: 주조색 (Royal Blue) — 1.2 / 1.4 */
+  --brand-primary: #2563EB;
+  --brand-primary-hover: #1D4ED8;
+  --brand-soft: #EFF6FF;
+  --brand-border: #BFDBFE;
 
-  /* 기출 / 스트릭 / 리워드 (Ochre) */
-  --amber-primary: #B45309;
-  --amber-soft: #FAF0E1;
-  --amber-border: #E6C89C;
+  /* 포인트 2: 동기부여 (Amber) — 1.2 / 1.4 */
+  --amber-accent: #F59E0B;
+  --amber-primary: #D97706;
+  --amber-soft: #FFFBEB;
+  --amber-border: #FDE68A;
 
-  /* 오답 / 경고 (Crimson) */
-  --danger-primary: #B91C1C;
-  --danger-soft: #FBEBEB;
-  --danger-border: #E5B8B8;
+  /* 포인트 3 & 정답 (Emerald) — 1.2 / 1.4 */
+  --success-accent: #10B981;
+  --success-primary: #059669;
+  --success-soft: #ECFDF5;
+  --success-border: #A7F3D0;
 
-  /* 구 보라/파랑 치환 토큰 (Stone/Ink) */
-  --xp-primary: #18181B;
-  --xp-soft: #EFECE6;
-  --xp-border: #C8C4BA;
-  --sky-primary: #52525B;
-  --sky-soft: #EFECE6;
-  --info-primary: #52525B;
-  --info-soft: #EFECE6;
+  /* 오답 / 경고 (Coral Red) — 1.2 / 1.4 */
+  --danger-primary: #E11D48;
+  --danger-soft: #FFF1F2;
+  --danger-border: #FECDD3;
 
-  /* 토스트 (4.0) */
-  --toast-bg: #18181B;
-  --toast-text: #F4F3EF;
+  /* 호환 매핑 토큰 — 1.4 */
+  --xp-primary: #2563EB;
+  --xp-soft: #EFF6FF;
+  --xp-border: #BFDBFE;
+  --sky-primary: #2563EB;
+  --sky-soft: #EFF6FF;
+  --info-primary: #2563EB;
+  --info-soft: #EFF6FF;
 
-  /* 그림자 (3.3) */
-  --shadow-none: none;
-  --shadow-xs: 0 1px 2px rgba(24, 24, 27, 0.06);
-  --shadow-sm: 0 2px 6px rgba(24, 24, 27, 0.04), 0 1px 2px rgba(24, 24, 27, 0.03);
-  --shadow-float: 0 8px 20px rgba(24, 24, 27, 0.14);
+  /* 토스트 (5.0) */
+  --toast-bg: #0F172A;
+  --toast-text: #FFFFFF;
 
   /* 간격 — 4px 그리드 (3.1) */
   --space-1: 4px;
@@ -68,12 +70,21 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* 모서리 (3.2) */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* 모서리 반경 (3.2) */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-pill: 9999px;
+
+  /* 부드러운 그림자 (3.3) */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-sm: 0 4px 14px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 26px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  --shadow-cta: 0 6px 16px -2px rgba(37, 99, 235, 0.28), 0 2px 6px -1px rgba(37, 99, 235, 0.16);
+  --shadow-float: 0 12px 28px -4px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 
   /* 글꼴 3원화 (2.1) */
   --font-ko: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
@@ -81,53 +92,62 @@
   --font-num: "JetBrains Mono", "SF Mono", "Roboto Mono", "Pretendard Variable", monospace;
 }
 
-/* ---------- 2. 다크 모드 토큰 (웜 카본) — DESIGN_REDESIGN.md 1.2 ---------- */
+/* ---------- 2. 다크 모드 토큰 (딥 슬레이트 보조) — DESIGN_REDESIGN.md 1.4 / 3.3 ---------- */
 html[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg-page: #121211;
-  --bg-surface: #1A1A18;
-  --bg-subtle: #242421;
-  --bg-muted: #2E2E2A;
-  --bg-header-glass: #121211;
-  --bg-nav-glass: #1A1A18;
+  --bg-page: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-subtle: #273549;
+  --bg-muted: #334155;
+  --bg-tint-blue: #172554;
+  --bg-header-glass: rgba(15, 23, 42, 0.88);
+  --bg-nav-glass: rgba(30, 41, 59, 0.92);
 
-  --text-primary: #F4F3EF;
-  --text-secondary: #A8A69E;
-  --text-muted: #78766E;
-  --text-on-solid: #121211;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-on-solid: #0F172A;
 
-  --border-subtle: #2A2A26;
-  --border-strong: #3E3E38;
-  --border-focus: #F4F3EF;
+  --border-subtle: #334155;
+  --border-strong: #475569;
+  --border-focus: #60A5FA;
 
-  --brand-primary: #34A87E;
-  --brand-primary-hover: #4BC096;
-  --brand-soft: #162922;
-  --brand-border: #24473A;
+  --brand-primary: #3B82F6;
+  --brand-primary-hover: #60A5FA;
+  --brand-soft: #1E3A8A;
+  --brand-border: #2563EB;
 
-  --amber-primary: #E59A2E;
-  --amber-soft: #292014;
-  --amber-border: #4D391E;
+  --amber-accent: #FBBF24;
+  --amber-primary: #FBBF24;
+  --amber-soft: #451A03;
+  --amber-border: #92400E;
 
-  --danger-primary: #E06C6C;
-  --danger-soft: #2B1919;
-  --danger-border: #522929;
+  --success-accent: #34D399;
+  --success-primary: #34D399;
+  --success-soft: #064E3B;
+  --success-border: #059669;
 
-  --xp-primary: #E59A2E;
-  --xp-soft: #242421;
-  --xp-border: #3E3E38;
-  --sky-primary: #A8A69E;
-  --sky-soft: #242421;
-  --info-primary: #A8A69E;
-  --info-soft: #242421;
+  --danger-primary: #FB7185;
+  --danger-soft: #4C0519;
+  --danger-border: #9F1239;
 
-  --toast-bg: #F4F3EF;
-  --toast-text: #121211;
+  --xp-primary: #60A5FA;
+  --xp-soft: #1E3A8A;
+  --xp-border: #2563EB;
+  --sky-primary: #60A5FA;
+  --sky-soft: #1E3A8A;
+  --info-primary: #60A5FA;
+  --info-soft: #1E3A8A;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
-  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.65);
+  --toast-bg: #F8FAFC;
+  --toast-text: #0F172A;
+
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.40);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.50);
+  --shadow-cta: 0 6px 18px rgba(59, 130, 246, 0.35);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.65);
 }
 
 /* ---------- 3. 리셋 · 바디 ---------- */
@@ -186,12 +206,13 @@ button {
 .word-example-en,
 .quiz-blank-sentence,
 .bot-badge,
-.choice-word {
+.choice-word,
+.summary-row-word {
   font-family: var(--font-en);
   font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
 }
 
-/* 숫자 글꼴 그룹 (2.1) */
+/* 숫자 글꼴 그룹 (2.1 / 6.2 유지 3) */
 .streak-pill,
 .level-pill,
 .hero-date-label,
@@ -220,7 +241,7 @@ button {
   font-feature-settings: "tnum" 1, "zero" 0;
 }
 
-/* ---------- 4. 공통 앱 쉘 (4.0) ---------- */
+/* ---------- 4. 공통 앱 쉘 (5.0) ---------- */
 .app-shell {
   width: 100%;
   max-width: 720px;
@@ -228,16 +249,18 @@ button {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 76px;
+  padding-bottom: 80px;
 }
 
 .app-header {
   position: sticky;
   top: 0;
   z-index: 30;
-  height: 56px;
+  height: 60px;
   padding: 0 16px;
   background: var(--bg-header-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -262,10 +285,9 @@ button {
 }
 
 .brand-logo {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
-  box-shadow: none;
   flex-shrink: 0;
 }
 
@@ -301,33 +323,59 @@ button {
   flex-shrink: 0;
 }
 
-/* 스트릭·레벨 칩: 동일한 무채색 칩 */
-.streak-pill,
+/* 스트릭 배지 (5.0): 🔥 N일 연속 */
+.streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-border);
+  color: var(--amber-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.streak-pill span[aria-hidden="true"] {
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* 레벨 배지 (5.0): ⚡ Lv.N · N XP */
 .level-pill {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  gap: 4px;
+  padding: 5px 10px;
   border-radius: var(--radius-pill);
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-primary);
   font-size: 12px;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: 0;
+  font-weight: 700;
+  line-height: 1;
   white-space: nowrap;
+}
+
+.level-pill span[aria-hidden="true"] {
+  font-size: 13px;
+  line-height: 1;
 }
 
 .install-btn {
   display: none;
   align-items: center;
-  padding: 4px 12px;
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
   background: var(--brand-primary);
   color: var(--text-on-solid);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
+  transition: background-color 0.15s ease;
 }
 
 .install-btn.visible {
@@ -338,30 +386,33 @@ button {
   background: var(--brand-primary-hover);
 }
 
+/* 헤더 토글 버튼 (5.0): 36px 원형 */
 .icon-toggle-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--bg-surface);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .icon-toggle-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   stroke-width: 1.75;
 }
 
 .icon-toggle-btn:hover {
-  border-color: var(--border-strong);
+  background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
-/* 하단 내비게이션 */
+/* 하단 내비게이션 (5.0): 높이 64px, 글래스 블러, 28px 인디케이터 알약 */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -369,6 +420,8 @@ button {
   right: 0;
   z-index: 40;
   background: var(--bg-nav-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--border-subtle);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -378,7 +431,7 @@ button {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  height: 60px;
+  height: 64px;
 }
 
 .nav-item {
@@ -397,27 +450,31 @@ button {
 }
 
 .nav-item svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   stroke-width: 1.75;
+  transition: stroke-width 0.15s ease;
 }
 
 .nav-item.active {
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--brand-primary);
+  font-weight: 700;
 }
 
 .nav-item.active svg {
   stroke-width: 2.25;
 }
 
+/* 상단 중앙 활성 알약 인디케이터 */
 .nav-item.active::before {
   content: "";
   position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 3px;
+  border-radius: var(--radius-pill);
   background: var(--brand-primary);
 }
 
@@ -444,10 +501,10 @@ button {
   display: none;
 }
 
-/* 토스트 */
+/* 플로팅 토스트 (5.0): radius-pill, shadow-float */
 .toast-container {
   position: fixed;
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   left: 16px;
   right: 16px;
   z-index: 60;
@@ -459,10 +516,10 @@ button {
 .toast-msg {
   background: var(--toast-bg);
   color: var(--toast-text);
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
   text-align: center;
@@ -522,71 +579,107 @@ button {
   color: var(--text-muted);
 }
 
-/* ---------- 6. 홈 화면 (4.1) ---------- */
+/* ---------- 6. 홈 화면 (5.1) ---------- */
+/* 히어로 브리핑 카드: radius-xl(24px), 그라디언트 틴트, shadow-md */
 .hero-card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFF 100%);
+  border: 1px solid #DBEAFE;
+  border-radius: var(--radius-xl);
+  padding: 22px 20px;
+  box-shadow: var(--shadow-md);
+}
+
+html[data-theme="dark"] .hero-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--border-subtle);
 }
 
 .hero-top-row {
   display: block;
 }
 
+/* 기준일 알약 배지 */
 .hero-date-label {
-  display: block;
-  margin-bottom: var(--space-1);
-  padding: 0;
-  background: transparent;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-primary);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
-  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
 .hero-headline {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin-bottom: var(--space-4);
+  margin-bottom: 16px;
 }
 
-/* 3열 지표: 단일 수평 데이터 스트립 */
+/* 3열 핵심 지표 그리드: 3열 개별 라운드 소프트 카드 (radius: 16px) */
 .hero-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  padding: var(--space-3) 0;
-  border-top: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: var(--space-4);
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 0;
+  border: none;
 }
 
 .stat-box {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: var(--space-1) var(--space-3);
-  text-align: left;
+  background: #F8FAFC;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 12px 10px;
+  text-align: center;
 }
 
-.stat-box:nth-child(n + 2) {
-  border-left: 1px solid var(--border-subtle);
+html[data-theme="dark"] .stat-box {
+  background: var(--bg-subtle);
+  border-color: var(--border-subtle);
+}
+
+/* ① 오늘 복습할 단어: 블루 소프트 */
+.stat-box.highlight-due {
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+}
+
+.stat-box.highlight-due .stat-value,
+.stat-box.highlight-due #stat-due-count {
+  color: var(--brand-primary);
+}
+
+/* ② 미학습 새 단어: 쿨그레이 / 텍스트 프라이머리 */
+.stat-box #stat-new-count {
+  color: var(--text-primary);
+}
+
+/* ③ 연속 학습일: 앰버 소프트 */
+.stat-box.highlight-streak {
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-border);
+}
+
+.stat-box.highlight-streak .stat-value,
+.stat-box.highlight-streak #stat-streak-count {
+  color: var(--amber-primary);
 }
 
 .stat-label {
   display: block;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
-  color: var(--text-muted);
-  margin-bottom: var(--space-1);
+  color: var(--text-secondary);
+  margin-bottom: 4px;
 }
 
 .stat-value {
@@ -598,62 +691,63 @@ button {
   color: var(--text-primary);
 }
 
-#stat-due-count {
-  color: var(--brand-primary);
-}
-
 .stat-value-danger {
-  color: var(--danger-primary);
+  color: var(--danger-primary) !important;
 }
 
 .stat-sub {
   display: block;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.35;
   letter-spacing: 0;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
+/* 메인 시작 CTA 버튼: 높이 52px, radius-md(14px), shadow-cta 블루 글로우 */
 .primary-cta-btn {
   width: 100%;
-  min-height: 48px;
+  min-height: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  padding: 14px 18px;
   border-radius: var(--radius-md);
   background: var(--brand-primary);
   color: var(--text-on-solid);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.55;
-  box-shadow: none;
-  transition: background-color 0.15s ease;
+  box-shadow: var(--shadow-cta);
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .primary-cta-btn:hover {
   background: var(--brand-primary-hover);
+  transform: translateY(-1px);
 }
 
 .primary-cta-btn.is-danger {
   background: var(--danger-primary);
+  box-shadow: 0 6px 16px -2px rgba(225, 29, 72, 0.28);
 }
 
-/* 보조(무채색) 버튼 형태의 CTA — 빈 상태 카드 액션 (4.5-3) */
 .primary-cta-btn.secondary {
   background: var(--bg-subtle);
   color: var(--text-primary);
   border: 1px solid var(--border-strong);
+  box-shadow: none;
 }
 
 .primary-cta-btn.secondary:hover {
   background: var(--bg-muted);
+  transform: translateY(-1px);
 }
 
-/* 퀴즈 3종 바로 시작 */
+/* 퀴즈 3종 바로 시작 카드 (5.1): radius-lg(18px), shadow-sm */
 .quiz-mode-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -670,38 +764,45 @@ button {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  padding: 16px;
   text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: var(--space-2);
-  box-shadow: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .mode-card:hover {
-  border-color: var(--border-focus);
-  background: var(--bg-subtle);
+  transform: translateY(-2px);
+  border-color: #93C5FD;
+  box-shadow: var(--shadow-md);
 }
 
 .mode-badge {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: var(--radius-xs);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+}
+
+.mode-badge.exam-badge {
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
 }
 
 .mode-card-title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.55;
   color: var(--text-primary);
 }
@@ -714,27 +815,32 @@ button {
   color: var(--text-secondary);
 }
 
-/* SRS 단계 현황 */
+/* 간격반복(SRS) 복습 단계 현황 (5.1): radius-lg(18px), shadow-sm */
 .srs-panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: none;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .srs-stages-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .srs-stage-item {
-  background: var(--bg-page);
+  background: #F8FAFC;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 10px 4px;
   text-align: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+html[data-theme="dark"] .srs-stage-item {
+  background: var(--bg-subtle);
 }
 
 .srs-stage-interval {
@@ -753,15 +859,27 @@ button {
   font-weight: 700;
   line-height: 1.45;
   letter-spacing: -0.015em;
-  color: var(--text-primary);
+  color: var(--brand-primary);
 }
 
 #srs-count-0 {
-  color: var(--text-secondary);
+  color: var(--text-muted);
+}
+
+#srs-count-1,
+#srs-count-2,
+#srs-count-3 {
+  color: var(--brand-primary);
+}
+
+/* 4단계 14일 장기기억 완성 */
+.srs-stage-item:last-child {
+  background: var(--success-soft);
+  border-color: var(--success-border);
 }
 
 #srs-count-4 {
-  color: var(--brand-primary);
+  color: var(--success-primary);
 }
 
 .srs-helper-bar {
@@ -792,10 +910,10 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
   background: var(--bg-subtle);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-subtle);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
@@ -818,31 +936,31 @@ button {
   width: 100%;
 }
 
-/* ---------- 7. 단어장 화면 (4.2) ---------- */
+/* ---------- 7. 단어장 화면 (5.2) ---------- */
 .toolbar-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  margin-bottom: var(--space-3);
-  box-shadow: none;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
 }
 
 .wordbook-dataset-tabs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-1);
+  gap: 4px;
   background: var(--bg-subtle);
-  padding: var(--space-1);
+  padding: 4px;
   border-radius: var(--radius-md);
   margin-bottom: var(--space-3);
 }
 
 .dataset-tab-btn {
-  padding: var(--space-2) var(--space-3);
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--text-secondary);
@@ -852,8 +970,7 @@ button {
 
 .dataset-tab-btn.active {
   background: var(--bg-surface);
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--brand-primary);
   box-shadow: var(--shadow-xs);
 }
 
@@ -865,20 +982,26 @@ button {
 
 .search-input {
   width: 100%;
-  height: 40px;
-  padding: var(--space-2) var(--space-3);
+  height: 44px;
+  padding: 10px 14px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: var(--bg-page);
+  background: #F8FAFC;
   font-size: 14px;
   line-height: 1.55;
   letter-spacing: -0.01em;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html[data-theme="dark"] .search-input {
+  background: var(--bg-subtle);
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--border-focus);
   background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
 }
 
 .filter-pills {
@@ -892,16 +1015,20 @@ button {
 }
 
 .filter-pill {
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: -0.005em;
-  background: var(--bg-page);
+  background: #F8FAFC;
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+html[data-theme="dark"] .filter-pill {
+  background: var(--bg-subtle);
 }
 
 .filter-pill.exam-filter-jump {
@@ -911,11 +1038,12 @@ button {
   font-weight: 600;
 }
 
-/* 활성 필터: 먹색 반전 */
+/* 활성 필터 (5.2): 로열 블루 솔리드 */
 .filter-pill.active {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
   color: var(--text-on-solid);
+  font-weight: 600;
 }
 
 .guide-text {
@@ -925,30 +1053,32 @@ button {
   margin-bottom: var(--space-3);
 }
 
-/* 단어 카드 */
+/* 기본 단어 카드 (5.2): radius-lg(18px), shadow-sm */
 .word-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
 .word-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: none;
-  transition: border-color 0.15s ease;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
   position: relative;
 }
 
 .word-card:hover {
-  border-color: var(--border-strong);
+  border-color: #93C5FD;
+  box-shadow: var(--shadow-md);
 }
 
 .word-card.speaking {
   border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
 }
 
 .word-card-top {
@@ -975,45 +1105,64 @@ button {
 
 .word-pos {
   font-size: 12px;
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: 0;
-  color: var(--text-muted);
-  background: var(--bg-subtle);
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-}
-
-/* 난이도 배지: 고1·고2·고3 단일 무채색 태그 */
-.level-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--text-secondary);
   background: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
+}
+
+/* 난이도 배지 (5.2): 3색 소프트 태그 */
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+}
+
+.level-고1 {
+  background: var(--success-soft);
+  color: var(--success-primary);
+  border: 1px solid var(--success-border);
+}
+
+.level-고2 {
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-border);
+}
+
+.level-고3 {
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
 }
 
 .speak-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
+  color: #1E293B;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   flex-shrink: 0;
+}
+
+html[data-theme="dark"] .speak-btn {
+  color: var(--text-primary);
 }
 
 .speak-btn svg,
@@ -1040,16 +1189,20 @@ button {
   line-height: 1.45;
   letter-spacing: -0.015em;
   color: var(--text-primary);
-  margin: var(--space-2) 0 var(--space-3);
+  margin: 8px 0 12px;
 }
 
-/* 예문: 에디토리얼 인용선 */
+/* 예문 박스 (5.2): 소프트 쿨그레이 + 블루 보더 */
 .word-example-box {
-  background: transparent;
-  border-left: 2px solid var(--border-strong);
-  border-radius: 0;
-  padding: 2px 0 2px var(--space-3);
-  margin-bottom: var(--space-3);
+  background: #F8FAFC;
+  border-left: 3px solid var(--brand-primary);
+  border-radius: 0 12px 12px 0;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+html[data-theme="dark"] .word-example-box {
+  background: var(--bg-subtle);
 }
 
 .word-example-en {
@@ -1066,6 +1219,7 @@ button {
   line-height: 1.5;
   letter-spacing: -0.01em;
   color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 .word-card-footer {
@@ -1087,40 +1241,42 @@ button {
   align-items: center;
 }
 
+/* SRS 태그 (5.2) */
 .srs-tag {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: 2px 8px;
-  border: 1px solid transparent;
+  padding: 3px 8px;
   border-radius: var(--radius-xs);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
   background: var(--bg-subtle);
   color: var(--text-muted);
+  border: 1px solid transparent;
 }
 
 .srs-tag.scheduled {
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
+  background: var(--success-soft);
+  color: var(--success-primary);
+  border: 1px solid var(--success-border);
 }
 
 .srs-tag.due {
   background: var(--amber-soft);
   color: var(--amber-primary);
-  border-color: var(--amber-border);
-  font-weight: 600;
+  border: 1px solid var(--amber-border);
 }
 
-/* ---------- 8. 기출 다의어 카드 (4.4) ---------- */
+/* ---------- 8. 기출 다의어 카드 (5.4) ---------- */
+/* 말해보카식 소프트 컬러 블록 구조: radius-lg(18px), shadow-sm */
 .exam-word-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: none;
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .exam-word-card .word-card-top {
@@ -1130,10 +1286,10 @@ button {
 .grade-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
 }
@@ -1145,9 +1301,9 @@ button {
 }
 
 .grade-A {
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-border);
 }
 
 .source-badge {
@@ -1160,26 +1316,24 @@ button {
   letter-spacing: 0;
 }
 
-/* ① 기본 뜻 */
+/* ① 기본 뜻 (5.4) */
 .exam-base-meaning {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: transparent;
-  border: none;
+  padding: 6px 0 10px;
   border-bottom: 1px solid var(--border-subtle);
-  padding: var(--space-1) 0 var(--space-2);
   margin: 0;
 }
 
 .exam-base-tag {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--text-muted);
   background: var(--bg-subtle);
-  padding: 1px 6px;
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
   flex-shrink: 0;
 }
@@ -1192,26 +1346,29 @@ button {
   color: var(--text-secondary);
 }
 
-/* ② 시험 출제 뜻 목록 */
+/* ② 시험 출제 뜻 섹션 (5.4): 소프트 블루 틴트 박스 */
 .exam-meanings-section {
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-subtle);
-  border-radius: 0;
-  padding: var(--space-3) 0;
-  margin: 0;
+  background: var(--bg-tint-blue);
+  border: 1px solid #DBEAFE;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+
+html[data-theme="dark"] .exam-meanings-section {
+  border-color: var(--border-subtle);
 }
 
 .exam-meanings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-2);
+  margin-bottom: 8px;
 }
 
 .exam-meanings-title {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--brand-primary);
@@ -1253,13 +1410,13 @@ button {
 
 .exam-meaning-pct {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
-  color: var(--brand-primary);
-  background: var(--brand-soft);
-  border: none;
-  padding: 1px 6px;
+  color: var(--success-primary);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
 }
 
@@ -1271,20 +1428,19 @@ button {
   color: var(--text-secondary);
 }
 
-/* ③ 판단 신호: 좌측 보더 콜아웃 */
+/* ③ 판단 신호 (5.4): 앰버 소프트 콜아웃 */
 .exam-word-signal {
-  background: var(--bg-subtle);
-  border: none;
-  border-left: 2px solid var(--amber-primary);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  padding: var(--space-2) var(--space-3);
-  margin: var(--space-3) 0;
+  background: var(--amber-soft);
+  border-left: 3px solid var(--amber-accent);
+  border-radius: 0 12px 12px 0;
+  padding: 10px 14px;
+  margin: 10px 0;
 }
 
 .exam-word-signal-label {
   display: block;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--amber-primary);
@@ -1299,13 +1455,17 @@ button {
   color: var(--text-primary);
 }
 
-/* ④ 기출 예문 */
+/* ④ 기출 예문 (5.4) */
 .exam-example-box {
-  background: transparent;
-  border-left: 2px solid var(--border-strong);
-  border-radius: 0;
-  padding: 2px 0 2px var(--space-3);
-  margin-bottom: var(--space-3);
+  background: #F8FAFC;
+  border-left: 3px solid #94A3B8;
+  border-radius: 0 12px 12px 0;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+html[data-theme="dark"] .exam-example-box {
+  background: var(--bg-subtle);
 }
 
 .exam-example-source {
@@ -1317,14 +1477,42 @@ button {
   color: var(--text-muted);
 }
 
-/* ---------- 9. 퀴즈 화면 (4.3) ---------- */
+/* 기출 퀴즈 모드 2종: 문맥 하이라이트 & 함정 배지 (5.4) */
+mark.exam-highlight-word,
+.exam-highlight-word {
+  background: #FEF3C7;
+  color: var(--amber-primary);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-weight: 700;
+}
+
+html[data-theme="dark"] mark.exam-highlight-word,
+html[data-theme="dark"] .exam-highlight-word {
+  background: var(--amber-soft);
+}
+
+.trap-pill {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
+}
+
+/* ---------- 9. 퀴즈 화면 (5.3) ---------- */
 .quiz-config-bar {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  margin-bottom: var(--space-3);
-  box-shadow: none;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
 .quiz-group-caption {
@@ -1336,24 +1524,23 @@ button {
   margin-bottom: var(--space-1);
 }
 
-.quiz-tabs,
-.quiz-tabs.exam-quiz-tabs {
+.quiz-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-1);
+  gap: 4px;
   background: var(--bg-subtle);
-  border: none;
   border-radius: var(--radius-md);
-  padding: var(--space-1);
+  padding: 4px;
   margin-bottom: var(--space-3);
 }
 
 .quiz-tabs.exam-quiz-tabs {
   grid-template-columns: repeat(2, 1fr);
+  background: var(--amber-soft);
 }
 
 .quiz-tab-btn {
-  padding: var(--space-2) var(--space-1);
+  padding: 8px 4px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
@@ -1366,13 +1553,17 @@ button {
 
 .quiz-tab-btn.active {
   background: var(--bg-surface);
-  color: var(--text-primary);
+  color: var(--brand-primary);
   font-weight: 600;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-xs);
 }
 
+.quiz-tabs.exam-quiz-tabs .quiz-tab-btn.active,
 .quiz-tab-btn.exam-tab-btn.active {
+  background: var(--bg-surface);
   color: var(--amber-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .quiz-scope-row {
@@ -1385,7 +1576,7 @@ button {
 
 .quiz-scope-label {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--text-secondary);
@@ -1394,24 +1585,29 @@ button {
 .scope-select {
   flex: 1;
   min-width: 180px;
-  height: 36px;
+  height: 38px;
   padding: 6px 10px;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   border: 1px solid var(--border-strong);
-  background: var(--bg-page);
+  background: #F8FAFC;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: -0.005em;
 }
 
+html[data-theme="dark"] .scope-select {
+  background: var(--bg-subtle);
+}
+
+/* 진행 상태 바 (5.3): 높이 8px 도톰한 게이지 */
 .quiz-progress-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-2);
+  margin-bottom: 8px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--text-secondary);
@@ -1419,11 +1615,11 @@ button {
 
 .progress-track {
   width: 100%;
-  height: 4px;
+  height: 8px;
   background: var(--bg-muted);
   border-radius: var(--radius-pill);
   overflow: hidden;
-  margin-bottom: var(--space-4);
+  margin-bottom: 16px;
 }
 
 .progress-fill {
@@ -1433,12 +1629,13 @@ button {
   transition: width 0.25s ease;
 }
 
+/* 문제 스테이지 카드 (5.3): radius-xl(24px), padding 24px 20px, shadow-md */
 .quiz-stage-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-md);
 }
 
 .quiz-prompt-top {
@@ -1494,72 +1691,56 @@ button {
   line-height: 1.6;
   letter-spacing: -0.005em;
   color: var(--text-primary);
-  margin-bottom: var(--space-3);
+  margin-bottom: 12px;
 }
 
 .blank-slot {
   display: inline-block;
   min-width: 96px;
   padding: 0 6px;
-  border-bottom: 2px solid var(--text-primary);
+  border-bottom: 2px solid var(--brand-primary);
   text-align: center;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .blank-slot.filled {
-  color: var(--brand-primary);
-  border-bottom-color: var(--brand-primary);
+  color: var(--success-primary);
+  border-bottom-color: var(--success-accent);
   font-weight: 700;
   animation: blankFill 0.2s ease-out;
 }
 
-mark.exam-highlight-word,
-.exam-highlight-word {
-  background: var(--amber-soft);
-  color: var(--amber-primary);
-  padding: 1px 6px;
-  border-radius: var(--radius-xs);
-  font-weight: 600;
-}
-
-.trap-pill {
-  margin-left: auto;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: 0;
-  background: var(--amber-soft);
-  color: var(--amber-primary);
-  border: 1px solid var(--amber-border);
-}
-
 .quiz-blank-ko {
   display: inline-block;
-  padding: 0;
-  background: transparent;
+  background: #F8FAFC;
+  border-radius: 10px;
+  padding: 6px 12px;
   font-size: 14px;
   line-height: 1.55;
   letter-spacing: -0.01em;
   color: var(--text-secondary);
 }
 
-/* 4지선다 */
+html[data-theme="dark"] .quiz-blank-ko {
+  background: var(--bg-subtle);
+}
+
+/* 4지선다 보기 버튼 (1.3 / 5.3): min-height: 52px, radius-md(14px), shadow-xs */
 .choices-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-2);
+  gap: 10px;
 }
 
 .choice-btn {
   width: 100%;
-  min-height: 48px;
+  min-height: 52px;
   text-align: left;
-  padding: var(--space-3) var(--space-4);
+  padding: 12px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
+  border: 1.5px solid var(--border-strong);
   background: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.55;
@@ -1567,13 +1748,14 @@ mark.exam-highlight-word,
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  transition: border-color 0.14s ease, background-color 0.14s ease;
+  gap: 12px;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
 .choice-btn:hover:not(:disabled) {
-  border-color: var(--border-focus);
-  background: var(--bg-subtle);
+  border-color: var(--brand-primary);
+  background: var(--brand-soft);
+  transform: translateY(-1px);
 }
 
 .choice-btn .grade-badge,
@@ -1588,40 +1770,54 @@ mark.exam-highlight-word,
 }
 
 .choice-num {
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-xs);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: 0;
   color: var(--text-secondary);
   flex-shrink: 0;
 }
 
+/* 정답 판정 (1.3 / 5.3): 에메랄드 그린 소프트 배경 + 2px 보더 + 3px 글로우 + correctPop */
 .choice-btn.correct {
-  border-color: var(--brand-primary);
-  background: var(--brand-soft);
-  color: var(--brand-primary);
+  background: var(--success-soft);
+  border: 2px solid var(--success-accent);
+  color: #065F46;
   font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  animation: correctPop 0.24s ease-out;
+}
+
+html[data-theme="dark"] .choice-btn.correct {
+  color: #A7F3D0;
 }
 
 .choice-btn.correct .choice-num {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-  color: var(--text-on-solid);
+  background: var(--success-accent);
+  border-color: var(--success-accent);
+  color: #FFFFFF;
 }
 
+/* 오답 판정 (1.3 / 5.3): 코랄 레드 소프트 배경 + 2px 보더 + 3px 글로우 + wrongShake */
 .choice-btn.wrong {
-  border-color: var(--danger-primary);
   background: var(--danger-soft);
-  color: var(--danger-primary);
+  border: 2px solid var(--danger-primary);
+  color: #9F1239;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.16);
   animation: wrongShake 0.34s ease-in-out;
+}
+
+html[data-theme="dark"] .choice-btn.wrong {
+  color: #FECDD3;
 }
 
 .choice-btn.wrong .choice-num {
@@ -1630,7 +1826,7 @@ mark.exam-highlight-word,
   color: #FFFFFF;
 }
 
-/* 카드 뒤집기 */
+/* 카드 뒤집기 모드 (5.3): min-height: 220px, radius-xl(24px) */
 .flashcard-container {
   margin: var(--space-2) 0 var(--space-4);
 }
@@ -1638,18 +1834,23 @@ mark.exam-highlight-word,
 .flashcard-box {
   width: 100%;
   min-height: 220px;
-  background: var(--bg-page);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-5);
+  background: #F8FAFC;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.18s ease, background-color 0.18s ease;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
   user-select: none;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="dark"] .flashcard-box {
+  background: var(--bg-subtle);
 }
 
 .flashcard-box:hover {
@@ -1658,7 +1859,8 @@ mark.exam-highlight-word,
 
 .flashcard-box.flipped {
   background: var(--bg-surface);
-  border-color: var(--border-focus);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-md);
 }
 
 .flashcard-box .quiz-target-word {
@@ -1684,7 +1886,7 @@ mark.exam-highlight-word,
 
 .flashcard-meaning {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.02em;
   color: var(--text-primary);
@@ -1710,7 +1912,7 @@ mark.exam-highlight-word,
 }
 
 .judge-btn {
-  padding: var(--space-3) var(--space-4);
+  padding: 12px 16px;
   border-radius: var(--radius-md);
   font-size: 15px;
   font-weight: 600;
@@ -1719,7 +1921,7 @@ mark.exam-highlight-word,
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .judge-btn:disabled {
@@ -1728,15 +1930,20 @@ mark.exam-highlight-word,
 }
 
 .judge-btn.unknown {
-  background: var(--bg-surface);
-  border: 1px solid var(--danger-border);
+  background: #FFF1F2;
+  border: 1.5px solid #FECDD3;
   color: var(--danger-primary);
 }
 
+html[data-theme="dark"] .judge-btn.unknown {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+}
+
 .judge-btn.known {
-  background: var(--brand-primary);
-  border: 1px solid var(--brand-primary);
-  color: var(--text-on-solid);
+  background: var(--success-accent);
+  border: 1.5px solid var(--success-primary);
+  color: #FFFFFF;
 }
 
 .judge-sub {
@@ -1746,13 +1953,11 @@ mark.exam-highlight-word,
   letter-spacing: 0;
 }
 
-/* 정오답 피드백 */
+/* 정오답 피드백 패널 (5.3): radius-md(14px) */
 .quiz-feedback {
-  margin-top: var(--space-4);
-  padding: var(--space-4);
+  margin-top: 16px;
+  padding: 16px;
   border-radius: var(--radius-md);
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
   animation: fadeIn 0.15s ease-out;
 }
 
@@ -1762,13 +1967,23 @@ mark.exam-highlight-word,
   justify-content: space-between;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.55;
 }
 
+.quiz-feedback:has(.feedback-header.correct) {
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+}
+
+.quiz-feedback:has(.feedback-header.wrong) {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+}
+
 .feedback-header.correct {
-  color: var(--brand-primary);
+  color: var(--success-primary);
 }
 
 .feedback-header.wrong {
@@ -1809,17 +2024,26 @@ mark.exam-highlight-word,
   color: var(--text-muted);
 }
 
+/* 다음 문제 버튼 (5.3): 높이 48px, radius-md(14px), 로열 블루 */
 .next-question-btn {
   margin-top: var(--space-3);
   width: 100%;
-  min-height: 44px;
+  height: 48px;
+  min-height: 48px;
   padding: 10px 16px;
   border-radius: var(--radius-md);
-  background: var(--text-primary);
+  background: var(--brand-primary);
   color: var(--text-on-solid);
   font-weight: 600;
   font-size: 15px;
   line-height: 1.55;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.next-question-btn:hover {
+  background: var(--brand-primary-hover);
 }
 
 .xp-gain-wrap {
@@ -1832,13 +2056,13 @@ mark.exam-highlight-word,
 
 .xp-gain-pill {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
-  color: var(--text-primary);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-border);
+  color: var(--amber-primary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
   animation: xpRise 0.22s ease-out;
@@ -1849,7 +2073,7 @@ mark.exam-highlight-word,
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
-  color: var(--xp-primary);
+  color: var(--amber-primary);
 }
 
 .xp-cap-notice {
@@ -1860,15 +2084,16 @@ mark.exam-highlight-word,
   margin-bottom: var(--space-1);
 }
 
+/* 레벨업 축하 배너 (5.6): radius-md(14px), 앰버 소프트 */
 .levelup-banner {
   background: var(--amber-soft);
-  border: 1px solid var(--amber-border);
+  border: 1.5px solid var(--amber-border);
   color: var(--amber-primary);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px 16px;
   margin-bottom: var(--space-4);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.55;
   animation: softReveal 0.25s ease-out;
 }
@@ -1895,7 +2120,7 @@ mark.exam-highlight-word,
 }
 
 .session-xp-line strong {
-  color: var(--text-primary);
+  color: var(--brand-primary);
   font-weight: 700;
 }
 
@@ -1907,6 +2132,7 @@ mark.exam-highlight-word,
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
 }
 
 .summary-row {
@@ -1951,24 +2177,25 @@ mark.exam-highlight-word,
   gap: var(--space-2);
 }
 
-/* ---------- 10. 오답노트 화면 (4.5) ---------- */
+/* ---------- 10. 오답노트 화면 (5.5) ---------- */
+/* 오답노트 상단 복습 배너: radius-lg(18px), 코랄 레드 좌측 보더(4px), shadow-sm */
 .wrong-banner {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--danger-primary);
+  border: 1px solid var(--danger-border);
+  border-left: 4px solid var(--danger-primary);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-  box-shadow: none;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .wrong-banner-title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.45;
   letter-spacing: -0.015em;
   color: var(--text-primary);
-  margin-bottom: var(--space-1);
+  margin-bottom: 4px;
 }
 
 .wrong-banner-desc {
@@ -1977,7 +2204,7 @@ mark.exam-highlight-word,
   line-height: 1.55;
   letter-spacing: -0.01em;
   color: var(--text-secondary);
-  margin-bottom: var(--space-3);
+  margin-bottom: 14px;
 }
 
 .wrong-quiz-btns {
@@ -1990,23 +2217,46 @@ mark.exam-highlight-word,
   margin-bottom: var(--space-2);
 }
 
+/* 오답 퀴즈 시작 버튼 5종 (5.5): radius-sm(10px) */
 .wrong-start-btn {
-  padding: var(--space-2) var(--space-3);
+  padding: 9px 14px;
   border-radius: var(--radius-sm);
-  background: var(--text-primary);
+  background: var(--brand-primary);
   color: var(--text-on-solid);
-  border: 1px solid var(--text-primary);
+  border: 1px solid var(--brand-primary);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   letter-spacing: -0.005em;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.wrong-start-btn:hover {
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
 }
 
 .wrong-start-btn.secondary,
 .wrong-start-btn.exam-btn-secondary {
+  background: #F8FAFC;
+  color: #1E293B;
+  border: 1px solid var(--border-strong);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .wrong-start-btn.secondary,
+html[data-theme="dark"] .wrong-start-btn.exam-btn-secondary {
   background: var(--bg-subtle);
   color: var(--text-primary);
-  border: 1px solid var(--border-strong);
+}
+
+.wrong-start-btn.secondary:hover,
+.wrong-start-btn.exam-btn-secondary:hover {
+  background: var(--brand-soft);
+  border-color: #93C5FD;
+  color: var(--brand-primary);
 }
 
 .wrong-start-count {
@@ -2021,47 +2271,55 @@ mark.exam-highlight-word,
   margin-bottom: var(--space-4);
 }
 
-/* 오답 횟수 배지: 유채색 허용 단 1곳 */
+/* 오답 횟수 배지 (5.5): 코랄 핑크 소프트 */
 .wrong-count-badge {
   display: inline-flex;
   align-items: center;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
   background: var(--danger-soft);
   color: var(--danger-primary);
   border: 1px solid var(--danger-border);
 }
 
-/* 모드 구분 배지: exam-mode / basic-mode 공통 무채색 */
-.wrong-mode-badge,
-.wrong-mode-badge.exam-mode,
-.wrong-mode-badge.basic-mode {
+/* 모드 구분 배지 (5.5): 기출 앰버 / 기본 블루 */
+.wrong-mode-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: var(--radius-xs);
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
 }
 
+.wrong-mode-badge.exam-mode {
+  background: var(--amber-soft);
+  color: var(--amber-primary);
+  border: 1px solid var(--amber-border);
+}
+
+.wrong-mode-badge.basic-mode {
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-border);
+}
+
+/* 빈 상태 카드 (5.5): radius-lg(18px), padding 32px 20px, shadow-sm */
 .empty-state {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-8) var(--space-5);
+  padding: 32px 20px;
   text-align: center;
   color: var(--text-secondary);
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-title {
@@ -2099,9 +2357,10 @@ mark.exam-highlight-word,
   margin: 0;
 }
 
-/* ---------- 11. 레벨 · 리그 · 배지 (4.6) ---------- */
+/* ---------- 11. 레벨 · 리그 · 배지 (5.6) ---------- */
+/* 레벨 진행 바 (5.6): 높이 8px, 앰버 채움 */
 .level-progress {
-  margin: var(--space-3) 0 var(--space-4);
+  margin: 14px 0 18px;
 }
 
 .level-progress-head {
@@ -2110,7 +2369,7 @@ mark.exam-highlight-word,
   justify-content: space-between;
   gap: var(--space-2);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--text-secondary);
@@ -2118,13 +2377,13 @@ mark.exam-highlight-word,
 }
 
 .level-progress-head strong {
-  color: var(--text-primary);
+  color: var(--brand-primary);
   font-size: 13px;
   font-weight: 700;
 }
 
 .level-progress-track {
-  height: 6px;
+  height: 8px;
   border-radius: var(--radius-pill);
   background: var(--bg-muted);
   overflow: hidden;
@@ -2133,16 +2392,17 @@ mark.exam-highlight-word,
 .level-progress-fill {
   height: 100%;
   border-radius: var(--radius-pill);
-  background: var(--amber-primary);
+  background: var(--amber-accent);
   transition: width 0.3s ease;
 }
 
+/* 주간 연습 리그 카드 (5.6): radius-lg(18px), shadow-sm */
 .league-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: none;
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
 }
 
 .league-caption {
@@ -2163,7 +2423,7 @@ mark.exam-highlight-word,
 }
 
 .league-summary strong {
-  color: var(--text-primary);
+  color: var(--brand-primary);
   font-weight: 700;
 }
 
@@ -2171,15 +2431,16 @@ mark.exam-highlight-word,
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .league-row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 36px;
-  padding: 6px 10px;
+  height: 40px;
+  min-height: 40px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   font-size: 14px;
@@ -2187,9 +2448,10 @@ mark.exam-highlight-word,
   letter-spacing: -0.01em;
 }
 
+/* 사용자 본인 행 (5.6): 민트 에메랄드 소프트 + 1.5px 솔리드 보더 */
 .league-row.me {
-  background: var(--brand-soft);
-  border-color: var(--brand-border);
+  background: var(--success-soft);
+  border: 1.5px solid #34D399;
   font-weight: 600;
 }
 
@@ -2204,9 +2466,15 @@ mark.exam-highlight-word,
   flex-shrink: 0;
 }
 
-.league-row:nth-child(-n + 3) .league-rank,
-.league-row.me .league-rank {
-  color: var(--text-primary);
+/* 1~3위 앰버 강조 */
+.league-row:nth-child(-n + 3) .league-rank {
+  color: var(--amber-primary);
+  font-weight: 700;
+}
+
+.league-row:nth-child(n + 4) .league-rank {
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .league-name {
@@ -2219,7 +2487,7 @@ mark.exam-highlight-word,
 
 .bot-badge {
   display: inline-block;
-  padding: 1px 5px;
+  padding: 2px 6px;
   border-radius: var(--radius-xs);
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
@@ -2239,15 +2507,15 @@ mark.exam-highlight-word,
 }
 
 .league-row.me .league-xp {
-  color: var(--brand-primary);
+  color: var(--success-primary);
   font-weight: 700;
 }
 
-/* 배지 컬렉션 */
+/* 학습 배지 컬렉션 그리드 (5.6): 2열(모바일) / 4열(>=560px), gap: 10px */
 .badge-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
+  gap: 10px;
 }
 
 @media (min-width: 560px) {
@@ -2261,36 +2529,44 @@ mark.exam-highlight-word,
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: 6px;
-  padding: var(--space-3);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
+  gap: 8px;
+  padding: 14px;
   border-radius: var(--radius-lg);
   box-shadow: none;
 }
 
+/* 아이콘 프레임 (5.6): 40px × 40px, radius: 12px, font-size: 22px */
 .badge-icon {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
-  background: var(--amber-soft);
-  border: 1px solid var(--amber-border);
-  color: var(--amber-primary);
+  border-radius: 12px;
+  font-size: 22px;
+  line-height: 1;
   flex-shrink: 0;
 }
 
-.badge-icon svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: 1.75;
+/* 해금 상태 (5.6) */
+.badge-item.unlocked {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--amber-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge-item.unlocked .badge-icon {
+  background: #FEF3C7;
+  border: 1px solid var(--amber-border);
+}
+
+html[data-theme="dark"] .badge-item.unlocked .badge-icon {
+  background: var(--amber-soft);
 }
 
 .badge-name {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--text-primary);
@@ -2298,21 +2574,29 @@ mark.exam-highlight-word,
 
 .badge-sub {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0;
   color: var(--amber-primary);
 }
 
+/* 미해금 상태 (5.6): grayscale(1), opacity: 0.35 */
 .badge-item.locked {
-  background: var(--bg-page);
-  border: 1px dashed var(--border-subtle);
+  background: #F8FAFC;
+  border: 1px dashed var(--border-strong);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .badge-item.locked {
+  background: var(--bg-subtle);
+  border-color: var(--border-subtle);
 }
 
 .badge-item.locked .badge-icon {
   background: var(--bg-subtle);
-  border-color: var(--border-subtle);
-  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  filter: grayscale(1);
+  opacity: 0.35;
 }
 
 .badge-item.locked .badge-name {
@@ -2325,14 +2609,19 @@ mark.exam-highlight-word,
   color: var(--text-muted);
 }
 
-/* ---------- 12. 모션 ---------- */
+/* ---------- 12. 모션 · 애니메이션 (1.3 / 6.2 유지 10) ---------- */
+/* 정답 탄력 팝 */
+@keyframes correctPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* 오답 진동 */
 @keyframes wrongShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-  100% { transform: translateX(0); }
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
 @keyframes xpRise {
@@ -2345,7 +2634,6 @@ mark.exam-highlight-word,
   to { transform: translateY(0); }
 }
 
-/* 스프링 오버슈트(scale) 대신 투명도 전환만 사용 */
 @keyframes softReveal {
   from { opacity: 0.4; }
   to { opacity: 1; }
