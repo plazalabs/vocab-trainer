@@ -15,7 +15,7 @@
   <script>
     // 첫 페인트 전 테마 적용 (깜빡임 방지) — vocab_trainer_prefs_v1.theme: 'system' | 'light' | 'dark'
     (function () {
-      var theme = 'system';
+      var theme = 'light';
       try {
         var p = JSON.parse(localStorage.getItem('vocab_trainer_prefs_v1') || '{}');
         if (p && (p.theme === 'light' || p.theme === 'dark')) theme = p.theme;
@@ -66,123 +66,95 @@
     <main class="main-content">
       <!-- 1. 홈 화면 (Home View) -->
       <section id="view-home" class="view-section active" aria-label="홈 화면">
+        <div id="home-resume-card" class="resume-card hidden"></div>
         <div class="hero-card">
           <div class="hero-top-row">
-            <div>
-              <span id="home-date-badge" class="hero-date-label">오늘의 학습 브리핑</span>
-              <h2 id="home-greeting-title" class="hero-headline">오늘 복습할 단어를 확인하세요</h2>
-            </div>
+            <h2 id="home-greeting-title" class="hero-headline">오늘 복습할 단어를 확인하세요</h2>
+            <span id="home-date-badge" class="hero-date-label">오늘의 학습 브리핑</span>
           </div>
-
-          <div class="hero-stats-grid">
-            <div class="stat-box highlight-due">
-              <span class="stat-label">오늘 복습할 단어</span>
-              <strong id="stat-due-count" class="stat-value">0</strong>
-              <span id="stat-due-sub" class="stat-sub">복습 대기 중</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">미학습 새 단어</span>
-              <strong id="stat-new-count" class="stat-value">24</strong>
-              <span id="stat-learned-sub" class="stat-sub">전체 24개 중</span>
-            </div>
-            <div class="stat-box highlight-streak">
-              <span class="stat-label">연속 학습일</span>
-              <strong id="stat-streak-count" class="stat-value">0일</strong>
-              <span id="stat-today-done" class="stat-sub">오늘 0개 학습</span>
-            </div>
-          </div>
-
-          <div id="home-level-progress" class="level-progress" aria-label="레벨 진행도"></div>
 
           <button id="btn-hero-start" class="primary-cta-btn" type="button">
             <span id="btn-hero-start-text">새 학습 / 오늘의 복습 퀴즈 시작하기</span>
             <span aria-hidden="true">→</span>
           </button>
-        </div>
 
-        <div class="section-header">
-          <h3 class="section-title">퀴즈 3종 바로 시작</h3>
-          <span class="section-caption">원하는 학습 방식을 선택하세요</span>
-        </div>
+          <div class="quiz-mode-grid">
+            <button class="mode-card" type="button" data-start-mode="meaning" id="btn-home-mode-meaning">
+              <span class="mode-badge">유형 A · 4지선다</span>
+              <span class="mode-card-title">뜻 맞히기</span>
+              <span class="mode-card-desc">제시된 고등 필수 영단어를 보고 알맞은 한국어 뜻을 고릅니다.</span>
+            </button>
 
-        <div class="quiz-mode-grid">
-          <button class="mode-card" type="button" data-start-mode="meaning" id="btn-home-mode-meaning">
-            <span class="mode-badge">유형 A · 4지선다</span>
-            <span class="mode-card-title">뜻 맞히기 퀴즈</span>
-            <span class="mode-card-desc">제시된 고등 필수 영단어를 보고 알맞은 한국어 뜻을 고릅니다.</span>
-          </button>
+            <button class="mode-card" type="button" data-start-mode="blank" id="btn-home-mode-blank">
+              <span class="mode-badge">유형 B · 문맥 추론</span>
+              <span class="mode-card-title">예문 빈칸</span>
+              <span class="mode-card-desc">영어 예문과 해석을 참고해 빈칸에 들어갈 알맞은 영단어를 고릅니다.</span>
+            </button>
 
-          <button class="mode-card" type="button" data-start-mode="blank" id="btn-home-mode-blank">
-            <span class="mode-badge">유형 B · 문맥 추론</span>
-            <span class="mode-card-title">예문 빈칸 채우기</span>
-            <span class="mode-card-desc">영어 예문과 해석을 참고해 빈칸에 들어갈 알맞은 영단어를 고릅니다.</span>
-          </button>
-
-          <button class="mode-card" type="button" data-start-mode="flashcard" id="btn-home-mode-flashcard">
-            <span class="mode-badge">유형 C · 자기 판정</span>
-            <span class="mode-card-title">카드 뒤집기 학습</span>
-            <span class="mode-card-desc">카드를 뒤집어 뜻과 예문을 확인한 뒤 '알아요 / 몰라요'를 스스로 판정합니다.</span>
-          </button>
-        </div>
-
-        <div class="section-header">
-          <h3 class="section-title">간격반복(SRS) 복습 단계 현황</h3>
-          <span class="section-caption">정답 시 1일 → 3일 → 7일 → 14일 확대</span>
-        </div>
-
-        <div class="srs-panel">
-          <div class="srs-stages-grid">
-            <div class="srs-stage-item">
-              <span class="srs-stage-interval">미학습/재출제</span>
-              <strong id="srs-count-0" class="srs-stage-count">24</strong>
-            </div>
-            <div class="srs-stage-item">
-              <span class="srs-stage-interval">1일 간격</span>
-              <strong id="srs-count-1" class="srs-stage-count">0</strong>
-            </div>
-            <div class="srs-stage-item">
-              <span class="srs-stage-interval">3일 간격</span>
-              <strong id="srs-count-2" class="srs-stage-count">0</strong>
-            </div>
-            <div class="srs-stage-item">
-              <span class="srs-stage-interval">7일 간격</span>
-              <strong id="srs-count-3" class="srs-stage-count">0</strong>
-            </div>
-            <div class="srs-stage-item">
-              <span class="srs-stage-interval">14일 완성</span>
-              <strong id="srs-count-4" class="srs-stage-count">0</strong>
-            </div>
-          </div>
-
-          <div class="srs-helper-bar">
-            <span id="sim-date-display">기준일: 오늘</span>
-            <div class="srs-sim-actions">
-              <button id="btn-sim-next-day" class="mini-btn" type="button" title="간격반복 테스트를 위해 가상 기준일을 하루 앞으로 이동합니다">
-                +1일 경과 테스트
-              </button>
-              <button id="btn-reset-storage" class="mini-btn danger" type="button" title="모든 학습 기록을 초기화합니다">
-                기록 초기화
-              </button>
-            </div>
+            <button class="mode-card" type="button" data-start-mode="flashcard" id="btn-home-mode-flashcard">
+              <span class="mode-badge">유형 C · 자기 판정</span>
+              <span class="mode-card-title">카드 뒤집기</span>
+              <span class="mode-card-desc">카드를 뒤집어 뜻과 예문을 확인한 뒤 '알아요 / 몰라요'를 스스로 판정합니다.</span>
+            </button>
           </div>
         </div>
 
-        <div class="section-header">
-          <h3 class="section-title">🏆 주간 연습 리그</h3>
-          <span class="section-caption">월~일 주간 XP · 봇 9명 + 나</span>
+        <div class="status-card">
+          <div class="hero-stats-grid">
+            <div class="stat-box highlight-due">
+              <span class="stat-label">오늘 복습</span>
+              <strong id="stat-due-count" class="stat-value">0</strong>
+              <span id="stat-due-sub" class="stat-sub">복습 대기 중</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">새 단어</span>
+              <strong id="stat-new-count" class="stat-value">24</strong>
+              <span id="stat-learned-sub" class="stat-sub">전체 24개 중</span>
+            </div>
+            <div class="stat-box highlight-streak">
+              <span class="stat-label">연속 학습</span>
+              <strong id="stat-streak-count" class="stat-value">0일</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">오늘 학습</span>
+              <strong id="stat-today-done" class="stat-value">0</strong>
+            </div>
+          </div>
+
+          <div id="home-level-progress" class="level-progress" aria-label="레벨 진행도"></div>
+
+          <div class="srs-panel">
+            <div id="home-week-dots" class="week-dots" aria-label="이번 주 학습 기록"></div>
+            <div id="home-srs-bar" class="srs-bar"></div>
+            <div class="goal-chips" role="group" aria-label="하루 목표 설정">
+              <span class="goal-chips-label">하루 목표</span>
+              <button class="goal-chip" type="button" data-goal-level="light">가볍게 10</button>
+              <button class="goal-chip" type="button" data-goal-level="normal">보통 20</button>
+              <button class="goal-chip" type="button" data-goal-level="focus">집중 40</button>
+            </div>
+
+            <div class="srs-helper-bar">
+              <span id="sim-date-display">기준일: 오늘</span>
+              <div class="srs-sim-actions">
+                <button id="btn-sim-next-day" class="mini-btn" type="button" title="간격반복 테스트를 위해 가상 기준일을 하루 앞으로 이동합니다">
+                  +1일 경과 테스트
+                </button>
+                <button id="btn-reset-storage" class="mini-btn danger" type="button" title="모든 학습 기록을 초기화합니다">
+                  기록 초기화
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div id="home-league-card" class="league-card"></div>
 
-        <div class="section-header">
-          <h3 class="section-title">학습 배지 컬렉션</h3>
-          <span class="section-caption">한 번 획득한 배지는 유지됩니다</span>
-        </div>
         <div id="home-badge-grid" class="badge-grid"></div>
       </section>
 
       <!-- 2. 단어장 화면 (Wordbook View) -->
       <section id="view-wordbook" class="view-section" aria-label="단어장 화면">
-        <div class="toolbar-card">
+        <div class="toolbar-card" id="wordbook-toolbar">
           <div class="wordbook-dataset-tabs" role="tablist" aria-label="단어장 구분 탭">
             <button class="dataset-tab-btn active" type="button" data-wordbook-tab="sample" id="tab-wordbook-sample" role="tab" aria-selected="true">
               기본 단어장 (24)
@@ -190,7 +162,12 @@
             <button class="dataset-tab-btn" type="button" data-wordbook-tab="exam" id="tab-wordbook-exam" role="tab" aria-selected="false">
               기출 다의어 (40)
             </button>
+            <button id="btn-wb-search-toggle" class="wb-search-toggle" type="button" aria-label="단어 검색 열기" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" /></svg>
+          </button>
           </div>
+
+
 
           <div class="search-row">
             <input
@@ -219,9 +196,12 @@
           </div>
         </div>
 
-        <p id="wordbook-guide-text" class="guide-text">
+        <div class="guide-tip">
+          <button class="guide-tip-btn" type="button" aria-label="단어장 사용 안내">i</button>
+          <p id="wordbook-guide-text" class="guide-text guide-tip-panel">
           단어 카드를 클릭하면 브라우저 음성 합성(speechSynthesis)으로 영어 발음을 들을 수 있습니다.
         </p>
+        </div>
 
         <div id="wordbook-list" class="word-list" aria-live="polite"></div>
       </section>
@@ -229,6 +209,10 @@
       <!-- 3. 퀴즈 화면 (Quiz View) -->
       <section id="view-quiz" class="view-section" aria-label="퀴즈 화면">
         <div class="quiz-config-bar">
+          <div class="quiz-config-collapsed">
+            <span class="quiz-collapsed-mode" id="quiz-collapsed-mode-label">퀴즈 진행 중</span>
+            <button class="mini-btn" type="button" id="btn-quiz-settings">설정 열기</button>
+          </div>
           <div class="quiz-group-caption">기본 퀴즈 3종 (샘플 24단어)</div>
           <div class="quiz-tabs" role="tablist" aria-label="퀴즈 유형 선택">
             <button class="quiz-tab-btn active" type="button" data-quiz-mode="meaning" id="tab-quiz-meaning">
@@ -266,6 +250,7 @@
         </div>
 
         <div id="quiz-active-area"></div>
+        <div id="quiz-feedback-banner" class="quiz-feedback-banner hidden" role="status" aria-live="polite"></div>
       </section>
 
       <!-- 4. 오답노트 화면 (Wrong Answer Note View) -->
