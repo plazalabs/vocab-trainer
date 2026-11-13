@@ -1152,6 +1152,16 @@
       chip.classList.toggle('active', chip.dataset.goalLevel === state.prefs.goalLevel);
     });
 
+    // v5: 히어로 진행 링 + 하루 목표 표시
+    const goalPreset = GOAL_PRESETS[state.prefs.goalLevel] || GOAL_PRESETS.normal;
+    const heroPct = Math.min(100, Math.round((todayStudiedCount / goalPreset.count) * 100));
+    const ringNum = document.getElementById('hero-ring-num');
+    if (ringNum) ringNum.textContent = `${heroPct}%`;
+    const ringFg = document.getElementById('hero-ring-fg');
+    if (ringFg) ringFg.style.strokeDashoffset = (163.36 * (1 - heroPct / 100)).toFixed(1);
+    const heroGoalCount = document.getElementById('hero-goal-count');
+    if (heroGoalCount) heroGoalCount.textContent = `${goalPreset.count}개`;
+
     // v4: 세션 이어하기 카드
     const resumeCard = document.getElementById('home-resume-card');
     if (resumeCard) {
@@ -1351,6 +1361,18 @@
           .join('')
       : '';
 
+    // v5 결함 수정: 뜻별 % 합계가 100 미달이면 나머지 문맥 비중을 명시
+    const pctSum = Array.isArray(w.exam_meanings)
+      ? w.exam_meanings.reduce(
+          (s, m) => s + (m && typeof m.share_pct === 'number' ? m.share_pct : 0),
+          0
+        )
+      : 0;
+    const pctNoteHtml =
+      pctSum > 0 && pctSum < 99
+        ? `<li class="exam-meaning-note">%는 주요 문맥 뜻의 출제 비중 · 그 밖의 문맥 ${100 - Math.round(pctSum)}%</li>`
+        : '';
+
     const hasWordSignal =
       w.signal !== null &&
       w.signal !== undefined &&
@@ -1414,6 +1436,7 @@
             </div>
             <ul class="exam-meanings-list">
               ${meaningsItemsHtml}
+              ${pctNoteHtml}
             </ul>
               ${examMeaningsCount > 1 ? `<button class="exam-more-chip" type="button" data-action="toggle-exam" data-word-id="${escapeHtml(w.id)}">+${examMeaningsCount - 1} 뜻 더 보기</button>` : ''}
           </div>
@@ -2441,7 +2464,7 @@
     container.innerHTML = `
       <div class="quiz-progress-header">
         <span>문제 ${idx + 1} / ${total}</span>
-        <span>정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개</span>
+        <span class="js-correct-count">정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개</span>
       </div>
       <div class="progress-track" aria-hidden="true">
         <div class="progress-fill" style="width: ${progressPct}%;"></div>
@@ -2554,6 +2577,11 @@
       if (outcome.xp) playCorrectSfx(outcome.xp.combo);
     } else playWrongSfx();
     announceLevelUp(outcome.xp);
+
+    // v5 결함 수정: 채점 즉시 상단 정답 카운터 동기화 (기존에는 다음 문제로 넘어가야 갱신됨)
+    document.querySelectorAll('.js-correct-count').forEach((el) => {
+      el.textContent = `정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개`;
+    });
 
     const feedbackSlot = document.getElementById('quiz-feedback-banner');
     if (feedbackSlot) {
@@ -3117,6 +3145,16 @@
       });
     }
 
+    // v5 결함 수정: 안내(i) 버튼 클릭 토글 (기존에는 호버 전용이라 무반응으로 보였음)
+    const guideBtn = document.querySelector('.guide-tip-btn');
+    const guidePanel = document.getElementById('wordbook-guide-text');
+    if (guideBtn && guidePanel) {
+      guideBtn.addEventListener('click', () => {
+        const open = guidePanel.classList.toggle('is-open');
+        guideBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+
     const searchInput = document.getElementById('wordbook-search');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -3294,7 +3332,10 @@
     const installBtn = document.getElementById('btn-pwa-install');
     if (installBtn) {
       installBtn.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) return;
+        if (!deferredInstallPrompt) {
+          showToast('브라우저 메뉴에서 "앱 설치" 또는 "홈 화면에 추가"를 선택해 주세요');
+          return;
+        }
         deferredInstallPrompt.prompt();
         await deferredInstallPrompt.userChoice;
         deferredInstallPrompt = null;
