@@ -616,9 +616,7 @@
   }
 
   function formatBadgeDate(ymdStr) {
-    if (!ymdStr) return '-';
-    const parts = ymdStr.split('-');
-    return `${parts[1]}월 ${parts[2]}일`;
+    return formatKoreanShortDate(ymdStr);
   }
 
   function getBadgeProgress(def) {
