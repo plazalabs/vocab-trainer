@@ -2666,7 +2666,7 @@
 
   // 정답 시 인라인 XP 피드백 (DESIGN.md 2.5-3)
   function renderXpGainPill(xp) {
-    if (!xp || !xp.combo || xp.combo < 1) return '';
+    if (!xp || !xp.combo || xp.combo < 1 || xp.capped) return '';
     const comboHtml = xp.comboBonus > 0
       ? `<span class="xp-combo-text">${xp.combo}연속 보너스 +${xp.comboBonus} XP</span>`
       : '';
