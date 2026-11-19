@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concept C · 에디토리얼·카드형 — 고등 영단어 트레이너 시안 (390px)</title>
+  <style>
+    /* ==========================================================================
+       Concept C: 에디토리얼·카드형 (Literary Print & Typographic Card)
+       - 레퍼런스: Vocabulary.com · Readwise Reader · NYT Games · Kinfolk Editorial
+       - 원칙: 큰 세리프 타이포 · 잡지식 룰 위계 · 단어 자체가 주인공 · 그라데이션 0 · 보라 0
+       ========================================================================== */
+    :root {
+      /* Paper & Ink */
+      --stage-bg: #EAE2D3;
+      --paper: #F5EFE4;
+      --card: #FFFDF8;
+      --card-tint: #FBF7EE;
+      --rule-light: #DDD4C4;
+      --rule-mid: #C4B8A3;
+      --ink: #1C1917;
+      --ink-2: #4A453F;
+      --ink-3: #7C746A;
+
+      /* Editorial Stamp Accent (Vermilion Terracotta) */
+      --vermilion: #B93815;
+      --vermilion-dark: #942B0E;
+      --vermilion-soft: #FDF1EC;
+      --vermilion-line: #EABFB0;
+
+      /* Literary Correct Accent (Bookbinding Sage Green) */
+      --sage: #2D6A4F;
+      --sage-soft: #EDF5F0;
+      --sage-line: #B8D4C4;
+      --sage-ink: #1D4B37;
+
+      /* Typography */
+      --font-serif-en: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+      --font-serif-ko: "AppleMyungjo", "Batang", "Noto Serif KR", Georgia, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+
+      /* Print Geometry */
+      --r-card: 4px;
+      --r-btn: 3px;
+      --r-tag: 2px;
+      --shadow-paper: 3px 3px 0 #DDD4C4;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--stage-bg);
+      color: var(--ink);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      word-break: keep-all;
+      padding: 28px 0 56px;
+    }
+
+    .mockup-stage {
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .mockup-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--ink);
+      border-radius: var(--r-tag);
+      box-shadow: var(--shadow-paper);
+    }
+
+    .mockup-banner-title {
+      font-family: var(--font-serif-ko);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .mockup-banner-tag {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 11.5px;
+      color: var(--vermilion);
+    }
+
+    .screen-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding: 0 2px;
+    }
+
+    .screen-label strong {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+
+    .screen-label span {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    /* 390px Mobile Frame */
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 5px 5px 0 #D3C8B5;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 30px;
+      padding: 0 18px;
+      background: var(--paper);
+      font-family: var(--font-serif-en);
+      font-size: 11.5px;
+      color: var(--ink-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ==========================================================================
+       SCREEN 01: HOME (Editorial Masthead + Word-First Hero + TOC Modes)
+       ========================================================================== */
+    .masthead {
+      padding: 6px 18px 14px;
+      border-bottom: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .issue-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--rule-light);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .issue-streak {
+      color: var(--vermilion);
+    }
+
+    .masthead-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .masthead-title {
+      font-family: var(--font-serif-ko);
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+
+    .masthead-edition {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+
+    .screen-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Editorial Hero Card: Word Spotlight + Goal Ring */
+    .editorial-card {
+      background: var(--card);
+      border: 1px solid var(--ink);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-paper);
+      padding: 18px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-kicker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .kicker-caps {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vermilion);
+    }
+
+    .kicker-meta {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .spotlight-word-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .spotlight-left {
+      min-width: 0;
+    }
+
+    .spotlight-headword {
+      font-family: var(--font-serif-en);
+      font-size: 36px;
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .spotlight-pos {
+      margin-top: 4px;
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 12.5px;
+      color: var(--ink-3);
+    }
+
+    .spotlight-desc {
+      margin-top: 6px;
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    /* Editorial Progress Ring */
+    .ed-ring-wrap {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+    }
+
+    .ed-ring-svg {
+      width: 66px;
+      height: 66px;
+      transform: rotate(-90deg);
+    }
+
+    .ed-ring-track {
+      fill: none;
+      stroke: var(--rule-light);
+      stroke-width: 4;
+    }
+
+    .ed-ring-fill {
+      fill: none;
+      stroke: var(--vermilion);
+      stroke-width: 4;
+      /* r=28 -> circumference=175.93, 70% -> offset=52.78 */
+      stroke-dasharray: 175.93;
+      stroke-dashoffset: 52.78;
+    }
+
+    .ed-ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ed-ring-num {
+      font-family: var(--font-serif-en);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .ed-ring-sub {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+
+    .goal-bar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid var(--rule-light);
+      border-bottom: 1px solid var(--rule-light);
+      gap: 8px;
+    }
+
+    .goal-stat-text {
+      font-size: 12px;
+      color: var(--ink-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .goal-stat-text strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .goal-picks {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .goal-pick {
+      padding: 3px 8px;
+      border-radius: var(--r-tag);
+      border: 1px solid var(--rule-mid);
+      background: var(--card-tint);
+      color: var(--ink-2);
+      font-family: var(--font-serif-en);
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+
+    .goal-pick.is-active {
+      background: var(--vermilion);
+      border-color: var(--vermilion);
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    /* Ink CTA Button */
+    .btn-ink {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 46px;
+      padding: 0 16px;
+      border: 1px solid var(--ink);
+      border-radius: var(--r-btn);
+      background: var(--ink);
+      color: var(--card);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+    }
+
+    .btn-ink:hover {
+      background: var(--vermilion);
+      border-color: var(--vermilion);
+    }
+
+    .btn-ink-right {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    /* Editorial Table of Contents: 5 Study Modes */
+    .toc-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toc-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--ink);
+      padding-bottom: 6px;
+    }
+
+    .toc-title {
+      font-family: var(--font-serif-ko);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .toc-caption {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .toc-list {
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--rule-mid);
+      border-radius: var(--r-card);
+    }
+
+    .toc-item {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: baseline;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .toc-item + .toc-item {
+      border-top: 1px solid var(--rule-light);
+    }
+
+    .toc-item:hover {
+      background: var(--card-tint);
+    }
+
+    .toc-num {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--vermilion);
+    }
+
+    .toc-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .toc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .toc-sub {
+      font-size: 11.5px;
+      color: var(--ink-3);
+    }
+
+    .toc-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 2px 6px;
+      border-radius: var(--r-tag);
+      border: 1px solid var(--rule-mid);
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+
+    .toc-badge.exam {
+      border-color: var(--vermilion-line);
+      background: var(--vermilion-soft);
+      color: var(--vermilion);
+    }
+
+    .toc-divider {
+      padding: 6px 14px;
+      background: var(--paper);
+      border-top: 1px solid var(--rule-mid);
+      border-bottom: 1px solid var(--rule-light);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* Editorial Bottom Nav */
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1.5px solid var(--ink);
+      background: var(--card);
+      padding: 8px 8px 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 0;
+      border: none;
+      background: transparent;
+      color: var(--ink-3);
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-btn.is-active {
+      color: var(--vermilion);
+      font-weight: 700;
+    }
+
+    .nav-active-bar {
+      width: 14px;
+      height: 2px;
+      background: var(--vermilion);
+      margin-top: 1px;
+    }
+
+    /* ==========================================================================
+       SCREEN 02: QUIZ (Word-Protagonist Index Card + Literary Feedback Note)
+       ========================================================================== */
+    .running-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px 10px;
+      border-bottom: 1px solid var(--rule-mid);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink-2);
+    }
+
+    .running-num {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+
+    .ink-progress-track {
+      width: 100%;
+      height: 3px;
+      background: var(--rule-light);
+    }
+
+    .ink-progress-fill {
+      width: 40%;
+      height: 100%;
+      background: var(--ink);
+    }
+
+    /* Stacked Postcard / Index Card for the Word */
+    .word-card-stack {
+      position: relative;
+      padding-bottom: 6px;
+    }
+
+    .word-card-stack::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      bottom: 0;
+      height: 10px;
+      background: var(--card-tint);
+      border: 1px solid var(--rule-mid);
+      border-top: none;
+      border-radius: 0 0 var(--r-card) var(--r-card);
+      z-index: 0;
+    }
+
+    .word-index-card {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--r-card);
+      padding: 16px 18px 22px;
+      text-align: center;
+    }
+
+    .index-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .index-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--ink-3);
+    }
+
+    .index-tag {
+      padding: 1px 6px;
+      border: 1px solid var(--rule-mid);
+      border-radius: var(--r-tag);
+      font-weight: 700;
+      color: var(--ink-2);
+    }
+
+    .index-tag.pos {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-weight: 400;
+      border-color: var(--vermilion-line);
+      color: var(--vermilion);
+      background: var(--vermilion-soft);
+    }
+
+    .audio-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border: 1px solid var(--ink);
+      border-radius: var(--r-tag);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .headword-hero {
+      font-family: var(--font-serif-en);
+      font-size: 44px;
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin: 22px 0 10px;
+    }
+
+    .ornament-rule {
+      width: 36px;
+      height: 1.5px;
+      background: var(--vermilion);
+      margin: 0 auto 10px;
+    }
+
+    .headword-prompt {
+      font-size: 12.5px;
+      color: var(--ink-3);
+    }
+
+    /* Editorial Index Choices */
+    .ed-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ed-choice {
+      display: grid;
+      grid-template-columns: 26px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 50px;
+      padding: 11px 14px;
+      background: var(--card);
+      border: 1px solid var(--rule-mid);
+      border-radius: var(--r-btn);
+      color: var(--ink);
+      font-size: 14.5px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .ed-choice-num {
+      font-family: var(--font-serif-en);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    /* Selected + Correct Literary Annotation */
+    .ed-choice.is-correct {
+      background: var(--sage-soft);
+      border: 1.5px solid var(--sage);
+      border-left: 4px solid var(--sage);
+      color: var(--sage-ink);
+      font-weight: 700;
+    }
+
+    .ed-choice.is-correct .ed-choice-num {
+      color: var(--sage);
+      font-weight: 700;
+    }
+
+    .ed-choice-mark {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--sage);
+    }
+
+    .ed-choice.is-dim {
+      opacity: 0.55;
+      background: var(--card-tint);
+    }
+
+    /* Editorial Footnote / Dictionary Annotation Banner */
+    .ed-feedback {
+      background: var(--card);
+      border-top: 2px solid var(--sage);
+      padding: 16px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ed-fb-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .ed-fb-verdict {
+      font-family: var(--font-serif-ko);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--sage-ink);
+    }
+
+    .ed-fb-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--sage);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ed-xp-stamp {
+      padding: 1px 6px;
+      border: 1px solid var(--vermilion-line);
+      background: var(--vermilion-soft);
+      color: var(--vermilion);
+      border-radius: var(--r-tag);
+    }
+
+    /* Literary Pull-Quote Example */
+    .quote-block {
+      padding: 10px 12px;
+      background: var(--sage-soft);
+      border-left: 3px solid var(--sage);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .quote-en {
+      font-family: var(--font-serif-en);
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    .quote-en em {
+      font-style: italic;
+      font-weight: 700;
+      color: var(--sage-ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .quote-ko {
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    .ed-srs-note {
+      font-size: 11px;
+      color: var(--ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 420px) {
+      body {
+        padding: 0 0 24px;
+        background: var(--paper);
+      }
+      .mockup-stage {
+        gap: 20px;
+      }
+      .mockup-banner,
+      .screen-label {
+        margin-left: 12px;
+        margin-right: 12px;
+      }
+      .mockup-banner {
+        margin-top: 12px;
+      }
+      .phone-frame {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-stage">
+    <div class="mockup-banner">
+      <span class="mockup-banner-title">Concept C · 에디토리얼·카드형</span>
+      <span class="mockup-banner-tag">Print &amp; Serif · 390px</span>
+    </div>
+
+    <!-- ====================================================================
+         01. 홈 화면 (Home Screen)
+         ==================================================================== -->
+    <section aria-label="컨셉 C 홈 화면 시안">
+      <div class="screen-label">
+        <strong>01 · Home Edition</strong>
+        <span>390px · Archival Paper Light</span>
+      </div>
+
+      <div class="phone-frame">
+        <!-- Status Bar -->
+        <div class="status-bar" aria-hidden="true">
+          <span>9:41</span>
+          <div class="status-icons">
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor">
+              <rect x="0" y="6" width="2" height="4"/>
+              <rect x="4" y="4" width="2" height="6"/>
+              <rect x="8" y="2" width="2" height="8"/>
+              <rect x="12" y="0" width="2" height="10"/>
+            </svg>
+            <svg width="19" height="10" viewBox="0 0 19 10" fill="none">
+              <rect x="0.75" y="0.75" width="14.5" height="8.5" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="2.5" y="2.5" width="10.5" height="5" fill="currentColor"/>
+              <rect x="16.5" y="3" width="1.5" height="4" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Magazine Masthead -->
+        <header class="masthead">
+          <div class="issue-line">
+            <span class="issue-streak">STREAK 7일 연속</span>
+            <span>LV.4 · 340 XP</span>
+          </div>
+          <div class="masthead-row">
+            <h1 class="masthead-title">고등 영단어 트레이너</h1>
+            <span class="masthead-edition">Vol. 01 · SRS</span>
+          </div>
+        </header>
+
+        <div class="screen-body">
+          <!-- Featured Word & Daily Goal Card -->
+          <article class="editorial-card">
+            <div class="card-kicker-row">
+              <span class="kicker-caps">Today's Headword</span>
+              <span class="kicker-meta">오늘 복습 6단어 대기</span>
+            </div>
+
+            <div class="spotlight-word-row">
+              <div class="spotlight-left">
+                <h2 class="spotlight-headword">abandon</h2>
+                <p class="spotlight-pos">verb · 고1 필수 어휘</p>
+                <p class="spotlight-desc">오늘의 목표 20단어 중 14단어 완료</p>
+              </div>
+              <div class="ed-ring-wrap" role="img" aria-label="오늘 목표 70% 달성">
+                <svg class="ed-ring-svg" viewBox="0 0 66 66">
+                  <circle class="ed-ring-track" cx="33" cy="33" r="28" />
+                  <circle class="ed-ring-fill" cx="33" cy="33" r="28" />
+                </svg>
+                <div class="ed-ring-center">
+                  <span class="ed-ring-num">70%</span>
+                  <span class="ed-ring-sub">14/20</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="goal-bar-row">
+              <span class="goal-stat-text">하루 목표 <strong>20개</strong></span>
+              <div class="goal-picks" role="group" aria-label="하루 목표 선택">
+                <button class="goal-pick" type="button">10</button>
+                <button class="goal-pick is-active" type="button">20</button>
+                <button class="goal-pick" type="button">40</button>
+              </div>
+            </div>
+
+            <button class="btn-ink" type="button">
+              <span>오늘의 복습 퀴즈 시작하기</span>
+              <span class="btn-ink-right">6 words →</span>
+            </button>
+          </article>
+
+          <!-- Editorial Table of Contents: All 5 Study Modes -->
+          <div class="toc-section">
+            <div class="toc-header">
+              <h3 class="toc-title">학습 모드 목차</h3>
+              <span class="toc-caption">05 Curricula</span>
+            </div>
+
+            <div class="toc-list">
+              <button class="toc-item" type="button">
+                <span class="toc-num">01</span>
+                <div class="toc-content">
+                  <span class="toc-name">뜻 맞히기</span>
+                  <span class="toc-sub">표제어를 읽고 정확한 한국어 뜻 판별</span>
+                </div>
+                <span class="toc-badge">4지선다</span>
+              </button>
+
+              <button class="toc-item" type="button">
+                <span class="toc-num">02</span>
+                <div class="toc-content">
+                  <span class="toc-name">예문 빈칸</span>
+                  <span class="toc-sub">문장 맥락 속에서 알맞은 어휘 채우기</span>
+                </div>
+                <span class="toc-badge">문맥 추론</span>
+              </button>
+
+              <button class="toc-item" type="button">
+                <span class="toc-num">03</span>
+                <div class="toc-content">
+                  <span class="toc-name">카드 뒤집기</span>
+                  <span class="toc-sub">단어 카드를 넘기며 스스로 암기 판정</span>
+                </div>
+                <span class="toc-badge">자기 판정</span>
+              </button>
+
+              <div class="toc-divider">수능·모의고사 기출 다의어 · 40단어</div>
+
+              <button class="toc-item" type="button">
+                <span class="toc-num">04</span>
+                <div class="toc-content">
+                  <span class="toc-name">기출 예문 빈칸</span>
+                  <span class="toc-sub">실제 평가원·모의고사 지문 어휘 완성</span>
+                </div>
+                <span class="toc-badge exam">기출 1</span>
+              </button>
+
+              <button class="toc-item" type="button">
+                <span class="toc-num">05</span>
+                <div class="toc-content">
+                  <span class="toc-name">문맥 속 뜻</span>
+                  <span class="toc-sub">기본 뜻 함정을 넘어 지문 속 의미 독해</span>
+                </div>
+                <span class="toc-badge exam">기출 2</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editorial Bottom Nav -->
+        <nav class="bottom-nav" aria-label="하단 메뉴">
+          <button class="nav-btn is-active" type="button">
+            <span>홈</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </button>
+          <button class="nav-btn" type="button">
+            <span>단어장</span>
+          </button>
+          <button class="nav-btn" type="button">
+            <span>퀴즈</span>
+          </button>
+          <button class="nav-btn" type="button">
+            <span>오답노트 · 3</span>
+          </button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         02. 퀴즈 화면 (Quiz Screen — abandon)
+         ==================================================================== -->
+    <section aria-label="컨셉 C 퀴즈 화면 시안">
+      <div class="screen-label">
+        <strong>02 · Headword Quiz (abandon)</strong>
+        <span>390px · 뜻 맞히기</span>
+      </div>
+
+      <div class="phone-frame">
+        <!-- Status Bar -->
+        <div class="status-bar" aria-hidden="true">
+          <span>9:42</span>
+          <div class="status-icons">
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor">
+              <rect x="0" y="6" width="2" height="4"/>
+              <rect x="4" y="4" width="2" height="6"/>
+              <rect x="8" y="2" width="2" height="8"/>
+              <rect x="12" y="0" width="2" height="10"/>
+            </svg>
+            <svg width="19" height="10" viewBox="0 0 19 10" fill="none">
+              <rect x="0.75" y="0.75" width="14.5" height="8.5" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="2.5" y="2.5" width="10.5" height="5" fill="currentColor"/>
+              <rect x="16.5" y="3" width="1.5" height="4" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Running Magazine Header -->
+        <div class="running-head">
+          <span>← 뜻 맞히기</span>
+          <span class="running-num">No. 04 / 10</span>
+          <span>정답 3개</span>
+        </div>
+        <div class="ink-progress-track" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="10">
+          <div class="ink-progress-fill"></div>
+        </div>
+
+        <div class="screen-body">
+          <!-- Stacked Postcard / Headword Card -->
+          <div class="word-card-stack">
+            <article class="word-index-card">
+              <div class="index-top">
+                <div class="index-meta">
+                  <span class="index-tag pos">v.</span>
+                  <span class="index-tag">고1</span>
+                  <span>복습 1단계</span>
+                </div>
+                <button class="audio-btn" type="button">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+                  <span>발음 듣기</span>
+                </button>
+              </div>
+
+              <h2 class="headword-hero">abandon</h2>
+              <div class="ornament-rule" aria-hidden="true"></div>
+              <p class="headword-prompt">위 표제어에 알맞은 한국어 뜻을 고르세요</p>
+            </article>
+          </div>
+
+          <!-- 4 Editorial Index Choices -->
+          <div class="ed-choices" role="group" aria-label="한국어 뜻 4지선다">
+            <button class="ed-choice is-correct" type="button">
+              <span class="ed-choice-num">01</span>
+              <span>포기하다, 버리다</span>
+              <span class="ed-choice-mark">✓ 정답</span>
+            </button>
+
+            <button class="ed-choice is-dim" type="button">
+              <span class="ed-choice-num">02</span>
+              <span>수용하다, 편의를 제공하다</span>
+            </button>
+
+            <button class="ed-choice is-dim" type="button">
+              <span class="ed-choice-num">03</span>
+              <span>적응하다, 맞추다</span>
+            </button>
+
+            <button class="ed-choice is-dim" type="button">
+              <span class="ed-choice-num">04</span>
+              <span>인정하다, 감사를 표하다</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Literary Footnote Feedback Banner -->
+        <div class="ed-feedback" role="status">
+          <div class="ed-fb-head">
+            <strong class="ed-fb-verdict">정답입니다</strong>
+            <div class="ed-fb-tags">
+              <span class="ed-xp-stamp">+15 XP</span>
+              <span>다음 복습 3일 뒤</span>
+            </div>
+          </div>
+
+          <blockquote class="quote-block">
+            <p class="quote-en">“They had to <em>abandon</em> the outdoor concert because of the sudden storm.”</p>
+            <p class="quote-ko">그들은 갑작스러운 폭풍 때문에 야외 콘서트를 포기해야 했다.</p>
+          </blockquote>
+
+          <p class="ed-srs-note">간격반복(SRS) · 11월 22일 복습 예정 (복습 간격 1일 → 3일 적용)</p>
+
+          <button class="btn-ink" type="button">
+            <span>다음 표제어로</span>
+            <span class="btn-ink-right">Next →</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
