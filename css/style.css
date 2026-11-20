@@ -283,6 +283,13 @@ html[data-theme="dark"] .brand-mark {
   flex-shrink: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
 .install-btn {
   display: none;
   align-items: center;
@@ -371,11 +378,18 @@ html[data-theme="dark"] .brand-mark {
   height: 15px;
 }
 
-/* 390px 모바일 헤더: 스트릭·XP 배지 절대 숨김 금지 */
-@media (max-width: 440px) {
+/* 모바일 헤더(<=480px, 390px 기준): 2단 HUD로 타이틀 잘림 방지 + 스트릭·XP 배지 온전히 표시 */
+@media (max-width: 480px) {
   .header-inner {
-    padding: 8px 10px;
-    gap: 5px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    row-gap: 6px;
+    column-gap: 8px;
+  }
+  .brand-group {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
   }
   .brand-mark {
     width: 28px;
@@ -383,30 +397,46 @@ html[data-theme="dark"] .brand-mark {
     font-size: 14px;
   }
   .brand-title {
-    font-size: 13.5px;
+    font-size: 14.5px;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .header-actions {
+    order: 2;
+    gap: 5px;
   }
   .header-badges {
-    gap: 4px;
+    order: 3;
+    flex: 1 0 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .install-btn {
+    order: 3;
+    margin-left: auto;
+    height: 26px;
+    padding: 0 9px;
   }
   .streak-pill,
   .level-pill {
     height: 26px;
-    padding: 0 6px;
-    font-size: 10.5px;
-    gap: 2px;
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 3px;
   }
   .streak-pill .hud-icon,
   .level-pill .hud-icon {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
   }
   .icon-toggle-btn {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
   }
   .icon-toggle-btn svg {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
   }
 }
 
