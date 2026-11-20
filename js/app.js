@@ -2743,6 +2743,11 @@
       const nextBtn = document.getElementById('btn-next-question');
       if (nextBtn) {
         nextBtn.addEventListener('click', advanceToNextQuestion);
+        try {
+          nextBtn.focus({ preventScroll: true });
+        } catch (e) {
+          nextBtn.focus();
+        }
       }
       saveQuizSessionSnapshot();
     }
@@ -2818,6 +2823,18 @@
       prepareCurrentQuestionChoices();
     }
     renderQuizView();
+    const nextFocusTarget =
+      document.getElementById('quiz-choice-1') ||
+      document.getElementById('flashcard-flip-box') ||
+      document.getElementById('btn-summary-retry-wrong') ||
+      document.getElementById('btn-summary-restart');
+    if (nextFocusTarget) {
+      try {
+        nextFocusTarget.focus({ preventScroll: true });
+      } catch (e) {
+        nextFocusTarget.focus();
+      }
+    }
     saveQuizSessionSnapshot();
   }
 
