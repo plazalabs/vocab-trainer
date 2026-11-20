@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vocab-trainer-v7';
+const CACHE_NAME = 'vocab-trainer-v8';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
