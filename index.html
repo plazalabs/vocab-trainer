@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#2563EB" />
-  <meta name="description" content="간격반복(SRS), 3종 퀴즈, 오답노트를 지원하는 고등 필수 영어 어휘 학습 PWA" />
+  <meta name="theme-color" content="#15803D" />
+  <meta name="description" content="간격반복(SRS), 5종 퀴즈, 오답노트를 지원하는 고등 필수 영어 어휘 학습 PWA" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="영단어 트레이너" />
@@ -24,24 +24,17 @@
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     })();
   </script>
-  <!-- 웹폰트 (DESIGN_REDESIGN.md 2장). 폴백 스택은 css/style.css의 --font-ko / --font-en / --font-num에 지정 -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" />
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
   <div class="app-shell">
-    <!-- Top Header -->
+    <!-- Top Header (Concept A Tactile Arcade HUD) -->
     <header class="app-header">
       <div class="header-inner">
         <div class="brand-group">
-          <img src="./icons/icon.svg" alt="영단어 트레이너 로고" class="brand-logo" width="34" height="34" />
-          <div>
+          <div class="brand-mark" aria-hidden="true">V</div>
+          <div class="brand-text">
             <h1 class="brand-title">고등 영단어 트레이너</h1>
-            <span class="brand-subtitle">간격반복 · 3종 퀴즈 · 오답노트</span>
           </div>
         </div>
         <div class="header-badges">
@@ -49,15 +42,19 @@
             <span>앱 설치</span>
           </button>
           <div id="header-streak-badge" class="streak-pill" title="연속 학습일">
-            <span aria-hidden="true">🔥</span>
+            <svg class="hud-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2c.7 3.8-2 5.7-2 8.2 0 1.4 1 2.5 2.4 2.5 1.8 0 2.9-1.5 2.6-3.7 2.8 1.6 4.5 4.2 4.5 7 0 4.4-3.4 7.5-7.5 7.5S4.5 20.4 4.5 16c0-4.9 3.6-8.4 7.5-14z" />
+            </svg>
             <span id="header-streak-text">0일 연속</span>
           </div>
           <div id="header-level-badge" class="level-pill" title="레벨 · 누적 XP">
-            <span aria-hidden="true">⚡</span>
+            <svg class="hud-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="13 2 3 14 11 14 10 22 21 10 13 10 13 2" />
+            </svg>
             <span id="header-level-text">Lv.1 · 0 XP</span>
           </div>
-          <button id="btn-toggle-sound" class="icon-toggle-btn" type="button" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg></button>
-          <button id="btn-toggle-theme" class="icon-toggle-btn" type="button" aria-label="다크 모드 전환" title="다크 모드 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></button>
+          <button id="btn-toggle-sound" class="icon-toggle-btn" type="button" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></svg></button>
+          <button id="btn-toggle-theme" class="icon-toggle-btn" type="button" aria-label="다크 모드 전환" title="다크 모드 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></button>
         </div>
       </div>
     </header>
@@ -277,14 +274,14 @@
     <nav class="bottom-nav" aria-label="주요 메뉴">
       <div class="bottom-nav-inner">
         <button class="nav-item active" type="button" data-nav-target="home" id="nav-btn-home">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" />
           </svg>
           <span>홈</span>
         </button>
 
         <button class="nav-item" type="button" data-nav-target="wordbook" id="nav-btn-wordbook">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           </svg>
@@ -292,17 +289,17 @@
         </button>
 
         <button class="nav-item" type="button" data-nav-target="quiz" id="nav-btn-quiz">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="9" />
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          <span>퀴즈 3종</span>
+          <span>퀴즈</span>
         </button>
 
         <button class="nav-item" type="button" data-nav-target="wrong" id="nav-btn-wrong">
           <span id="nav-wrong-badge" class="nav-badge hidden">0</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
             <line x1="9" y1="13" x2="15" y2="13" />
