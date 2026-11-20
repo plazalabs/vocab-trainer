@@ -2277,6 +2277,7 @@
     const feedbackBanner = document.getElementById('quiz-feedback-banner');
     if (feedbackBanner && !state.quiz.answered) {
       feedbackBanner.classList.add('hidden');
+      feedbackBanner.classList.remove('is-correct', 'is-wrong', 'is-near');
       feedbackBanner.innerHTML = '';
     }
 
@@ -2325,34 +2326,46 @@
     const progressPct = Math.round(((idx + 1) / total) * 100);
     const wordObj = state.quiz.queue[idx];
     const mode = getEffectiveQuestionMode(sessionMode, wordObj);
+    const srsMetaText = getSrsBadgeMeta(wordObj.id).text;
+    const isExamWord = Boolean(wordObj.isExam);
 
-    let questionBodyHtml = '';
+    const stageTagsHtml = isExamWord
+      ? `
+        ${wordObj.grade ? `<span class="mini-tag grade grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
+        ${wordObj.source_note ? `<span class="mini-tag source">${escapeHtml(wordObj.source_note)}</span>` : ''}
+        <span class="mini-tag srs">${escapeHtml(srsMetaText)}</span>
+      `
+      : `
+        <span class="mini-tag pos">${escapeHtml(wordObj.pos)}</span>
+        <span class="mini-tag level level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
+        <span class="mini-tag srs">${escapeHtml(srsMetaText)}</span>
+      `;
+
+    let stageBodyHtml = '';
+    let belowStageHtml = '';
 
     if (mode === 'exam-blank') {
       // 기출 모드 유형 1 — 기출 예문 빈칸 4지선다
       const maskedSentence = maskWordInSentence(wordObj.example_en, wordObj.word);
       const contextMeaningObj = getExamContextMeaningObj(wordObj);
-      questionBodyHtml = `
-        <div class="quiz-question-box">
-          <div class="quiz-meta-row">
-            <span class="mode-badge exam-badge">기출 모드 · 유형 1 (예문 빈칸)</span>
-            ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
-            ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
-            ${
-              contextMeaningObj && contextMeaningObj.meaning_ko
-                ? `<span class="quiz-context-meaning">문맥 뜻: <strong>${escapeHtml(contextMeaningObj.meaning_ko)}</strong></span>`
-                : ''
-            }
-          </div>
+      stageBodyHtml = `
+        <div class="quiz-question-box is-sentence">
+          ${
+            contextMeaningObj && contextMeaningObj.meaning_ko
+              ? `<div class="quiz-context-hint is-exam">문맥 뜻 · <strong>${escapeHtml(contextMeaningObj.meaning_ko)}</strong></div>`
+              : ''
+          }
           <p class="quiz-blank-sentence">${maskedSentence}</p>
           ${wordObj.example_ko ? `<p class="quiz-blank-ko">${highlightKoAnswer(wordObj.example_ko, contextMeaningObj && contextMeaningObj.meaning_ko)}</p>` : ''}
         </div>
-        <div class="choices-grid" role="group" aria-label="기출 예문 빈칸 4지선다 보기">
+      `;
+      belowStageHtml = `
+        <div class="choices-grid choice-list" role="group" aria-label="기출 예문 빈칸 4지선다 보기">
           ${state.quiz.choices
             .map(
               (choice, cIdx) => `
-            <button class="choice-btn" type="button" data-choice-id="${escapeHtml(choice.id)}" id="quiz-choice-${cIdx + 1}">
-              <span class="choice-num">${cIdx + 1}</span>
+            <button class="choice-btn choice-3d" type="button" data-choice-id="${escapeHtml(choice.id)}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num choice-key">${cIdx + 1}</span>
               <span class="choice-word">${escapeHtml(choice.word)}</span>
               ${choice.grade ? `<span class="grade-badge grade-${escapeHtml(choice.grade)}">${escapeHtml(choice.grade)}급</span>` : ''}
             </button>
@@ -2364,27 +2377,23 @@
     } else if (mode === 'exam-meaning') {
       // 기출 모드 유형 2 — 문맥 속 뜻 4지선다 (기본 뜻 함정 포함)
       const highlightedSentence = highlightWordInSentence(wordObj.example_en, wordObj.word);
-      questionBodyHtml = `
+      stageBodyHtml = `
         <div class="quiz-question-box">
-          <div class="quiz-meta-row">
-            <span class="mode-badge exam-badge">기출 모드 · 유형 2 (문맥 속 뜻)</span>
-            ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
-            ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
-          </div>
-          <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
-          <p class="quiz-blank-sentence">${highlightedSentence}</p>
-          <p class="quiz-hint-text">
-            위 기출 문장에서 <strong>${escapeHtml(wordObj.word)}</strong>가 어떤 뜻으로 쓰였는지 고르세요
-            ${wordObj.base_meaning_ko ? `(기본 뜻 함정 주의!)` : ''}
+          <h3 class="quiz-target-word target-word">${escapeHtml(wordObj.word)}</h3>
+          <p class="quiz-blank-sentence is-compact">${highlightedSentence}</p>
+          <p class="quiz-hint-text prompt-guide">
+            위 기출 문장에서 <strong>${escapeHtml(wordObj.word)}</strong>의 문맥 속 뜻을 고르세요${wordObj.base_meaning_ko ? ' (기본 뜻 함정 주의!)' : ''}
           </p>
         </div>
-        <div class="choices-grid" role="group" aria-label="문맥 속 뜻 4지선다 보기">
+      `;
+      belowStageHtml = `
+        <div class="choices-grid choice-list" role="group" aria-label="문맥 속 뜻 4지선다 보기">
           ${state.quiz.choices
             .map(
               (choice, cIdx) => `
-            <button class="choice-btn" type="button" data-choice-id="${escapeHtml(choice.id)}" data-is-trap="${choice.isTrap ? 'true' : 'false'}" id="quiz-choice-${cIdx + 1}">
-              <span class="choice-num">${cIdx + 1}</span>
-              <span>${escapeHtml(choice.meaning_ko)}</span>
+            <button class="choice-btn choice-3d" type="button" data-choice-id="${escapeHtml(choice.id)}" data-is-trap="${choice.isTrap ? 'true' : 'false'}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num choice-key">${cIdx + 1}</span>
+              <span class="choice-label">${escapeHtml(choice.meaning_ko)}</span>
             </button>
           `
             )
@@ -2393,22 +2402,20 @@
       `;
     } else if (mode === 'meaning') {
       // (a) 뜻 맞히기 4지선다
-      questionBodyHtml = `
+      stageBodyHtml = `
         <div class="quiz-question-box">
-          <div class="quiz-meta-row">
-            <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
-            <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
-          </div>
-          <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
-          <p class="quiz-hint-text">위 영단어의 알맞은 한국어 뜻을 고르세요</p>
+          <h3 class="quiz-target-word target-word">${escapeHtml(wordObj.word)}</h3>
+          <p class="quiz-hint-text prompt-guide">알맞은 한국어 뜻을 골라주세요</p>
         </div>
-        <div class="choices-grid" role="group" aria-label="한국어 뜻 4지선다 보기">
+      `;
+      belowStageHtml = `
+        <div class="choices-grid choice-list" role="group" aria-label="한국어 뜻 4지선다 보기">
           ${state.quiz.choices
             .map(
               (choice, cIdx) => `
-            <button class="choice-btn" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
-              <span class="choice-num">${cIdx + 1}</span>
-              <span>${escapeHtml(choice.meaning_ko)}</span>
+            <button class="choice-btn choice-3d" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num choice-key">${cIdx + 1}</span>
+              <span class="choice-label">${escapeHtml(choice.meaning_ko)}</span>
             </button>
           `
             )
@@ -2418,22 +2425,20 @@
     } else if (mode === 'blank') {
       // (b) 예문 빈칸 채우기 4지선다
       const maskedSentence = maskWordInSentence(wordObj.example_en, wordObj.word);
-      questionBodyHtml = `
-        <div class="quiz-question-box">
-          <div class="quiz-meta-row">
-            <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
-            <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
-            <span class="quiz-context-meaning">뜻 힌트: <strong>${escapeHtml(wordObj.meaning_ko)}</strong></span>
-          </div>
+      stageBodyHtml = `
+        <div class="quiz-question-box is-sentence">
+          <div class="quiz-context-hint">뜻 힌트 · <strong>${escapeHtml(wordObj.meaning_ko)}</strong></div>
           <p class="quiz-blank-sentence">${maskedSentence}</p>
           <p class="quiz-blank-ko">${highlightKoAnswer(wordObj.example_ko, wordObj.meaning_ko)}</p>
         </div>
-        <div class="choices-grid" role="group" aria-label="빈칸 영단어 4지선다 보기">
+      `;
+      belowStageHtml = `
+        <div class="choices-grid choice-list" role="group" aria-label="빈칸 영단어 4지선다 보기">
           ${state.quiz.choices
             .map(
               (choice, cIdx) => `
-            <button class="choice-btn" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
-              <span class="choice-num">${cIdx + 1}</span>
+            <button class="choice-btn choice-3d" type="button" data-choice-id="${choice.id}" id="quiz-choice-${cIdx + 1}">
+              <span class="choice-num choice-key">${cIdx + 1}</span>
               <span class="choice-word">${escapeHtml(choice.word)}</span>
               <span class="choice-pos">${escapeHtml(choice.pos)}</span>
             </button>
@@ -2449,80 +2454,79 @@
       const cardMeaning = isExamCard
         ? getExamContextMeaningObj(wordObj).meaning_ko || ''
         : wordObj.meaning_ko || '';
-      const cardMetaHtml = isExamCard
-        ? `
-          ${wordObj.grade ? `<span class="grade-badge grade-${escapeHtml(wordObj.grade)}">${escapeHtml(wordObj.grade)}급</span>` : ''}
-          ${wordObj.source_note ? `<span class="source-badge">기출 ${escapeHtml(wordObj.source_note)}</span>` : ''}
-        `
-        : `
-          <span class="word-pos">${escapeHtml(wordObj.pos)}</span>
-          <span class="level-badge level-${escapeHtml(wordObj.level)}">${escapeHtml(wordObj.level)}</span>
-        `;
 
-      questionBodyHtml = `
-        <div class="flashcard-container">
-          <div class="flashcard-box ${isFlipped ? 'flipped' : ''}" id="flashcard-flip-box" role="button" tabindex="0" aria-label="플래시카드 뒤집기">
-            <div>
-              ${cardMetaHtml}
-            </div>
-            <h3 class="quiz-target-word">${escapeHtml(wordObj.word)}</h3>
-
-            ${
-              isFlipped
-                ? `
-              <div class="flashcard-back-details">
-                <p class="flashcard-meaning">${escapeHtml(cardMeaning)}</p>
-                ${
-                  isExamCard && wordObj.base_meaning_ko
-                    ? `<p class="flashcard-base-note">기본 뜻: ${escapeHtml(wordObj.base_meaning_ko)}</p>`
-                    : ''
-                }
-                <p class="word-example-en">"${escapeHtml(wordObj.example_en)}"</p>
+      stageBodyHtml = `
+        <div class="flashcard-box ${isFlipped ? 'flipped' : ''}" id="flashcard-flip-box" role="button" tabindex="0" aria-label="플래시카드 뒤집기">
+          <h3 class="quiz-target-word target-word">${escapeHtml(wordObj.word)}</h3>
+          ${
+            isFlipped
+              ? `
+            <div class="flashcard-back-details">
+              <p class="flashcard-meaning">${escapeHtml(cardMeaning)}</p>
+              ${
+                isExamCard && wordObj.base_meaning_ko
+                  ? `<p class="flashcard-base-note">기본 뜻: ${escapeHtml(wordObj.base_meaning_ko)}</p>`
+                  : ''
+              }
+              <div class="flashcard-example-box">
+                <p class="word-example-en">${highlightWordInSentence(wordObj.example_en, wordObj.word)}</p>
                 <p class="word-example-ko">${escapeHtml(wordObj.example_ko)}</p>
               </div>
-            `
-                : `
-              <p class="flashcard-hint">카드를 눌러 뜻과 예문을 확인하세요</p>
-            `
-            }
-          </div>
-
-          <div class="self-judge-row">
-            <button class="judge-btn unknown" type="button" id="btn-judge-unknown" ${isFlipped ? '' : 'disabled'}>
-              <span>몰라요 ✕</span>
-              <span class="judge-sub">오답노트 저장 · 내일 재출제</span>
-            </button>
-            <button class="judge-btn known" type="button" id="btn-judge-known" ${isFlipped ? '' : 'disabled'}>
-              <span>알아요 ○</span>
-              <span class="judge-sub">간격 확대 (1→3→7→14일)</span>
-            </button>
-          </div>
+            </div>
+          `
+              : `
+            <span class="flashcard-hint-pill">카드를 눌러 뜻과 예문을 확인하세요</span>
+          `
+          }
+        </div>
+      `;
+      belowStageHtml = `
+        <div class="self-judge-row">
+          <button class="judge-btn unknown" type="button" id="btn-judge-unknown" ${isFlipped ? '' : 'disabled'}>
+            <span class="judge-title">몰라요 ✕</span>
+            <span class="judge-sub">오답노트 · 내일 재출제</span>
+          </button>
+          <button class="judge-btn known" type="button" id="btn-judge-known" ${isFlipped ? '' : 'disabled'}>
+            <span class="judge-title">알아요 ○</span>
+            <span class="judge-sub">간격 확대 (1→3→7→14일)</span>
+          </button>
         </div>
       `;
     }
 
+    const correctSoFar = state.quiz.results.filter((r) => r.isCorrect).length;
+    const comboText =
+      state.quiz.sessionCombo >= 2
+        ? `🔥 ${state.quiz.sessionCombo}연속 정답`
+        : `정답 ${correctSoFar}개`;
+
     container.innerHTML = `
-      <div class="quiz-progress-header">
-        <span>문제 ${idx + 1} / ${total}</span>
-        <span class="js-correct-count">정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개</span>
-      </div>
-      <div class="progress-track" aria-hidden="true">
-        <div class="progress-fill" style="width: ${progressPct}%;"></div>
+      <div class="quiz-topbar-strip">
+        <div class="candy-progress-wrap progress-track" role="progressbar" aria-valuenow="${idx + 1}" aria-valuemin="0" aria-valuemax="${total}">
+          <div class="candy-progress-fill progress-fill" style="width: ${progressPct}%;"></div>
+        </div>
+        <span class="quiz-counter">${idx + 1} / ${total}</span>
       </div>
 
-      <div class="quiz-stage-card">
-        <div class="quiz-prompt-top">
-          <span class="srs-tag">${escapeHtml(getSrsBadgeMeta(wordObj.id).text)}</span>
-          <button class="speak-btn" type="button" id="btn-quiz-speak" data-speak-text="${escapeHtml(wordObj.word)}">
+      <div class="quiz-mode-bar">
+        <span class="quiz-mode-pill${isExamQuizMode(mode) ? ' is-exam' : ''}">${escapeHtml(getQuizModeLabel(mode))}</span>
+        <span class="combo-pill js-correct-count">${comboText}</span>
+      </div>
+
+      <div class="quiz-stage-card word-stage${isExamWord ? ' is-exam' : ''}">
+        <div class="quiz-prompt-top word-stage-top">
+          <div class="tag-row">${stageTagsHtml}</div>
+          <button class="speak-btn speak-btn-3d" type="button" id="btn-quiz-speak" data-speak-text="${escapeHtml(wordObj.word)}">
             ${svgIcon('volume')}
-            <span>발음 듣기</span>
+            <span>발음</span>
           </button>
         </div>
 
-        ${questionBodyHtml}
-
-        <div id="quiz-feedback-slot"></div>
+        ${stageBodyHtml}
       </div>
+
+      ${belowStageHtml}
+      <div id="quiz-feedback-slot"></div>
     `;
 
     // 이벤트 연결
@@ -2569,6 +2573,7 @@
 
     const correctChoiceId = mode === 'exam-meaning' ? 'correct' : String(wordObj.id);
     const isCorrect = String(chosenId) === correctChoiceId;
+    const clickedTrap = mode === 'exam-meaning' && clickedBtn && clickedBtn.dataset.isTrap === 'true';
 
     // 빈칸 채우기 모드일 경우 모든 빈칸에 마스킹됐던 원문 굴절형 그대로 채워 넣기
     document.querySelectorAll('#quiz-active-area .blank-slot').forEach((slot) => {
@@ -2583,8 +2588,17 @@
       if (btn === clickedBtn) btn.classList.add('is-selected');
       if (cid === correctChoiceId) {
         btn.classList.add('correct', 'is-correct');
+        const checkEl = document.createElement('span');
+        checkEl.className = 'choice-check';
+        checkEl.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span>정답</span>';
+        btn.appendChild(checkEl);
       } else if (btn === clickedBtn && !isCorrect) {
         btn.classList.add('wrong', 'is-wrong');
+        if (clickedTrap) {
+          btn.classList.add('is-near');
+        }
+      } else {
+        btn.classList.add('is-dim');
       }
       if (mode === 'exam-meaning' && btn.dataset.isTrap === 'true') {
         const trapTag = document.createElement('span');
@@ -2618,9 +2632,13 @@
     } else playWrongSfx();
     announceLevelUp(outcome.xp);
 
-    // v5 결함 수정: 채점 즉시 상단 정답 카운터 동기화 (기존에는 다음 문제로 넘어가야 갱신됨)
+    // 채점 즉시 상단 정답/콤보 카운터 동기화
+    const updatedCorrectCount = state.quiz.results.filter((r) => r.isCorrect).length;
     document.querySelectorAll('.js-correct-count').forEach((el) => {
-      el.textContent = `정답 ${state.quiz.results.filter((r) => r.isCorrect).length}개`;
+      el.textContent =
+        state.quiz.sessionCombo >= 2
+          ? `🔥 ${state.quiz.sessionCombo}연속 정답`
+          : `정답 ${updatedCorrectCount}개`;
     });
 
     const feedbackSlot = document.getElementById('quiz-feedback-banner');
@@ -2645,56 +2663,80 @@
         ? (contextMeaningObj && contextMeaningObj.meaning_ko) || ''
         : wordObj.meaning_ko || '';
 
-      const clickedTrap = mode === 'exam-meaning' && clickedBtn && clickedBtn.dataset.isTrap === 'true';
+      const isNearMiss = !isCorrect && Boolean(clickedTrap);
+      const feedbackStateClass = isCorrect ? 'correct' : isNearMiss ? 'near' : 'wrong';
+      const statusIconSvg = isCorrect
+        ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>'
+        : isNearMiss
+        ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+        : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+      const verdictText = isCorrect
+        ? retryInfo.isRetry
+          ? '재출제 정답!'
+          : '정답입니다!'
+        : isNearMiss
+        ? '아쉬워요 · 기본 뜻 함정!'
+        : '오답입니다';
+
+      const nextBtnVariant = isCorrect ? '' : isNearMiss ? ' is-orange' : ' is-danger';
 
       feedbackSlot.classList.remove('hidden');
       feedbackSlot.classList.toggle('is-correct', isCorrect);
       feedbackSlot.classList.toggle('is-wrong', !isCorrect);
+      feedbackSlot.classList.toggle('is-near', isNearMiss);
       feedbackSlot.innerHTML = `
-        <div class="quiz-feedback">
-          <div class="feedback-header ${isCorrect ? 'correct' : 'wrong'}">
-            <span>${
-              isCorrect
-                ? retryInfo.isRetry
-                  ? '✅ 재출제 정답!'
-                  : '🎉 정답입니다!'
-                : `오답입니다 · 정답: ${escapeHtml(wordObj.word)} (${escapeHtml(targetMeaningText)})`
-            }</span>
-            <span class="next-review-badge">다음 복습 ${outcome.intervalDays}일 뒤 · ${formatKoreanShortDate(outcome.nextReviewDate)}</span>
-            ${renderXpGainPill(outcome.xp)}
+        <div class="quiz-feedback feedback-banner-inner">
+          <div class="feedback-top feedback-header ${feedbackStateClass}">
+            <div class="feedback-status-badge ${feedbackStateClass}" aria-hidden="true">${statusIconSvg}</div>
+            <div class="feedback-headline-wrap">
+              <div class="feedback-title-row">
+                <strong class="feedback-verdict">${verdictText}</strong>
+                ${renderXpGainPill(outcome.xp)}
+              </div>
+              ${
+                !isCorrect
+                  ? `<div class="feedback-answer-line">정답: <strong>${escapeHtml(wordObj.word)}</strong> (${escapeHtml(targetMeaningText)})</div>`
+                  : ''
+              }
+              <span class="next-review-pill">다음 복습 ${outcome.intervalDays}일 뒤 · ${formatKoreanShortDate(outcome.nextReviewDate)} 예정</span>
+            </div>
           </div>
-          <button class="next-question-btn" type="button" id="btn-next-question">
-            ${state.quiz.currentIndex + 1 < state.quiz.queue.length ? '다음 문제 →' : '결과 확인하기 →'}
-          </button>
+
           ${renderXpCapNotice(outcome.xp)}
           ${
             clickedTrap && wordObj.base_meaning_ko
               ? `<p class="feedback-trap">
-                  [기본 뜻 함정 주의] 기본 뜻('${escapeHtml(wordObj.base_meaning_ko)}') 함정에 주의하세요! 이 기출 문장에서는 '${escapeHtml(targetMeaningText)}' 뜻으로 쓰였습니다.
+                  기본 뜻('${escapeHtml(wordObj.base_meaning_ko)}')은 이 단어의 대표 뜻이지만, 이 기출 문장에서는 <strong>'${escapeHtml(targetMeaningText)}'</strong> 뜻으로 쓰였습니다.
                 </p>`
               : ''
           }
-          <p class="feedback-line">
-            <strong>예문:</strong> ${escapeHtml(wordObj.example_en)}
-          </p>
-          ${
-            isExamMode && wordObj.example_ko
-              ? `<p class="feedback-line">
-                  <strong>해석:</strong> ${escapeHtml(wordObj.example_ko)}
-                  ${wordObj.source_note ? `<span class="feedback-source">(${escapeHtml(wordObj.source_note)} 기출)</span>` : ''}
-                </p>`
-              : ''
-          }
+
+          <div class="example-box">
+            <p class="example-en">${highlightWordInSentence(wordObj.example_en, wordObj.word)}</p>
+            ${
+              wordObj.example_ko
+                ? `<p class="example-ko">${escapeHtml(wordObj.example_ko)}${isExamMode && wordObj.source_note ? ` <span class="feedback-source">(${escapeHtml(wordObj.source_note)} 기출)</span>` : ''}</p>`
+                : ''
+            }
+          </div>
+
           ${
             isExamMode && wordObj.signal
-              ? `<p class="feedback-line feedback-signal">
+              ? `<p class="feedback-signal">
                   <strong>💡 판단 신호:</strong> ${escapeHtml(wordObj.signal)}
                 </p>`
               : ''
           }
-          <p class="feedback-meta">
+
+          <p class="srs-foot feedback-meta">
             간격반복(SRS): ${escapeHtml(scheduleMsg)}
           </p>
+
+          <button class="next-question-btn btn-3d primary-cta-btn${nextBtnVariant}" type="button" id="btn-next-question">
+            <span>${state.quiz.currentIndex + 1 < state.quiz.queue.length ? '다음 문제로' : '결과 확인하기'}</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </div>
       `;
 
@@ -2797,12 +2839,23 @@
     const currentModeLabel = getQuizModeLabel(state.quiz.mode);
 
     container.innerHTML = `
-      <div class="quiz-stage-card quiz-summary">
-        ${levelUpBanner}
-        <span class="hero-date-label">🎯 학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
-        <h3 class="hero-headline">
-          총 ${total}문제 중 ${correctCount}문제 정답 (${accuracy}%)
-        </h3>
+      <div class="quiz-summary">
+        <div class="summary-hero-block">
+          ${levelUpBanner}
+          <span class="hero-kicker">학습 세션 완료 · ${escapeHtml(currentModeLabel)}</span>
+          <div class="summary-score-row">
+            <h3 class="summary-headline">
+              총 ${total}문제 중 <em>${correctCount}문제</em> 정답
+            </h3>
+            <span class="summary-pct-pill">${accuracy}%</span>
+          </div>
+          <p class="session-xp-line">이번 세션 획득 <span class="xp-burst">+${state.quiz.sessionXp} XP</span> · Lv.${state.gamification.level} (${state.gamification.totalXp} XP)</p>
+          ${
+            state.quiz.retryTotal > 0
+              ? `<p class="session-retry-line">재출제 정복 <strong>${state.quiz.retryConquered}/${state.quiz.retryTotal}개</strong> — 틀린 단어를 세션 안에서 다시 풀어 맞혔습니다.</p>`
+              : ''
+          }
+        </div>
 
         <div class="hero-stats-grid">
           <div class="stat-box highlight-due">
@@ -2810,7 +2863,7 @@
             <strong class="stat-value">${correctCount}</strong>
             <span class="stat-sub">1→3→7→14일</span>
           </div>
-          <div class="stat-box">
+          <div class="stat-box highlight-wrong">
             <span class="stat-label">내일 재출제(오답)</span>
             <strong class="stat-value stat-value-danger">${wrongResults.length}</strong>
             <span class="stat-sub">오답노트 저장됨</span>
@@ -2821,43 +2874,39 @@
             <span class="stat-sub">자동 기록 완료</span>
           </div>
         </div>
-        <p class="session-xp-line">이번 세션 획득 <strong>+${state.quiz.sessionXp} XP</strong> · 현재 Lv.${state.gamification.level} (${state.gamification.totalXp} XP)</p>
-        ${
-          state.quiz.retryTotal > 0
-            ? `<p class="session-retry-line">재출제 정복 <strong>${state.quiz.retryConquered}/${state.quiz.retryTotal}개</strong> — 틀린 단어를 세션 안에서 다시 풀어 맞혔습니다.</p>`
-            : ''
-        }
 
-        <div class="summary-list">
-          ${state.quiz.results
-            .map((res) => {
-              const w = findWordById(res.wordId);
-              if (!w) return '';
-              const meaningLabel = w.isExam
-                ? getExamContextMeaningObj(w).meaning_ko || ''
-                : w.meaning_ko || '';
-              const modeLabel = getQuizModeLabel(res.mode || state.quiz.mode);
-              return `
-                <div class="summary-row">
-                  <div>
-                    <strong class="summary-row-word">${escapeHtml(w.word)}</strong>
-                    ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}">${escapeHtml(w.grade)}급</span>` : ''}
-                    <span class="summary-row-meaning">${escapeHtml(meaningLabel)}</span>
+        <div class="summary-list-card">
+          <div class="summary-list">
+            ${state.quiz.results
+              .map((res) => {
+                const w = findWordById(res.wordId);
+                if (!w) return '';
+                const meaningLabel = w.isExam
+                  ? getExamContextMeaningObj(w).meaning_ko || ''
+                  : w.meaning_ko || '';
+                const modeLabel = getQuizModeLabel(res.mode || state.quiz.mode);
+                return `
+                  <div class="summary-row ${res.isCorrect ? 'is-ok' : 'is-ng'}">
+                    <div class="summary-row-main">
+                      <strong class="summary-row-word">${escapeHtml(w.word)}</strong>
+                      ${w.grade ? `<span class="grade-badge grade-${escapeHtml(w.grade)}">${escapeHtml(w.grade)}급</span>` : ''}
+                      <span class="summary-row-meaning">${escapeHtml(meaningLabel)}</span>
+                    </div>
+                    <div class="summary-row-tags">
+                      ${
+                        !res.isCorrect
+                          ? `<span class="wrong-mode-badge ${w.isExam ? 'exam-mode' : 'basic-mode'}">${escapeHtml(modeLabel)} 오답</span>`
+                          : ''
+                      }
+                      <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
+                        ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}
+                      </span>
+                    </div>
                   </div>
-                  <div class="summary-row-tags">
-                    ${
-                      !res.isCorrect
-                        ? `<span class="wrong-mode-badge ${w.isExam ? 'exam-mode' : 'basic-mode'}">${escapeHtml(modeLabel)} 오답</span>`
-                        : ''
-                    }
-                    <span class="srs-tag ${res.isCorrect ? 'scheduled' : 'due'}">
-                      ${res.isCorrect ? `+${res.intervalDays}일 (${formatKoreanShortDate(res.nextReviewDate)})` : '내일 재출제'}
-                    </span>
-                  </div>
-                </div>
-              `;
-            })
-            .join('')}
+                `;
+              })
+              .join('')}
+          </div>
         </div>
 
         <div class="summary-actions">

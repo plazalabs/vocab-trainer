@@ -1698,3 +1698,1129 @@ html[data-theme="dark"] .mode-exam-tile .mode-tag {
 .badge-item.just-unlocked {
   animation: badgePop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
+
+/* ==========================================================================
+   8. 퀴즈 화면 (전 5종 모드 · 캔디 진행 바 · 3D 선택지 · 피드백 3상태 · 세션 요약)
+   ========================================================================== */
+
+/* 퀴즈 설정 바 (진행 중 접힘 / 펼침) */
+.quiz-config-bar {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiz-config-collapsed {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quiz-config-bar.is-collapsed {
+  padding: 9px 12px;
+  border-radius: var(--r-btn);
+  box-shadow: 0 2px 0 var(--border-lip);
+}
+
+.quiz-config-bar.is-collapsed .quiz-config-collapsed {
+  display: flex;
+}
+
+.quiz-config-bar.is-collapsed .quiz-group-caption,
+.quiz-config-bar.is-collapsed .quiz-tabs,
+.quiz-config-bar.is-collapsed .quiz-scope-row {
+  display: none;
+}
+
+.quiz-collapsed-mode {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink-primary);
+}
+
+.quiz-group-caption {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+}
+
+.quiz-group-caption.exam-caption {
+  color: var(--teal-ink);
+}
+
+.quiz-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.quiz-tabs.exam-quiz-tabs {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.quiz-tab-btn {
+  min-height: 38px;
+  padding: 6px 8px;
+  border-radius: var(--r-chip);
+  border: 2px solid var(--border-neutral);
+  background: var(--app-bg);
+  box-shadow: 0 2px 0 var(--border-lip);
+  color: var(--ink-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+.quiz-tab-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--border-lip);
+}
+
+.quiz-tab-btn.active {
+  background: var(--green-soft);
+  border-color: var(--green);
+  box-shadow: 0 2px 0 var(--green-dark);
+  color: var(--green-ink);
+}
+
+.quiz-tab-btn.exam-tab-btn {
+  background: var(--surface);
+  border-color: var(--teal-border);
+  box-shadow: 0 2px 0 var(--teal-lip);
+  color: var(--teal-ink);
+}
+
+.quiz-tab-btn.exam-tab-btn.active {
+  background: var(--teal);
+  border-color: var(--teal-dark);
+  box-shadow: 0 2px 0 var(--teal-lip);
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .quiz-tab-btn.exam-tab-btn.active {
+  color: #0B110E;
+}
+
+.quiz-scope-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1.5px solid var(--border-neutral);
+}
+
+.quiz-scope-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+}
+
+.scope-select {
+  flex: 1;
+  min-width: 150px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--r-chip);
+  border: 2px solid var(--border-neutral);
+  background: var(--surface);
+  color: var(--ink-primary);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+/* 퀴즈 활성 영역 */
+#quiz-active-area {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 캔디 프로그레스 바 */
+.quiz-topbar-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.candy-progress-wrap {
+  flex: 1;
+  height: 14px;
+  background: var(--track-bg);
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border-neutral);
+  overflow: hidden;
+  position: relative;
+}
+
+.candy-progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: var(--r-pill);
+  position: relative;
+  transition: width 260ms ease;
+}
+
+.candy-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.quiz-counter {
+  font-family: var(--font-en);
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 모드 + 콤보/정답 필 행 */
+.quiz-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quiz-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: var(--sky-soft);
+  border: 1.5px solid var(--sky-border);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--sky-ink);
+}
+
+.quiz-mode-pill.is-exam {
+  background: var(--teal-soft);
+  border-color: var(--teal-border);
+  color: var(--teal-ink);
+}
+
+.combo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: var(--orange-soft);
+  border: 1.5px solid var(--orange-border);
+  font-family: var(--font-en);
+  font-size: 11.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--orange-ink);
+}
+
+/* 단어 스테이지 카드 (.word-stage) */
+.word-stage {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 4px 0 var(--border-lip);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.word-stage.is-exam {
+  border-color: var(--teal-border);
+  box-shadow: 0 4px 0 var(--teal-lip);
+}
+
+.word-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.mini-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: var(--r-chip);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mini-tag.pos {
+  background: var(--sky-soft);
+  border: 1.5px solid var(--sky-border);
+  color: var(--sky-ink);
+  font-family: var(--font-en);
+}
+
+.mini-tag.level {
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  color: var(--sun-ink);
+}
+
+.mini-tag.srs {
+  background: var(--surface-tint);
+  border: 1.5px solid var(--border-neutral);
+  color: var(--ink-secondary);
+}
+
+.mini-tag.grade {
+  font-family: var(--font-en);
+  background: var(--teal-soft);
+  border: 1.5px solid var(--teal-border);
+  color: var(--teal-ink);
+}
+
+.mini-tag.grade-S {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.mini-tag.source {
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  color: var(--sun-ink);
+}
+
+.speak-btn-3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: var(--r-chip);
+  border: 2px solid var(--sky-border);
+  background: var(--sky-soft);
+  box-shadow: 0 2px 0 var(--sky-lip);
+  color: var(--sky-ink);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+.speak-btn-3d svg {
+  width: 14px;
+  height: 14px;
+}
+
+.speak-btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--sky-lip);
+}
+
+.quiz-question-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-question-box.is-sentence {
+  align-items: stretch;
+  text-align: left;
+  gap: 10px;
+}
+
+.target-word,
+.quiz-target-word {
+  font-family: var(--font-en);
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary);
+  margin: 4px 0 2px;
+  word-break: break-word;
+}
+
+.prompt-guide,
+.quiz-hint-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.quiz-context-hint {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--r-chip);
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sun-ink);
+}
+
+.quiz-context-hint.is-exam {
+  background: var(--teal-soft);
+  border-color: var(--teal-border);
+  color: var(--teal-ink);
+}
+
+.quiz-blank-sentence {
+  font-family: var(--font-en);
+  font-size: 16.5px;
+  font-weight: 800;
+  line-height: 1.55;
+  color: var(--ink-primary);
+  background: var(--surface-tint);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-btn);
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.quiz-blank-sentence.is-compact {
+  font-size: 15px;
+  width: 100%;
+}
+
+.quiz-blank-ko {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  padding: 0 4px;
+}
+
+.blank-slot {
+  display: inline-block;
+  min-width: 72px;
+  padding: 0 8px;
+  margin: 0 2px;
+  border-bottom: 3px solid var(--sky);
+  background: var(--sky-soft);
+  color: var(--sky-ink);
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.blank-slot.filled {
+  border-bottom-color: var(--green);
+  background: var(--green-soft);
+  color: var(--green-ink);
+}
+
+mark.exam-highlight-word,
+.exam-highlight-word {
+  background: var(--sun-bg);
+  color: var(--ink-primary);
+  border-bottom: 2px solid var(--sun-accent);
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 900;
+}
+
+.ko-answer-mark {
+  background: var(--green-soft);
+  color: var(--green-ink);
+  font-weight: 900;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+/* 4지선다 3D 택타일 선택지 (.choice-list / .choice-3d) */
+.choice-list,
+.choices-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice-btn,
+.choice-3d {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 14px;
+  border-radius: var(--r-btn);
+  border: 2px solid var(--border-neutral);
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--border-lip);
+  color: var(--ink-primary);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: left;
+  transition: transform 60ms ease, box-shadow 60ms ease, background-color 100ms ease, border-color 100ms ease;
+}
+
+.choice-btn:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border-lip);
+}
+
+.choice-key,
+.choice-num {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-chip);
+  border: 2px solid var(--border-neutral);
+  background: var(--app-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+}
+
+.choice-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.choice-word {
+  font-family: var(--font-en);
+  font-size: 16px;
+  font-weight: 900;
+  color: inherit;
+}
+
+.choice-pos {
+  font-family: var(--font-en);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  margin-left: auto;
+}
+
+/* 선택지 3상태 (정답 에메랄드 · 오답 코랄 · 근접/함정 오렌지) */
+.choice-btn.is-correct,
+.choice-btn.correct {
+  background: var(--green-soft);
+  border-color: var(--green);
+  box-shadow: 0 2px 0 var(--green-dark);
+  color: var(--green-ink);
+  animation: correctPop 220ms ease-out;
+}
+
+.choice-btn.is-correct .choice-key,
+.choice-btn.correct .choice-num {
+  background: var(--green);
+  border-color: var(--green-dark);
+  color: #FFFFFF;
+}
+
+.choice-btn.is-wrong,
+.choice-btn.wrong {
+  background: var(--coral-soft);
+  border-color: var(--coral);
+  box-shadow: 0 2px 0 var(--coral-lip);
+  color: var(--coral-ink);
+  animation: wrongShake 260ms ease-in-out;
+}
+
+.choice-btn.is-wrong .choice-key,
+.choice-btn.wrong .choice-num {
+  background: var(--coral);
+  border-color: var(--coral-dark);
+  color: #FFFFFF;
+}
+
+.choice-btn.is-wrong.is-near {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+  box-shadow: 0 2px 0 var(--orange-lip);
+  color: var(--orange-ink);
+}
+
+.choice-btn.is-wrong.is-near .choice-key,
+.choice-btn.is-wrong.is-near .choice-num {
+  background: var(--orange);
+  border-color: var(--orange-dark);
+  color: #FFFFFF;
+}
+
+.choice-btn.is-dim {
+  opacity: 0.58;
+  box-shadow: 0 2px 0 var(--border-neutral);
+}
+
+.choice-check {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--green-ink);
+  white-space: nowrap;
+}
+
+.trap-pill {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  color: var(--sun-ink);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* 카드 뒤집기 모드 (Flashcard) */
+.flashcard-box {
+  min-height: 170px;
+  padding: 18px 14px;
+  border-radius: var(--r-btn);
+  border: 2px dashed var(--orange-border);
+  background: var(--orange-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.flashcard-box.flipped {
+  border-style: solid;
+  border-color: var(--green-border);
+  background: var(--green-soft);
+}
+
+.flashcard-hint-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--orange-border);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--orange-ink);
+}
+
+.flashcard-back-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.flashcard-meaning {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--green-ink);
+}
+
+.flashcard-base-note {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+}
+
+.flashcard-example-box {
+  background: var(--surface);
+  border: 2px solid var(--green-border);
+  border-radius: var(--r-chip);
+  padding: 10px 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.self-judge-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.judge-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: var(--r-btn);
+  border: 2px solid var(--border-neutral);
+  font-weight: 900;
+  transition: transform 60ms ease, box-shadow 60ms ease, opacity 120ms ease;
+}
+
+.judge-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.judge-title {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.judge-sub {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.judge-btn.unknown {
+  background: var(--coral-soft);
+  border-color: var(--coral);
+  box-shadow: 0 4px 0 var(--coral-lip);
+  color: var(--coral-ink);
+}
+
+.judge-btn.unknown:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--coral-lip);
+}
+
+.judge-btn.known {
+  background: var(--green);
+  border-color: var(--green-dark);
+  box-shadow: 0 4px 0 var(--green-lip);
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .judge-btn.known {
+  color: #0B110E;
+}
+
+.judge-btn.known:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--green-lip);
+}
+
+/* ==========================================================================
+   피드백 배너 (3상태 색 의미 규칙: 정답 에메랄드 · 오답 코랄 · 근접/함정 오렌지)
+   ========================================================================== */
+.quiz-feedback-banner {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--nav-h) + 8px + env(safe-area-inset-bottom, 0px));
+  width: min(var(--shell-max), calc(100vw - 20px));
+  max-height: 60vh;
+  z-index: 60;
+  border-radius: var(--r-card);
+  border: 2px solid var(--border-neutral);
+  border-top-width: 4px;
+  box-shadow: 0 4px 0 var(--border-lip);
+  overflow-y: auto;
+  background: var(--surface);
+}
+
+/* 상태 1: 정답 (에메랄드 그린) */
+.quiz-feedback-banner.is-correct {
+  background: var(--green-soft);
+  border-color: var(--green);
+  box-shadow: 0 4px 0 var(--green-lip);
+}
+
+/* 상태 2: 오답 (코랄 레드) */
+.quiz-feedback-banner.is-wrong {
+  background: var(--coral-soft);
+  border-color: var(--coral);
+  box-shadow: 0 4px 0 var(--coral-lip);
+}
+
+/* 상태 3: 근접 / 기본 뜻 함정 (텐저린 오렌지 · 선샤인) */
+.quiz-feedback-banner.is-near {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+  box-shadow: 0 4px 0 var(--orange-lip);
+}
+
+.feedback-banner-inner {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.feedback-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.feedback-status-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  border: 2px solid var(--green);
+  box-shadow: 0 2px 0 var(--green-lip);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feedback-status-badge.wrong {
+  border-color: var(--coral);
+  box-shadow: 0 2px 0 var(--coral-lip);
+  color: var(--coral);
+}
+
+.feedback-status-badge.near {
+  border-color: var(--orange);
+  box-shadow: 0 2px 0 var(--orange-lip);
+  color: var(--orange);
+}
+
+.feedback-headline-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.feedback-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.feedback-verdict {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--green-ink);
+}
+
+.quiz-feedback-banner.is-wrong .feedback-verdict {
+  color: var(--coral-ink);
+}
+
+.quiz-feedback-banner.is-near .feedback-verdict {
+  color: var(--orange-ink);
+}
+
+.feedback-answer-line {
+  margin-top: 2px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.xp-gain-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.xp-burst,
+.xp-gain-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  font-family: var(--font-en);
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--sun-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.xp-combo-text {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--orange-soft);
+  border: 1.5px solid var(--orange-border);
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--orange-ink);
+}
+
+.xp-cap-notice {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+}
+
+.next-review-pill {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--green-dark);
+}
+
+.quiz-feedback-banner.is-wrong .next-review-pill {
+  color: var(--coral-ink);
+}
+
+.quiz-feedback-banner.is-near .next-review-pill {
+  color: var(--orange-ink);
+}
+
+.feedback-trap {
+  background: var(--sun-bg);
+  border: 2px solid var(--sun-accent);
+  border-radius: var(--r-chip);
+  padding: 9px 11px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--sun-ink);
+  line-height: 1.45;
+}
+
+.example-box {
+  background: var(--surface);
+  border: 2px solid var(--green-border);
+  border-radius: var(--r-btn);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quiz-feedback-banner.is-wrong .example-box {
+  border-color: var(--coral-border);
+}
+
+.quiz-feedback-banner.is-near .example-box {
+  border-color: var(--orange-border);
+}
+
+.example-en {
+  font-family: var(--font-en);
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--ink-primary);
+}
+
+.example-ko {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.feedback-source {
+  font-weight: 800;
+  color: var(--teal-ink);
+}
+
+.feedback-signal {
+  background: var(--sun-bg);
+  border: 1.5px solid var(--sun-accent);
+  border-radius: var(--r-chip);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sun-ink);
+  line-height: 1.45;
+}
+
+.srs-foot {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--green-ink);
+}
+
+.quiz-feedback-banner.is-wrong .srs-foot {
+  color: var(--coral-ink);
+}
+
+.quiz-feedback-banner.is-near .srs-foot {
+  color: var(--orange-ink);
+}
+
+/* ==========================================================================
+   9. 세션 요약 화면 (Quiz Summary)
+   ========================================================================== */
+.quiz-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.summary-hero-block {
+  background: var(--sun-bg);
+  border: 2px solid var(--sun-accent);
+  border-radius: var(--r-card);
+  box-shadow: 0 4px 0 var(--sun-lip);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.levelup-banner {
+  background: var(--green);
+  border: 2px solid var(--green-dark);
+  box-shadow: 0 2px 0 var(--green-lip);
+  color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: var(--r-chip);
+  font-size: 13.5px;
+  font-weight: 900;
+  text-align: center;
+}
+
+html[data-theme="dark"] .levelup-banner {
+  color: #0B110E;
+}
+
+.summary-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.summary-headline {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--ink-primary);
+  letter-spacing: -0.025em;
+}
+
+.summary-headline em {
+  font-style: normal;
+  color: var(--green);
+}
+
+.summary-pct-pill {
+  font-family: var(--font-en);
+  font-size: 18px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--green-soft);
+  border: 2px solid var(--green);
+  color: var(--green-ink);
+}
+
+.session-xp-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sun-ink);
+}
+
+.session-retry-line {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  background: var(--surface);
+  border: 1.5px solid var(--sun-accent);
+  border-radius: var(--r-chip);
+  padding: 8px 10px;
+}
+
+.stat-box.highlight-wrong {
+  background: var(--coral-soft);
+  border-color: var(--coral-border);
+}
+
+.summary-list-card {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 10px 12px;
+}
+
+.summary-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 4px;
+  border-bottom: 1.5px solid var(--border-neutral);
+  flex-wrap: wrap;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.summary-row-word {
+  font-family: var(--font-en);
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--ink-primary);
+}
+
+.summary-row-meaning {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+}
+
+.summary-row-tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
