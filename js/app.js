@@ -2822,6 +2822,12 @@
   }
 
   function renderQuizSummary(container) {
+    const feedbackBanner = document.getElementById('quiz-feedback-banner');
+    if (feedbackBanner) {
+      feedbackBanner.classList.add('hidden');
+      feedbackBanner.classList.remove('is-correct', 'is-wrong', 'is-near');
+      feedbackBanner.innerHTML = '';
+    }
     if (!state.quiz.completionRecorded) {
       state.quiz.completionRecorded = true;
       state.gamification.stats.completedSessions += 1;

@@ -2691,6 +2691,11 @@ html[data-theme="dark"] .judge-btn.known {
   gap: 10px;
 }
 
+.summary-hero-block .hero-kicker {
+  align-self: flex-start;
+  margin-bottom: 0;
+}
+
 .levelup-banner {
   background: var(--green);
   border: 2px solid var(--green-dark);
