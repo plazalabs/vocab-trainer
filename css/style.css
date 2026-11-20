@@ -718,3 +718,983 @@ html[data-theme="dark"] .mini-btn.accent {
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   7. 홈 화면 (Concept A · Hero + Weekly Streak + 5 Modes + Status + League + Badges)
+   ========================================================================== */
+
+/* 세션 이어하기 배너 카드 */
+.resume-card {
+  background: var(--sky-soft);
+  border: 2px solid var(--sky-border);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--sky-lip);
+  padding: 12px 14px;
+}
+
+.resume-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.resume-card-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sky-ink);
+}
+
+.resume-card-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+/* 히어로 미션 블록 (선샤인 옐로우 색면 + 기존 마스코트 + 캔디 진행 링 + 3D CTA) */
+.hero-block {
+  background: var(--sun-bg);
+  border: 2px solid var(--sun-accent);
+  border-radius: var(--r-card);
+  box-shadow: 0 4px 0 var(--sun-lip);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mascot-badge {
+  width: 82px;
+  height: 82px;
+  border-radius: var(--r-btn);
+  background: var(--surface);
+  border: 2px solid var(--sun-accent);
+  box-shadow: 0 3px 0 var(--sun-lip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.v5-mascot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--sun-accent);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--sun-ink);
+  margin-bottom: 6px;
+}
+
+.hero-title {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary);
+}
+
+.hero-sub {
+  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sun-ink);
+}
+
+/* 진행 링 + 하루 목표 칩 스트립 */
+.goal-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  background: var(--surface);
+  border: 2px solid var(--sun-accent);
+  border-radius: var(--r-btn);
+}
+
+.ring-box {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+}
+
+.ring-svg {
+  width: 68px;
+  height: 68px;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: var(--track-bg);
+  stroke-width: 9;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 163.36;
+  stroke-dashoffset: 163.36;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-variant-numeric: tabular-nums;
+}
+
+.ring-pct {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--green-ink);
+}
+
+.ring-sub {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.goal-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.goal-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.goal-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+}
+
+.goal-count {
+  font-family: var(--font-en);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.goal-count em {
+  font-style: normal;
+  color: var(--green);
+}
+
+.goal-chips {
+  display: flex;
+  gap: 5px;
+}
+
+.goal-chip {
+  flex: 1;
+  min-height: 28px;
+  padding: 0 6px;
+  border-radius: var(--r-chip);
+  border: 1.5px solid var(--border-neutral);
+  background: var(--app-bg);
+  color: var(--ink-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 100ms ease, border-color 100ms ease, color 100ms ease;
+}
+
+.goal-chip.active,
+.goal-chip.is-active {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green-ink);
+}
+
+/* 주간 스트릭 카드 */
+.streak-card {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.streak-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.streak-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink-primary);
+}
+
+.streak-xp-meta {
+  font-family: var(--font-en);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--sky-ink);
+  background: var(--sky-soft);
+  border: 1.5px solid var(--sky-border);
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-muted);
+}
+
+.day-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--border-neutral);
+  background: var(--app-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-size: 12.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.day-circle.done,
+.day-circle.is-done {
+  background: var(--orange);
+  border-color: var(--orange-lip);
+  box-shadow: 0 2px 0 var(--orange-lip);
+  color: #FFFFFF;
+}
+
+.day-circle.today:not(.done),
+.day-circle.is-today:not(.is-done) {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+  color: var(--orange-ink);
+}
+
+/* 섹션 헤더 */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+}
+
+.section-sub {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+}
+
+/* 학습 모드 바로가기 5종 (기본 3 + 수능 기출 2) */
+.mode-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mode-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 12px 10px;
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-btn);
+  box-shadow: 0 3px 0 var(--border-lip);
+  text-align: left;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+.mode-tile:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border-lip);
+}
+
+.mode-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-chip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.mode-icon-box.green {
+  background: var(--green-soft);
+  border-color: var(--green-border);
+  color: var(--green-ink);
+}
+
+.mode-icon-box.sky {
+  background: var(--sky-soft);
+  border-color: var(--sky-border);
+  color: var(--sky-ink);
+}
+
+.mode-icon-box.orange {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.mode-icon-box.teal {
+  background: var(--teal-soft);
+  border-color: var(--teal-border);
+  color: var(--teal-ink);
+}
+
+.mode-name {
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--ink-primary);
+}
+
+.mode-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+}
+
+.mode-exam-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.mode-exam-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  background: var(--teal-soft);
+  border: 2px solid var(--teal);
+  border-radius: var(--r-btn);
+  box-shadow: 0 3px 0 var(--teal-lip);
+  text-align: left;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+.mode-exam-tile:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--teal-lip);
+}
+
+.mode-exam-tile .mode-icon-box {
+  background: var(--surface);
+  border-color: var(--teal);
+  color: var(--teal-ink);
+}
+
+.mode-exam-text {
+  min-width: 0;
+}
+
+.mode-exam-tile .mode-name {
+  color: var(--teal-ink);
+  font-size: 12.5px;
+}
+
+.mode-exam-tile .mode-tag {
+  color: var(--teal-lip);
+}
+
+html[data-theme="dark"] .mode-exam-tile .mode-tag {
+  color: var(--teal);
+}
+
+/* 학습 현황 & SRS 카드 */
+.status-card {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.status-card-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-neutral);
+}
+
+.status-kicker {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+}
+
+.status-bignum {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-en);
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-unit {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+  margin-left: 2px;
+}
+
+.status-due-pill {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--green-ink);
+  background: var(--green-soft);
+  border: 1.5px solid var(--green-border);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat-box {
+  background: var(--app-bg);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-btn);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.stat-box.highlight-streak {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+}
+
+.stat-box.highlight-today {
+  background: var(--sky-soft);
+  border-color: var(--sky-border);
+}
+
+.stat-box.highlight-due {
+  background: var(--green-soft);
+  border-color: var(--green-border);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+}
+
+.stat-value {
+  font-family: var(--font-en);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-box.highlight-streak .stat-value {
+  color: var(--orange-ink);
+}
+
+.stat-box.highlight-today .stat-value {
+  color: var(--sky-ink);
+}
+
+.stat-box.highlight-due .stat-value {
+  color: var(--green-ink);
+}
+
+.stat-value.stat-value-danger {
+  color: var(--coral);
+}
+
+.stat-sub {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+/* 레벨 진행 바 */
+.level-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.level-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.level-progress-head strong {
+  font-family: var(--font-en);
+  color: var(--sky-ink);
+  background: var(--sky-soft);
+  border: 1.5px solid var(--sky-border);
+  padding: 1px 8px;
+  border-radius: var(--r-pill);
+}
+
+.level-progress-track {
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: var(--track-bg);
+  border: 1.5px solid var(--border-neutral);
+  overflow: hidden;
+}
+
+.level-progress-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--sky);
+  transition: width 0.3s ease;
+}
+
+/* SRS 3색 분포 막대 & 테스트 도구 */
+.srs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 2px solid var(--border-neutral);
+}
+
+.srs-bar-track {
+  display: flex;
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: var(--track-bg);
+  border: 1.5px solid var(--border-neutral);
+  overflow: hidden;
+}
+
+.srs-bar-seg {
+  display: block;
+  height: 100%;
+}
+
+.srs-bar-seg.seg-new { background: var(--border-lip); }
+.srs-bar-seg.seg-ing { background: var(--sky); }
+.srs-bar-seg.seg-done { background: var(--green); }
+
+.srs-bar-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--r-pill);
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.legend-dot.dot-new { background: var(--border-lip); }
+.legend-dot.dot-ing { background: var(--sky); }
+.legend-dot.dot-done { background: var(--green); }
+
+.srs-helper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1.5px dashed var(--border-neutral);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.srs-sim-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 주간 연습 리그 카드 (보라·그라데이션 제거 → 스카이/에메랄드/선샤인 통일) */
+.league-card {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-card);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.league-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+
+.league-strip-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--ink-primary);
+}
+
+.league-strip-rank {
+  font-family: var(--font-en);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--teal-ink);
+  background: var(--teal-soft);
+  border: 1.5px solid var(--teal-border);
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  font-variant-numeric: tabular-nums;
+}
+
+.league-strip-xp {
+  margin-left: auto;
+  font-family: var(--font-en);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--sky-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.league-chevron {
+  font-size: 14px;
+  color: var(--ink-muted);
+  transition: transform 150ms ease;
+}
+
+.league-strip-head[aria-expanded="true"] .league-chevron {
+  transform: rotate(180deg);
+}
+
+.league-gauge {
+  height: 10px;
+  border-radius: var(--r-pill);
+  background: var(--track-bg);
+  border: 1.5px solid var(--border-neutral);
+  overflow: hidden;
+}
+
+.league-gauge-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--teal);
+  transition: width 0.3s ease;
+}
+
+.league-expand {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 2px solid var(--border-neutral);
+}
+
+.league-expand.is-open {
+  display: flex;
+}
+
+.league-summary {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+}
+
+.league-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.league-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-chip);
+  border: 1.5px solid var(--border-neutral);
+  background: var(--app-bg);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.league-row.is-me,
+.league-row.me {
+  background: var(--sun-bg);
+  border-color: var(--sun-accent);
+  color: var(--ink-primary);
+  font-weight: 900;
+}
+
+.league-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--border-neutral);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-size: 11.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.league-row.is-me .league-rank {
+  background: var(--sun-accent);
+  border-color: var(--sun-lip);
+  color: var(--sun-ink);
+}
+
+.league-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bot-badge {
+  font-family: var(--font-en);
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  background: var(--surface-tint);
+  border: 1.5px solid var(--border-neutral);
+  color: var(--ink-muted);
+}
+
+.league-xp {
+  font-family: var(--font-en);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--sky-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.league-caption {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+/* 배지 컬렉션 그리드 */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.badge-item {
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  border-radius: var(--r-btn);
+  box-shadow: 0 3px 0 var(--border-lip);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-chip);
+  background: var(--surface-tint);
+  border: 2px solid var(--border-neutral);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.badge-name {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink-primary);
+  line-height: 1.25;
+}
+
+.badge-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.badge-progress {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--track-bg);
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.badge-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--sky);
+  transition: width 0.3s ease;
+}
+
+.badge-item.unlocked {
+  background: var(--sun-bg);
+  border-color: var(--sun-accent);
+  box-shadow: 0 3px 0 var(--sun-lip);
+}
+
+.badge-item.unlocked .badge-icon {
+  background: var(--surface);
+  border-color: var(--sun-accent);
+}
+
+.badge-item.unlocked .badge-sub {
+  color: var(--sun-ink);
+}
+
+.badge-item.unlocked .badge-progress-fill {
+  background: var(--green);
+}
+
+.badge-item.in-progress .badge-sub {
+  color: var(--sky-ink);
+}
+
+.badge-item.locked {
+  background: var(--app-bg);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.badge-item.locked .badge-icon {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.badge-item.locked .badge-name {
+  color: var(--ink-secondary);
+}
+
+.badge-item.just-unlocked {
+  animation: badgePop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}

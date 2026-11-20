@@ -1109,17 +1109,36 @@
 
     const dateBadge = document.getElementById('home-date-badge');
     if (dateBadge) {
-      dateBadge.textContent = formatKoreanShortDate(today);
+      dateBadge.textContent =
+        state.streak.count > 0
+          ? `${formatKoreanShortDate(today)} · ${state.streak.count}일 연속 불꽃 중`
+          : `${formatKoreanShortDate(today)} · 오늘의 미션`;
     }
+
+    const goalPreset = GOAL_PRESETS[state.prefs.goalLevel] || GOAL_PRESETS.normal;
+    const remainingToGoal = Math.max(goalPreset.count - todayStudiedCount, 0);
 
     const greetingTitle = document.getElementById('home-greeting-title');
     if (greetingTitle) {
-      if (dueWords.length > 0) {
+      if (remainingToGoal === 0) {
+        greetingTitle.textContent = '오늘 목표 100% 달성!';
+      } else if (dueWords.length > 0) {
         greetingTitle.textContent = `오늘 복습할 단어 ${dueWords.length}개`;
       } else if (newWords.length > 0) {
-        greetingTitle.textContent = `새 단어 ${newWords.length}개가 기다려요`;
+        greetingTitle.textContent = `목표까지 ${remainingToGoal}단어 남았어요!`;
       } else {
-        greetingTitle.textContent = `오늘 복습 완료!`;
+        greetingTitle.textContent = '오늘 복습 완료!';
+      }
+    }
+
+    const heroSub = document.getElementById('home-hero-sub');
+    if (heroSub) {
+      if (remainingToGoal === 0) {
+        heroSub.textContent = `오늘 ${todayStudiedCount}단어 완료! 추가 복습도 가능해요.`;
+      } else if (dueWords.length > 0) {
+        heroSub.textContent = `복습 ${dueWords.length}개 포함 · 목표까지 ${remainingToGoal}단어!`;
+      } else {
+        heroSub.textContent = `새 단어 ${newWords.length}개가 기다리고 있어요!`;
       }
     }
 
@@ -1135,14 +1154,20 @@
     document.getElementById('stat-streak-count').textContent = `${state.streak.count}일`;
     document.getElementById('stat-today-done').textContent = String(todayStudiedCount);
 
+    const plan = getTodayPlan();
     const startBtnText = document.getElementById('btn-hero-start-text');
+    const startBtnBadge = document.getElementById('btn-hero-start-badge');
     if (startBtnText) {
-      const plan = getTodayPlan();
       if (plan.sessionCount > 0) {
-        startBtnText.textContent = `오늘 ${plan.sessionCount}문제 · 약 ${plan.minutes}분 시작하기`;
+        startBtnText.textContent =
+          dueWords.length > 0 ? '오늘의 복습 퀴즈 시작하기' : `오늘 학습 시작 (약 ${plan.minutes}분)`;
       } else {
-        startBtnText.textContent = `전체 단어 복습 퀴즈 시작하기 (${totalWords}개)`;
+        startBtnText.textContent = '전체 단어 복습 퀴즈 시작하기';
       }
+    }
+    if (startBtnBadge) {
+      startBtnBadge.textContent =
+        plan.sessionCount > 0 ? `${plan.sessionCount}단어 →` : `${totalWords}단어 →`;
     }
 
     // v4: 하루 목표 칩 상태 동기화
@@ -1150,13 +1175,16 @@
       chip.classList.toggle('active', chip.dataset.goalLevel === state.prefs.goalLevel);
     });
 
-    // v5: 히어로 진행 링 + 하루 목표 표시
-    const goalPreset = GOAL_PRESETS[state.prefs.goalLevel] || GOAL_PRESETS.normal;
+    // 히어로 진행 링 + 하루 목표 표시
     const heroPct = Math.min(100, Math.round((todayStudiedCount / goalPreset.count) * 100));
     const ringNum = document.getElementById('hero-ring-num');
     if (ringNum) ringNum.textContent = `${heroPct}%`;
+    const ringSub = document.getElementById('hero-ring-sub');
+    if (ringSub) ringSub.textContent = `${todayStudiedCount}/${goalPreset.count}`;
     const ringFg = document.getElementById('hero-ring-fg');
     if (ringFg) ringFg.style.strokeDashoffset = (163.36 * (1 - heroPct / 100)).toFixed(1);
+    const heroTodayCount = document.getElementById('hero-today-count');
+    if (heroTodayCount) heroTodayCount.textContent = String(todayStudiedCount);
     const heroGoalCount = document.getElementById('hero-goal-count');
     if (heroGoalCount) heroGoalCount.textContent = `${goalPreset.count}개`;
 
@@ -1167,7 +1195,7 @@
       if (snap) {
         resumeCard.innerHTML = `
           <div class="resume-card-body">
-            <span class="resume-card-text">진행 중인 세션이 있습니다 · ${escapeHtml(getQuizModeLabel(snap.mode))} ${snap.results.length}/${snap.queueIds.length}문제 완료</span>
+            <span class="resume-card-text">진행 중인 세션 · ${escapeHtml(getQuizModeLabel(snap.mode))} (${snap.results.length}/${snap.queueIds.length}문제)</span>
             <span class="resume-card-actions">
               <button id="btn-resume-session" class="mini-btn accent" type="button">이어서 하기</button>
               <button id="btn-discard-session" class="mini-btn" type="button">처음부터</button>
@@ -1189,16 +1217,30 @@
       }
     }
 
-    // v4: 주간 스트릭 도트 (월~일, 실측 로그 기반)
+    // 주간 스트릭 카드 헤더 & 월~일 도트 (실측 로그 기반)
+    const streakHeading = document.getElementById('home-streak-heading');
+    if (streakHeading) {
+      streakHeading.textContent = `이번 주 연속 학습 · ${state.streak.count}일째`;
+    }
+    const weeklyXpMeta = document.getElementById('home-weekly-xp-meta');
+    if (weeklyXpMeta) {
+      weeklyXpMeta.textContent = `주간 +${state.gamification.weekly.xp} XP`;
+    }
     const dotsEl = document.getElementById('home-week-dots');
     if (dotsEl) {
       const monday = getCurrentWeekMondayStr();
       const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
-      let dotsHtml = '<span class="week-dots-label">이번 주</span>';
+      let dotsHtml = '';
       for (let d = 0; d < 7; d++) {
         const ds = addDays(monday, d);
         const studied = !!(state.streak.studyLog && state.streak.studyLog[ds]);
-        dotsHtml += `<span class="week-dot${studied ? ' is-done' : ''}${ds === today ? ' is-today' : ''}">${dayNames[d]}</span>`;
+        const isToday = ds === today;
+        const dayNum = Number(ds.split('-')[2]);
+        dotsHtml += `
+          <div class="day-dot">
+            <span class="day-circle${studied ? ' done is-done' : ''}${isToday ? ' today is-today' : ''}">${studied ? '✓' : dayNum}</span>
+            <span>${dayNames[d]}</span>
+          </div>`;
       }
       dotsEl.innerHTML = dotsHtml;
     }
